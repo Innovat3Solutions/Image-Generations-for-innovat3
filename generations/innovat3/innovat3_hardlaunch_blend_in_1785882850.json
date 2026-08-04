@@ -1,0 +1,11 @@
+{
+  "model": "openai/gpt-image-2/edit",
+  "provider": "fal.ai",
+  "campaign": "Hard launch - We Didn't Come To Blend In (starring Juan)",
+  "prompt": "Hard-launch ad, CodesAlpha-inspired: headline WE DIDN'T COME / to blend in (script), badge INNOVAT3 SOLUTIONS IS OFFICIALLY LIVE, B&W crowd facing away with Juan in full color lime hoodie at center, services list, CTA pill (full prompt in fal request 019fcee7-6261-7bc1-83e2-d020606fd5ec)",
+  "refs": ["fal CDN: juan-ceo-ref.png (real photo, user-approved)", "fal CDN: innovat3-logo-black-transparent.png"],
+  "params": {"image_size": "1024x1536", "quality": "high"},
+  "cost_usd_estimate": 0.19,
+  "project": "innovat3",
+  "created": "2026-08-04T22:34:11Z"
+}

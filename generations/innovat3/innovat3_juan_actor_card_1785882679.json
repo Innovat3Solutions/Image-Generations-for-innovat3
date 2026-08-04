@@ -1,0 +1,22 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal.ai",
+  "campaign": "Actor card - Juan, Founder & CEO (lime hoodie uniform, 4 angles)",
+  "prompt": "Create a professional ACTOR REFERENCE CARD sheet, landscape layout, for the real man shown in the first image - preserve his exact facial identity... four photographic panels: FRONT, 3/4 ANGLE, PROFILE, FULL BODY in vivid lime hoodie uniform (full prompt in fal request 019fcee6-5cd7-73f1-8b12-dd67481d3c0f)",
+  "refs": [
+    "fal CDN: juan-ceo-ref.png (real photo, user-approved)",
+    "fal CDN: innovat3-logo-black-transparent.png"
+  ],
+  "params": {
+    "aspect_ratio": "16:9",
+    "resolution": "2K"
+  },
+  "cost_usd_estimate": 0.2,
+  "project": "innovat3",
+  "created": "2026-08-04T22:31:21Z",
+  "post_fix": {
+    "model": "fal-ai/nano-banana-pro/edit",
+    "action": "replaced accidental Nike swoosh on hoodie with Innovat3 icon mark",
+    "cost_usd_estimate": 0.2
+  }
+}

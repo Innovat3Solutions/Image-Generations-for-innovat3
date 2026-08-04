@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal.ai",
+  "campaign": "Actor card v2 - added black snapback with lime icon, corrected body proportions",
+  "prompt": "Edit pass on actor card v1: 1) add matte-black snapback cap with lime Innovat3 icon in all four panels, angle-matched; 2) correct body proportions in every panel to match the natural proportions of the FRONT panel (longer legs, correct head scale in FULL BODY). Identity, wardrobe, layout, labels unchanged. (full prompt in fal request 019fcf28-9068-7e53-9649-3e0e0ececcc6)",
+  "refs": ["previous actor card (fal CDN)", "fal CDN: innovat3-logo-black-transparent.png"],
+  "params": {"aspect_ratio": "16:9", "resolution": "2K"},
+  "cost_usd_estimate": 0.20,
+  "project": "innovat3",
+  "created": "2026-08-04T23:43:32Z"
+}
