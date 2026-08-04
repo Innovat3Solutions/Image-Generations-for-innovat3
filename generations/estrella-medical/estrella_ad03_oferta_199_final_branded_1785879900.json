@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Composite real Estrella Medical Centers logo (from refs/estrella_logo.png via fal CDN) into ad03 top space; add footer CTA 'EstrellaWellness.com · 305.217.7553' and 'Todo incluido. Sin cargos ocultos.'; all other elements unchanged",
+  "refs": ["../refs/estrella_logo.png", "estrella_ad03_oferta_199_1785877742.png"],
+  "params": {"resolution": "2K", "output_format": "png"},
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-08-04T21:26:00Z",
+  "note": "Demo of the logo-compositing finishing pass; same workflow can brand the remaining 9 creatives"
+}
