@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Dental & vision ad \u2014 \"Una sonrisa que no te cueste una fortuna.\" Cream studio, red circle frame, line-art tooth/eye/shield motif, CTA Cotiza dental + visi\u00f3n, footer contacts.\n",
+  "refs": [
+    "generations/refs/javis-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "jpeg"
+  },
+  "cost_usd": 0.08,
+  "project": "javis-insurance",
+  "created": "2026-08-04T21:44:12.036565+00:00"
+}

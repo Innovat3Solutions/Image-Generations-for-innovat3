@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Brand anthem ad \u2014 \"Protegiendo lo que m\u00e1s importa.\" Multigenerational familia on Miami Beach at dusk, constellation shield over family, all services listed, CTA Empieza hoy, full contact footer.\n",
+  "refs": [
+    "generations/refs/javis-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "jpeg"
+  },
+  "cost_usd": 0.08,
+  "project": "javis-insurance",
+  "created": "2026-08-04T21:47:31.565673+00:00"
+}

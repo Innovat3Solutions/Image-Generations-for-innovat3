@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Ventanita cafecito ACA ad \u2014 \"Tu cafecito cuesta m\u00e1s que tu seguro m\u00e9dico.\" Planes Obamacare desde $0 al mes. Steam-shield motif, golden hour, brand palette, logo top-left, CTA Cotiza GRATIS hoy, footer (305) 390-8679 \u00b7 javisservices.com\n",
+  "refs": [
+    "generations/refs/javis-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "jpeg"
+  },
+  "cost_usd": 0.08,
+  "project": "javis-insurance",
+  "created": "2026-08-04T21:40:46.604431+00:00"
+}

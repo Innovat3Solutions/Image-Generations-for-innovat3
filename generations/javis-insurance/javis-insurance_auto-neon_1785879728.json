@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Auto neon Ocean Drive ad \u2014 \"Miami traffic is wild. Your rate shouldn't be.\" Aseguranza de carro. Neon light-trail shield around car, night art deco scene, CTA Get your free quote, footer contacts.\n",
+  "refs": [
+    "generations/refs/javis-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "jpeg"
+  },
+  "cost_usd": 0.08,
+  "project": "javis-insurance",
+  "created": "2026-08-04T21:42:10.323249+00:00"
+}

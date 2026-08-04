@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Open Enrollment deadline ad \u2014 \"La fecha l\u00edmite se acerca.\" NOV 1 \u2014 ENE 15 giant type, flat deep-blue Swiss poster style, $0 plans badge, CTA Aparta tu cita, full contact footer.\n",
+  "refs": [
+    "generations/refs/javis-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "jpeg"
+  },
+  "cost_usd": 0.08,
+  "project": "javis-insurance",
+  "created": "2026-08-04T21:43:34.105170+00:00"
+}

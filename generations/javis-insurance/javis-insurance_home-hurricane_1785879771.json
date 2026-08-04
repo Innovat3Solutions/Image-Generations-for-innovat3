@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Home hurricane ad \u2014 \"Hurricane season doesn't wait. Ni t\u00fa deber\u00edas.\" Shield-dome protecting pastel Florida house from storm. CTA Protege tu casa hoy, footer contacts.\n",
+  "refs": [
+    "generations/refs/javis-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "jpeg"
+  },
+  "cost_usd": 0.08,
+  "project": "javis-insurance",
+  "created": "2026-08-04T21:42:52.328253+00:00"
+}

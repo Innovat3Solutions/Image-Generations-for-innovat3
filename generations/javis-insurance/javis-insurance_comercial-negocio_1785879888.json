@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Commercial insurance ad \u2014 \"Tu negocio es tu sue\u00f1o. Aseg\u00faralo.\" Food-truck owner at dawn, ABIERTO sign, shield reflection motif, CTA Protege tu negocio, footer contacts.\n",
+  "refs": [
+    "generations/refs/javis-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "jpeg"
+  },
+  "cost_usd": 0.08,
+  "project": "javis-insurance",
+  "created": "2026-08-04T21:44:49.300293+00:00"
+}
