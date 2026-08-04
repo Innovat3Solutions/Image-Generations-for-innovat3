@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Mini trust-strip section on a solid asphalt black background with faint film grain, lots of negative space. Stacked center: small yellow caps label 'BUILT FOR CONTRACTORS', centered line 'Licensed & Insured — $2M Liability — OSHA-Trained Crews — 24-Hour Bid Guarantee', muted grey row of partner wordmarks (Meridian Builders, Northpoint Roofing, Calder Construction, Stonebridge Development). Thin hairlines top and bottom. + master brand-world block (see EXCAVATION-KINGS-WEBSITE-CONCEPT.md §4)",
+  "refs": [],
+  "params": { "aspect_ratio": "16:9", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "section": "S2 trust strip",
+  "created": "2026-08-04T23:24:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Full-bleed background photo: large tracked excavator tearing into a concrete slab at dusk, backlit amber dust cloud, dark tonal gradient overlay strongest at the bottom of the frame. Slim top navigation bar: small yellow crown icon with 'EXCAVATION KINGS' wordmark on the left; on the right, links 'Services  Process  Projects', a phone number, and a small safety-yellow button 'Get a Bid'. Anchored bottom-left: tiny yellow all-caps label 'DEMOLITION · CONCRETE REMOVAL · EXCAVATION · GRADING', massive two-line ultra-condensed all-caps headline 'WE TEAR IT DOWN. YOU BUILD ON TOP.', one short sub-line 'Licensed demo and dirt-work crews for contractors who live on deadlines.', then a safety-yellow pill button 'Get a bid in 24 hours' beside a ghost outline button 'See our work'. + master brand-world block (see EXCAVATION-KINGS-WEBSITE-CONCEPT.md §4)",
+  "refs": [],
+  "params": { "aspect_ratio": "21:9", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "section": "S1 hero",
+  "created": "2026-08-04T23:23:00Z"
+}

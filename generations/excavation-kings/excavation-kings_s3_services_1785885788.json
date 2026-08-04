@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Services section 'THE DIRTY WORK' as hover-accordion slice layout: four full-height vertical duotone photo slices; first expanded (~40%) with index 01, headline 'DEMOLITION', copy 'Structures down, debris gone, site swept.', yellow arrow link; compressed slices with vertical labels '02 CONCRETE REMOVAL', '03 EXCAVATION & GRADING', '04 LAND CLEARING'. + master brand-world block (see EXCAVATION-KINGS-WEBSITE-CONCEPT.md §4)",
+  "refs": [],
+  "params": { "aspect_ratio": "16:9", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "section": "S3 services accordion",
+  "created": "2026-08-04T23:25:00Z"
+}

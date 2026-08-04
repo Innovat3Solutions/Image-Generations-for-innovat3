@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Closing CTA, image-as-canvas: sunrise photo of a perfectly graded empty dirt pad with machine tracks, dark overlay. Thin black/yellow hazard chevron divider along top edge. Centered-low: headline 'YOUR SITE. READY.', sub 'Demo, dirt, and haul-off — handled.', dark form card with fields Name/Company/Project type/Phone and yellow button 'Request my 24-hour bid', line 'or call (704) 555-0119 — WE DIG IT BETTER'. + master brand-world block (see EXCAVATION-KINGS-WEBSITE-CONCEPT.md §4)",
+  "refs": [],
+  "params": { "aspect_ratio": "16:9", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "section": "S6 closing CTA + form",
+  "created": "2026-08-04T23:27:00Z"
+}

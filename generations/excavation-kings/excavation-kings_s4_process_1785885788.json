@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Process section, bone paper background, near-black text. Top-left: yellow label 'THE 24-HOUR BID', headline 'A LOCKED NUMBER. NOT A GUESS.' Three columns with ghosted numerals 01/02/03: 'Send your plans' / 'We walk the site' / 'Bid in your inbox'. Bottom-right: underlined 'Start your bid →' + photo crop of gloved hands over site drawings. + master brand-world block (see EXCAVATION-KINGS-WEBSITE-CONCEPT.md §4)",
+  "refs": [],
+  "params": { "aspect_ratio": "16:9", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "section": "S4 process",
+  "created": "2026-08-04T23:26:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Proof section, asphalt background, off-grid. Left: overlapping before/after photo crops with bone borders, caption 'BEFORE / AFTER — RETAIL PAD, 6 DAYS'. Right: oversized condensed metrics with yellow underlines '1.2M YD³ MOVED', '340+ STRUCTURES DOWN', '98% ON-TIME' + GC quote from Meridian Builders. + master brand-world block (see EXCAVATION-KINGS-WEBSITE-CONCEPT.md §4)",
+  "refs": [],
+  "params": { "aspect_ratio": "16:9", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "section": "S5 proof",
+  "created": "2026-08-04T23:26:00Z"
+}
