@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/qwen-image-2/pro/edit",
+  "provider": "fal.ai",
+  "campaign": "8 - Your Data Knows The Answer (Data Intelligence)",
+  "prompt": "Using the logo from image 1, create a dark premium advertising poster, 4:5 portrait. Place the white logo from image 1 cleanly at the top center on the black background, keeping its exact shape and colors. Scene: deep matte black background, below the logo a large bold white headline 'YOUR DATA KNOWS THE ANSWER.' with 'THE ANSWER.' in glowing chartreuse lime-green. Center: a stunning 3D visualization of flowing luminous lime-green data streams and particles converging into a small glowing holographic Miami city skyline hovering above an open hand silhouette. Fine lime green grid lines and floating numbers in the darkness. Bottom: thin lime-green line, then small white text 'Data Intelligence / Workflow Automation / AI Infrastructure' and below it 'www.innovat3solutions.com'. Cinematic lighting, high contrast, futuristic premium tech aesthetic, only black, white and lime green #B9D93C",
+  "refs": ["fal CDN: logo_white_on_black.jpg (white logo flattened on black, passed natively as image 1)"],
+  "params": {"image_size": "1080x1350", "enable_prompt_expansion": false, "seed": 2036559081},
+  "cost_usd_estimate": 0.06,
+  "project": "innovat3",
+  "created": "2026-08-04T20:34:06Z"
+}

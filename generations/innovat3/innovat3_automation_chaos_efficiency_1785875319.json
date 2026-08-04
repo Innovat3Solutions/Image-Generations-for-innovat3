@@ -1,0 +1,11 @@
+{
+  "model": "ideogram/v4",
+  "provider": "fal.ai",
+  "campaign": "3 - Turn Chaos Into Efficiency (Workflow Automation)",
+  "prompt": "Bold typographic advertising poster, 4:5 portrait, for a Miami AI automation consultancy. Clean off-white background with subtle paper texture. Massive black condensed grotesk headline dominating the top half: 'TURN CHAOS INTO EFFICIENCY' with the word 'CHAOS' in scribbled tangled style and 'EFFICIENCY' printed inside a solid chartreuse lime-green rectangle in black. Center visual: a mess of tangled black cables entering the left side of a minimal glossy lime-green cube, exiting the right side as perfectly straight parallel neat lines. Subtle drop shadows, editorial Swiss design layout. Bottom: small clean black text 'www.innovat3solutions.com | hello@innovat3solutions.com'. Very top has a clean empty off-white margin band reserved for a logo. Modern agency ad, flat design with soft 3D center visual, lime green #B9D93C and black only",
+  "refs": ["refs/innovat3-logo-black-transparent.png (composited locally with PIL, top)"],
+  "params": {"image_size": "1080x1350", "rendering_speed": "QUALITY", "expansion_model": "None", "seed": 33175969},
+  "cost_usd_estimate": 0.08,
+  "project": "innovat3",
+  "created": "2026-08-04T20:28:41Z"
+}

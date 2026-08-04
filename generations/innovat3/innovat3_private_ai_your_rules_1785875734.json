@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/hidream-o1-image/edit",
+  "provider": "fal.ai",
+  "campaign": "9 - Your AI Your Servers Your Rules (Private AI Infrastructure)",
+  "prompt": "Using the provided logo image, design a minimal premium advertising poster, 4:5 portrait. Place the logo cleanly at the top center on a white background, preserving its exact geometry and lime-green and black colors. Below it, bold black headline 'YOUR AI. YOUR SERVERS. YOUR RULES.' with 'YOUR RULES.' on a chartreuse lime-green highlight bar. Center visual: a sleek matte-black server vault cube with a glowing lime-green padlock hologram floating in front, standing on a round pedestal, soft studio shadows, tiny lime circuit traces on the cube edges. Below: small grey text 'Private AI infrastructure. Your data never leaves your walls.' Bottom: slim black pill bar with white text 'www.innovat3solutions.com'. Generous white space, premium 3D product render aesthetic, black white and lime green #B9D93C only",
+  "refs": ["fal CDN: logo_black_padded.png (logo padded to 1400x700, passed natively)"],
+  "params": {"image_size": "1440x1800", "seed": 263611206},
+  "cost_usd_estimate": 0.05,
+  "project": "innovat3",
+  "created": "2026-08-04T20:35:35Z"
+}

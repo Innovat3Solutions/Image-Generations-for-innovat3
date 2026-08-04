@@ -1,0 +1,11 @@
+{
+  "model": "openai/gpt-image-2/edit",
+  "provider": "fal.ai",
+  "campaign": "7 - Software Should Solve Problems (Custom Apps)",
+  "prompt": "Design a premium social media advertisement poster, 4:5 portrait, placing the exact provided logo cleanly at the top left corner. Background: very light grey with faint out-of-focus code editor text (CSS snippets) in the upper area. Headline top-left: the single word 'Software' in heavy black grotesk inside a solid chartreuse lime-green highlight rectangle, then below in black bold: 'Should Solve Problems, Not Create Them.' Center scene: a giant tilted smartphone mockup displaying a clean business dashboard app with lime-green charts, invoice cards and a content calendar; sitting in front of it a young professional man in a lime-green sweater on a modern grey armchair, smiling at his phone, studio lighting, on a round white pedestal platform. Right side small paragraph in black: 'Well-built software simplifies workflows, improves performance, & supports growth.' with 'Well-built' highlighted in lime green. Bottom: two black rounded pill bars side by side with white text and lime icons: 'www.innovat3solutions.com' and 'hello@innovat3solutions.com'. Professional advertising design, crisp readable typography, black white grey and lime green #B9D93C",
+  "refs": ["fal CDN: innovat3-logo-black-transparent.png (passed natively)"],
+  "params": {"image_size": "1024x1536", "quality": "high"},
+  "cost_usd_estimate": 0.19,
+  "project": "innovat3",
+  "created": "2026-08-04T20:33:24Z"
+}

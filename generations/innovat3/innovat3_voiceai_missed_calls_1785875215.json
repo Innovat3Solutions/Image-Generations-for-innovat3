@@ -1,0 +1,21 @@
+{
+  "model": "fal-ai/flux-2-pro",
+  "provider": "fal.ai",
+  "campaign": "1 - Missed Calls Are Missed Revenue (Voice AI)",
+  "prompt": "Premium social media advertisement poster, 4:5 portrait format. Dark charcoal black textured concrete background with dramatic studio lighting. Large bold white sans-serif grotesk headline in upper third reading 'MISSED CALLS ARE MISSED REVENUE.' with the words 'MISSED REVENUE' highlighted inside a neon lime-green rectangle box. Center: a sleek modern smartphone floating at a dynamic angle, a glowing neon lime-green AI voice-assistant soundwave hologram rising out of its screen, thin lime green circuit lines and subtle glowing particles around it. Bottom: a slim rounded black pill-shaped bar with small white text 'www.innovat3solutions.com'. The very top of the poster is a clean empty dark area reserved for a brand logo, no text there. High-end tech advertising style, minimalist, sharp, professional product photography lighting, chartreuse lime green #B9D93C accent color throughout",
+  "refs": [
+    "refs/innovat3-logo-white-transparent.png (composited locally with PIL)"
+  ],
+  "params": {
+    "image_size": "1080x1350",
+    "seed": 28350396
+  },
+  "cost_usd_estimate": 0.06,
+  "project": "innovat3",
+  "created": "2026-08-04T20:26:56Z",
+  "post_fix": {
+    "model": "fal-ai/nano-banana-2/edit",
+    "action": "removed stray white glyph artifact below logo",
+    "cost_usd_estimate": 0.1
+  }
+}

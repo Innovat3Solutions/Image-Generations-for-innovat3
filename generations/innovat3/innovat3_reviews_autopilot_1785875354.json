@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/recraft/v4.1/text-to-image",
+  "provider": "fal.ai",
+  "campaign": "4 - Your Reputation On Autopilot (Review Management)",
+  "prompt": "Elegant minimal advertising poster for an AI review-management service, 4:5 portrait. Soft warm white studio background. Center: five large glossy 3D chartreuse lime-green stars floating in a row, the fifth star still materializing from small glowing pixel particles, soft realistic shadows below. Above the stars, bold black modern sans-serif headline 'YOUR REPUTATION, ON AUTOPILOT.' Below the stars a short line of grey text 'AI that collects, replies to, and grows your 5-star reviews 24/7'. Bottom edge: slim black rounded pill bar with white text 'www.innovat3solutions.com'. The very top is a clean empty white margin reserved for a logo. Premium brand design, generous white space, single lime green accent, high-end product render aesthetic",
+  "refs": ["refs/innovat3-logo-black-transparent.png (composited locally with PIL, top)"],
+  "params": {"image_size": "1080x1350"},
+  "cost_usd_estimate": 0.06,
+  "project": "innovat3",
+  "created": "2026-08-04T20:29:15Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "bytedance/seedream/v5/pro/edit",
+  "provider": "fal.ai",
+  "campaign": "5 - Your Website Is Leaking Leads (Lead Capture)",
+  "prompt": "Create a minimal high-end advertising poster, 4:5 portrait, using the exact logo from image 1 placed cleanly at the top center on the white background. Concept: light grey-white studio background, on the left a tilted dark smartphone standing like a leaking pipe, tiny 3D miniature people figures spilling out of its bottom and scattering on the floor, most figures matte black, some chartreuse lime-green. On the right side, large bold black editorial headline 'Your Website Is Leaking Leads.' with 'Leaking Leads.' in lime green. Below it a thin divider line and a small outlined badge reading 'DO THE MATH.' Then small grey text 'Innovat3 captures every visitor before they leave - 24/7.' Bottom: small black text 'www.innovat3solutions.com'. Clean negative space, soft studio shadows, premium 3D render aesthetic, only black, white, grey and lime green #B9D93C",
+  "refs": ["fal CDN: innovat3-logo-black-transparent.png (passed natively as image 1)"],
+  "params": {"image_size": "1440x1800"},
+  "cost_usd_estimate": 0.07,
+  "project": "innovat3",
+  "created": "2026-08-04T20:30:23Z"
+}

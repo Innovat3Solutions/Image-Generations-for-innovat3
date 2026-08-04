@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/flux-pro/v1.1-ultra",
+  "provider": "fal.ai",
+  "campaign": "2 - Your Phone Answers Itself (Voice AI 24/7)",
+  "prompt": "Premium advertising photograph for an AI voice agent company, 3:4 portrait. A modern bright Miami office reception desk at golden hour, no receptionist present, a sleek smartphone standing upright on the marble desk glowing with a vivid chartreuse lime-green voice waveform on screen, soft lime green light emanating onto the desk surface. Palm tree shadows through floor-to-ceiling windows, art-deco Miami skyline blurred in background. Above the phone floats a minimal holographic lime-green ring. Large clean bold white headline text across the upper area reads 'YOUR PHONE ANSWERS ITSELF'. Bottom area has a clean empty white space band reserved for a logo. Photorealistic, shallow depth of field, high-end commercial photography, bright airy feel, single lime green accent color",
+  "refs": ["refs/innovat3-logo-black-transparent.png (composited locally with PIL, bottom)"],
+  "params": {"aspect_ratio": "3:4", "seed": 3115184637},
+  "cost_usd_estimate": 0.06,
+  "project": "innovat3",
+  "created": "2026-08-04T20:27:56Z"
+}

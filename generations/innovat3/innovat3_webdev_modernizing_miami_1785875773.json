@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/luma-photon",
+  "provider": "fal.ai",
+  "campaign": "10 - Modernizing Miami (Web Development / Brand)",
+  "prompt": "Cinematic advertising poster, portrait. Miami art-deco skyline at dusk seen from across the water, buildings' windows glowing in vivid chartreuse lime-green instead of warm yellow, lime-green light trails of data streams flowing between the buildings like neon rivers, deep indigo-black sky. Large elegant bold white headline across the upper sky: 'MODERNIZING MIAMI'. Smaller white subline below it: 'One automated workflow at a time'. The bottom edge fades to solid black, clean and empty, reserved for a logo. Premium tech-brand aesthetic, dramatic reflections in the water, single lime green accent color, high detail",
+  "refs": ["refs/innovat3-logo-white-transparent.png (composited locally with PIL, bottom)"],
+  "params": {"aspect_ratio": "3:4"},
+  "cost_usd_estimate": 0.02,
+  "project": "innovat3",
+  "created": "2026-08-04T20:36:14Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "campaign": "6 - Growth You Can Measure / 300% ROI (Growth Consulting)",
+  "prompt": "Design a premium social media advertisement, 4:5 portrait, using the exact provided logo placed cleanly at the top center. Style: bright clean off-white background with subtle radial glow. Center: a confident professional Latina businesswoman in a chartreuse lime-green blouse standing in front of a large floating dark smartphone showing a business analytics dashboard with lime green charts. Around her float four rounded white glassmorphic stat cards with soft shadows, each with a lime-green icon and upward arrow: '300% Average ROI - first 90 days', '98% Client Retention', '24/7 System Uptime', '30% Revenue Recovered'. Below the scene, bold black headline 'GROWTH YOU CAN MEASURE.' and a lime-green rounded CTA button with black text 'GET YOUR FREE AUDIT'. Bottom small black text 'www.innovat3solutions.com'. Modern agency ad aesthetic, crisp typography, black white and lime green #B9D93C only",
+  "refs": ["fal CDN: innovat3-logo-black-transparent.png (passed natively)"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd_estimate": 0.13,
+  "project": "innovat3",
+  "created": "2026-08-04T20:31:18Z"
+}
