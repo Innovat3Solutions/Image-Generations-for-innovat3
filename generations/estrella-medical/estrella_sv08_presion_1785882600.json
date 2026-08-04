@@ -1,0 +1,18 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "SV8 — La presión alta no avisa (BP monitor hero); regen v2, v1 screen label CYS instead of PUL",
+  "prompt": "See campaign/MOODBOARD2_SERVICES_CAMPAIGN.md; full prompts in fal.ai request history",
+  "refs": [
+    "../refs/estrella_logo.png"
+  ],
+  "params": {
+    "aspect": "1:1",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-08-04T21:50:00Z",
+  "note": "Real logo composited at generation time; CTA EstrellaWellness.com / 305.217.7553 baked in"
+}
