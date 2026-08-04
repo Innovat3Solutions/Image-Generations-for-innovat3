@@ -1,0 +1,16 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt_note": "Concept 1 — La Nueva Estrella Eres Tú (brand/empowerment hero)",
+  "prompt": "See campaign/ESTRELLA_GLP1_CAMPAIGN_STRATEGY.md; full prompts logged in fal.ai request history",
+  "refs": [],
+  "params": {
+    "aspect": "4:5",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-08-04T21:10:00Z",
+  "post_production": "Overlay real Estrella Medical Centers logo in reserved clean space; add clinic phone/URL/WhatsApp number before trafficking."
+}
