@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="brand.css">
+<style>
+  .glow {
+    position: absolute; top: -300px; right: -300px; width: 900px; height: 900px;
+    background: radial-gradient(circle, rgba(201,131,90,0.22) 0%, rgba(201,131,90,0) 65%);
+  }
+  .content { position: absolute; left: 64px; right: 64px; top: 170px; z-index: 10; }
+  h1 { font-size: 84px; }
+  .stats { margin-top: 52px; }
+  .promise {
+    margin-top: 56px;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 38px;
+    line-height: 1.35;
+    color: var(--body-dim);
+    max-width: 880px;
+  }
+  .promise span { color: var(--copper); }
+  .strip {
+    position: absolute; left: 0; right: 0; bottom: 111px; height: 210px; overflow: hidden;
+  }
+  .strip img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; filter: grayscale(35%) brightness(0.75); }
+  .strip .fade { position: absolute; inset: 0; background: linear-gradient(180deg, #0a0a0a 0%, rgba(10,10,10,0.1) 60%); }
+</style></head>
+<body>
+<div class="post">
+  <div class="glow"></div>
+
+  <div class="toplabel"><span>Direct Builders</span><span class="dot"></span><span>Gen. Contractor</span></div>
+
+  <div class="content">
+    <div class="kicker">05 / Why Direct Builders</div>
+    <h1>Built on experience.<br><span class="thin">Driven by</span> <span class="accent">performance.</span></h1>
+    <div class="stats">
+      <div class="stat"><div class="num">25<em>+</em></div><div class="lbl">Years building South Florida</div></div>
+      <div class="stat"><div class="num">100<em>%</em></div><div class="lbl">Licensed &amp; insured — CGC1523480</div></div>
+      <div class="stat"><div class="num">48<em>h</em></div><div class="lbl">Written estimates, standard scopes</div></div>
+      <div class="stat"><div class="num">2</div><div class="lbl">Counties — Miami-Dade &amp; Broward</div></div>
+    </div>
+    <p class="promise">"On time, on budget, perfect the first time — <span>guaranteed.</span>"</p>
+  </div>
+
+  <div class="strip"><img src="../assets/goldberg-interior.jpg"><div class="fade"></div></div>
+
+  <div class="footer">
+    <div class="logochip"><img src="../assets/logo.png"></div>
+    <div class="contact"><b>305.232.2329</b> · directbuilders.net<br>FL Licensed GC · CGC1523480</div>
+  </div>
+</div>
+</body></html>

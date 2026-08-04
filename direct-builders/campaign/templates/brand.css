@@ -1,0 +1,169 @@
+/* Direct Builders — social post design system (1080x1350) */
+@import url('../assets/fonts/fonts.css');
+
+:root {
+  --ink: #0a0a0a;
+  --char: #161616;
+  --paper: #f5f5f3;
+  --body-dim: #cfcfcb;
+  --silver: #9a9a96;
+  --fog: #d8d8d8;
+  --copper: #c9835a;
+  --copper-deep: #9e5f38;
+  --copper-grad: linear-gradient(135deg, #d99a6b 0%, #b26e42 100%);
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.post {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+}
+
+/* ---- top brand label ---- */
+.toplabel {
+  position: absolute;
+  top: 52px; left: 64px; right: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 17px; font-weight: 500;
+  letter-spacing: 9px;
+  text-transform: uppercase;
+  color: var(--silver);
+  z-index: 20;
+  text-shadow: 0 1px 14px rgba(0,0,0,0.65);
+}
+.toplabel .dot { width: 12px; height: 12px; background: var(--copper-grad); }
+
+/* ---- kicker / index ---- */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 19px; font-weight: 500;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--copper);
+  display: flex; align-items: center; gap: 18px;
+  margin-bottom: 28px;
+}
+.kicker::before { content: ''; width: 44px; height: 2px; background: var(--copper-grad); }
+
+h1 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 84px;
+  line-height: 1.04;
+  letter-spacing: -1.5px;
+  color: var(--paper);
+}
+h1 .thin { font-weight: 500; color: var(--silver); }
+h1 .accent { color: var(--copper); }
+
+.sub {
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--body-dim);
+  max-width: 820px;
+}
+
+/* ---- CTA ---- */
+.cta {
+  display: inline-flex; align-items: center; gap: 16px;
+  background: var(--copper-grad);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 0.2px;
+  padding: 22px 38px;
+  border-radius: 3px;
+}
+
+/* ---- checklist ---- */
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.checks li {
+  list-style: none;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 3px;
+  padding: 26px 28px;
+  font-size: 24px; font-weight: 500; line-height: 1.4;
+  display: flex; gap: 18px; align-items: flex-start;
+}
+.checks .tick {
+  font-family: var(--font-mono);
+  color: #fff;
+  background: var(--copper-grad);
+  min-width: 34px; height: 34px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+/* ---- chips ---- */
+.chips { display: flex; gap: 14px; flex-wrap: wrap; }
+.chip {
+  font-family: var(--font-mono);
+  font-size: 19px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--paper);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 3px;
+  padding: 12px 20px;
+}
+
+/* ---- stats ---- */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.stat {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.035);
+  border-radius: 3px;
+  padding: 34px 36px 30px;
+}
+.stat .num {
+  font-family: var(--font-mono);
+  font-size: 76px; font-weight: 500;
+  color: var(--paper);
+  line-height: 1;
+}
+.stat .num em { font-style: normal; color: var(--copper); }
+.stat .lbl {
+  margin-top: 14px;
+  font-size: 21px; font-weight: 500;
+  color: var(--silver);
+  letter-spacing: 0.3px;
+}
+
+/* ---- footer ---- */
+.footer {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 30px 64px 34px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.14);
+  background: rgba(10,10,10,0.55);
+  backdrop-filter: blur(6px);
+  z-index: 30;
+}
+.logochip { background: #fff; padding: 10px 14px; border-radius: 3px; display: flex; }
+.logochip img { height: 26px; display: block; }
+.footer .contact {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 17px; line-height: 1.7;
+  color: var(--silver);
+  letter-spacing: 0.5px;
+}
+.footer .contact b { color: var(--paper); font-weight: 500; }
+
+/* ---- background image helpers ---- */
+.bg { position: absolute; inset: 0; }
+.bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shade { position: absolute; inset: 0; }

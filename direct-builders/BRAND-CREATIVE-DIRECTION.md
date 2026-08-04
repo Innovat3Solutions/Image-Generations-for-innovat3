@@ -22,7 +22,7 @@ Extracted from [directbuilders.net](https://www.directbuilders.net/) and the cur
 | Paper | `#f5f5f3` | Light backgrounds (warm off-white, not pure white) |
 | White | `#ffffff` | Cards, reversed type |
 
-**The brand is deliberately monochrome.** For B2B materials, allow **one** optional accent used sparingly (CTA buttons, a single highlight rule): a **safety/high-vis construction orange** (`#ff5c1f` range) *or* stay fully monochrome and let photography carry the color. Decide once after mood-board review; never mix multiple accents.
+**The brand is deliberately monochrome.** For B2B materials we allow **one** accent, decided after mood-board review (see Section 8): **copper/bronze** — `#c9835a`, deep variant `#9e5f38`, gradient `linear-gradient(135deg, #d99a6b, #b26e42)`. It is used sparingly: CTA buttons, kicker labels, one highlighted phrase per headline, check tiles. Never mix additional accents.
 
 ## 3. Typography
 
@@ -85,4 +85,18 @@ Dark variant: Ink background, Paper type, Silver labels — mirrors the site's a
 
 ---
 
-*When mood-board examples arrive: log them in this file with a one-line takeaway each, decide the accent-color question (Section 2), and update the prompt kit's style suffix accordingly.*
+## 8. Mood-board takeaways (logged Aug 2026)
+
+Reference set: Canlar İnşaat construction social series (9 posts) supplied by the client, plus the owner photo (Mike Amador in front of the branded fleet — same shot as the website team page).
+
+What we adopt from the mood board:
+- **Dark charcoal canvases** with one warm **copper/bronze** accent — this settled the Section 2 accent question (copper, not safety orange; it also echoes the fleet wrap and warm-wood project photography).
+- **Cutout people over flat color panels** — owner and crew portraits get background-removed and layered over copper panels (see `campaign/assets/mike-amador-cutout.png`).
+- **Social template system**: letterspaced brand label at top, indexed kicker (`01 /`), bold mixed-weight headline with one accent phrase, contact strip at the bottom of every post.
+- **Bold typographic contrast** — big Space Grotesk headlines, mono labels, generous dark negative space.
+
+What we deliberately do NOT adopt:
+- Rounded blobs, 3D emoji/social icons, glow-bokeh effects, floating buildings in hands — too playful for a 25-year GC brand. Direct Builders keeps squared geometry (3px radius) and real photography.
+- Yellow/orange hard-hat stock energy; our people are the actual team in company black.
+
+Executed system: `campaign/templates/brand.css` + six post templates, rendered to `campaign/output/`. Asset provenance: all photography from directbuilders.net (fleet, Goldberg & Rosen interior, commercial shell, Pinecrest exterior); owner cutout via BiRefNet background removal; the single AI image (`condo-aerial.jpg`, HOA post) generated with FLUX.2 Klein on fal using the Section 6 prompt kit.
