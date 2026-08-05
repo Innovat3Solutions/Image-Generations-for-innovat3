@@ -1,0 +1,17 @@
+{
+  "model": "gpt-image-2",
+  "provider": "fal.ai (openai/gpt-image-2/edit)",
+  "prompt": "Design a premium social-media advertisement for ZipPilot, a shared neighborhood direct-mail service. Brand style: deep navy blue background (#0A1E3C), bright blue (#2F80ED) and vivid green (#5BC236) accents, clean modern sans-serif typography, high contrast, professional advertising quality. Include the provided ZipPilot logo mark (blue location pin with a house and green growth arrow) at the top with the wordmark 'ZipPilot' shown with 'Zip' in white and 'Pilot' in bright blue. All text must be spelled exactly as given, crisp and legible.  Layout: photorealistic background of a professional plumber's white service van parked on a suburban street at dusk, a plumber in work clothes holding a pipe wrench, overlaid with a deep navy gradient for text legibility. Headline in big bold white: 'Only ONE plumber gets this ZIP code.' Subheadline in vivid green: 'Will it be you — or your competitor?' Small caption in light blue: 'Exclusive niche spots from $350/mo'. Bottom: a green pill button reading 'Lock Out Your Competition' and the URL 'TheZipPilot.com' in white.\n",
+  "refs": [
+    "refs/zippilot-favicon.png"
+  ],
+  "params": {
+    "quality": "high",
+    "width": 1024,
+    "height": 1024,
+    "output_format": "png"
+  },
+  "cost_usd": 0.17,
+  "project": "zippilot",
+  "created": "2026-08-05T00:24:36Z"
+}

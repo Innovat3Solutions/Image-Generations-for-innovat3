@@ -1,0 +1,17 @@
+{
+  "model": "gpt-image-2",
+  "provider": "fal.ai (openai/gpt-image-2/edit)",
+  "prompt": "Design a premium social-media advertisement for ZipPilot, a shared neighborhood direct-mail service. Brand style: deep navy blue background (#0A1E3C), bright blue (#2F80ED) and vivid green (#5BC236) accents, clean modern sans-serif typography, high contrast, professional advertising quality. Include the provided ZipPilot logo mark (blue location pin with a house and green growth arrow) at the top with the wordmark 'ZipPilot' shown with 'Zip' in white and 'Pilot' in bright blue. All text must be spelled exactly as given, crisp and legible.  Layout: clean flat design with three stacked math lines in very large type: 'One recurring client = $2,500+/yr' in white, 'Your ZipPilot spot = $350/mo' in bright blue, and a green highlight bar line 'It pays for itself.' Headline at top in bold white: 'One new client covers your whole campaign.' Background: faint thin-line icons of a cleaning spray bottle, pipe wrench, tooth, and scissors. Bottom: green pill button 'Do the Math' and URL 'TheZipPilot.com' in white.\n",
+  "refs": [
+    "refs/zippilot-favicon.png"
+  ],
+  "params": {
+    "quality": "high",
+    "width": 1024,
+    "height": 1024,
+    "output_format": "png"
+  },
+  "cost_usd": 0.17,
+  "project": "zippilot",
+  "created": "2026-08-05T00:34:06Z"
+}

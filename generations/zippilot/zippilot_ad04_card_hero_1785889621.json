@@ -1,0 +1,17 @@
+{
+  "model": "gpt-image-2",
+  "provider": "fal.ai (openai/gpt-image-2/edit)",
+  "prompt": "Design a premium social-media advertisement for ZipPilot, a shared neighborhood direct-mail service. Brand style: deep navy blue background (#0A1E3C), bright blue (#2F80ED) and vivid green (#5BC236) accents, clean modern sans-serif typography, high contrast, professional advertising quality. Include the provided ZipPilot logo mark (blue location pin with a house and green growth arrow) at the top with the wordmark 'ZipPilot' shown with 'Zip' in white and 'Pilot' in bright blue. All text must be spelled exactly as given, crisp and legible.  Layout: photorealistic close-up of a hand holding a glossy oversized direct-mail postcard filled with a 4x4 grid of colorful local business ads on a navy background, held above a sunny suburban street lined with curbside mailboxes, shallow depth of field. Headline in bold white: 'This card lands in 10,000 mailboxes.' Subheadline in light blue: '16 local businesses. One spot is yours.' Bottom: green pill button 'Claim Your Spot' and URL 'TheZipPilot.com' in white.\n",
+  "refs": [
+    "refs/zippilot-favicon.png"
+  ],
+  "params": {
+    "quality": "high",
+    "width": 1024,
+    "height": 1024,
+    "output_format": "png"
+  },
+  "cost_usd": 0.17,
+  "project": "zippilot",
+  "created": "2026-08-05T00:27:01Z"
+}
