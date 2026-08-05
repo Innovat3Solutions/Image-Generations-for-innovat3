@@ -48,7 +48,14 @@ Uses the system Chromium at `/opt/pw-browsers/chromium` (edit `render.js` for a 
   deliberately never depicted, because the real card design doesn't exist yet.
 - `assets/poppins-*.woff2` — Poppins 500/600/700/800 subsets.
 
-## Design system (base.css)
+## Design system (base.css) — v3, mood-board structure
+
+Structure follows the approved mood board: white logo chip top-left, color-mixed
+Poppins-800 headlines, glossy 3D hero objects (assets/hero_*.png, generated text-free
+in brand palette), circular feature-icon rows, pill CTA. Light (white) and brand (navy)
+background modes alternate across the set via body.light.
+
+### Original tokens
 
 Navy `#0A1E3C` · blue `#2F80ED` · green `#5BC236` · ice `#9DC3F5`. Locked header (logo +
 wordmark), locked footer (green pill CTA + TheZipPilot.com). Ads vary only the middle

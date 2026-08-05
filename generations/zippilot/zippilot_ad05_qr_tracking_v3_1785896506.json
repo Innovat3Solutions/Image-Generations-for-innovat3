@@ -1,0 +1,14 @@
+{
+  "model": "html-template v3 (mood-board design) + chromium screenshot",
+  "provider": "local render (playwright); 3D heroes + backgrounds: fal-ai/nano-banana-2 @2K",
+  "prompt": "Rendered from ad-templates/ad05_qr_tracking.html — edit HTML/CSS and re-run ad-templates/render.js.",
+  "refs": [
+    "ad-templates/assets/logo-mark.png"
+  ],
+  "params": {
+    "width": 1080
+  },
+  "cost_usd": 0,
+  "project": "zippilot",
+  "created": "2026-08-05T02:21:46Z"
+}
