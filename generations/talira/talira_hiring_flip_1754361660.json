@@ -1,0 +1,10 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Hiring-flip poster: orange field, 'We Are' gold + huge white 'Hiring', photoreal black office chair with headset, white pill badges 'Works 24/7 — never sleeps' / 'No sick days. No holidays.' / 'Answers every call in <1 second', line 'Good news: she starts today.', dark pill 'Meet your AI receptionist', taliravoice.com + Free 5-min live demo, white Talira logo top-right",
+  "refs": ["generations/refs/talira_logo.png (via https://talira.vercel.app/talira_logo.png)"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "talira",
+  "created": "2026-08-05T02:48:00Z"
+}

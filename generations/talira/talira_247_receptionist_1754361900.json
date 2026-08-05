@@ -1,0 +1,10 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "24/7 receptionist poster: orange field, stacked headline 'SHE NEVER SLEEPS. / NEVER TAKES LUNCH. / NEVER LOSES A LEAD.' (third line cream), subline 'Your AI receptionist — built and installed for you.', photoreal night desk scene with glowing soundwave smart speaker + floating calendar card 'New booking — 10:15 PM', white pill 'Hear it live — free 5-min demo' + taliravoice.com, white Talira logo top-left",
+  "refs": ["generations/refs/talira_logo.png (via https://talira.vercel.app/talira_logo.png)"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "talira",
+  "created": "2026-08-05T03:00:00Z"
+}

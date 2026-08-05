@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "3D maze poster: cream circular maze, glowing orange path to center badge with Talira soundwave icon, dead-end signposts VOICEMAIL / MISSED CALLS / ON HOLD / AFTER HOURS / LOST LEADS, tiny business owner at entrance, headline 'EVERY MISSED CALL IS A DEAD END.' (DEAD END. in orange), subline 'Talira answers every call — 24/7 — and books the appointment.', white pill 'Free 5-min live demo · taliravoice.com', orange Talira logo top-left",
+  "refs": ["generations/refs/talira_logo.png (via https://talira.vercel.app/talira_logo.png)"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "talira",
+  "created": "2026-08-05T02:58:00Z",
+  "note": "'ON HOLD' signpost appears twice — minor, re-roll if selected as final"
+}
