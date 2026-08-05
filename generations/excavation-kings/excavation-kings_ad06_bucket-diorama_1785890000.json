@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Excavator bucket cradling a miniature graded building pad with surveyor flags, headline 'YOUR SITE. SERVED.' + campaign brand block (see EXCAVATION-KINGS-AD-CAMPAIGN.md)",
+  "refs": [],
+  "params": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "ad": "06 The Bucket Diorama",
+  "created": "2026-08-05T00:52:00Z"
+}

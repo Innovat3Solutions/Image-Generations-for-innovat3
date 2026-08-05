@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Top-down aerial dig site with giant ground-stenciled type 'DIG DAY' overlapped by yellow excavator and dump trucks. + campaign brand block (see EXCAVATION-KINGS-AD-CAMPAIGN.md)",
+  "refs": [],
+  "params": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "ad": "03 Dig Day",
+  "created": "2026-08-05T00:38:00Z"
+}

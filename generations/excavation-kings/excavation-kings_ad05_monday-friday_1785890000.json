@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Vertical split before/after: grey 'MONDAY.' building vs golden 'FRIDAY.' cleared pad, line 'From standing structure to build-ready pad in one week.' + campaign brand block (see EXCAVATION-KINGS-AD-CAMPAIGN.md)",
+  "refs": [],
+  "params": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "ad": "05 Monday / Friday",
+  "created": "2026-08-05T00:45:00Z"
+}

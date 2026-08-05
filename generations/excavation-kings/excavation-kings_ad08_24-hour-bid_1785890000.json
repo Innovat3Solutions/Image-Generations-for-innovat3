@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Minimal typographic offer ad on asphalt texture: 'SEND PLANS. / GET A NUMBER. / 24 HOURS.' with hazard chevron stripe and 'Start your bid' pill, aimed at contractors and roofers. + campaign brand block (see EXCAVATION-KINGS-AD-CAMPAIGN.md)",
+  "refs": [],
+  "params": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "ad": "08 The 24-Hour Bid",
+  "created": "2026-08-05T00:57:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Excavator placing giant 3D concrete letters spelling exactly 'GONE' (final E lowered by strap), golden hour demolition site, headline 'WHATEVER STANDS IN YOUR WAY?'. Re-roll of failed first attempt where letters misspelled. + campaign brand block (see EXCAVATION-KINGS-AD-CAMPAIGN.md)",
+  "refs": [],
+  "params": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "ad": "04 Gone (take 2)",
+  "created": "2026-08-05T01:15:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2",
+  "provider": "fal.ai",
+  "prompt": "Five crew members hoisting a gigantic broken concrete slab overhead, yellow circle backdrop, headline 'HEAVY IS OUR LIGHT WORK.' + campaign brand block (see EXCAVATION-KINGS-AD-CAMPAIGN.md)",
+  "refs": [],
+  "params": { "aspect_ratio": "4:5", "resolution": "2K", "output_format": "jpeg" },
+  "cost_usd": 0.08,
+  "project": "excavation-kings",
+  "ad": "02 The Crew Lift",
+  "created": "2026-08-05T00:36:00Z"
+}
