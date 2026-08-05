@@ -1,0 +1,17 @@
+{
+  "model": "gpt-image-2",
+  "provider": "fal.ai (openai/gpt-image-2/edit)",
+  "prompt": "Design a premium square social-media advertisement for ZipPilot, a shared neighborhood direct-mail service. Brand style: deep navy blue background (#0A1E3C) with a subtle radial glow, bright blue (#2F80ED) and vivid green (#5BC236) accents, clean modern sans-serif typography, high contrast, professional advertising quality. Top-left: the provided ZipPilot logo mark (blue location pin with house and green arrow) small, next to the wordmark 'ZipPilot' with 'Zip' in white and 'Pilot' in bright blue. Headline in huge bold white capitals: 'ONLY 5 SPOTS LEFT'. Below it a subheadline in light blue: 'One card. 16 local businesses. 10,000 homes.' Center: a 4x4 grid of 16 rounded square tiles representing mailer ad spots — 11 tiles are dimmed dark blue stamped 'TAKEN' in small white caps with tiny niche labels such as PLUMBING, PIZZA, DENTAL, SALON, LAWN CARE, REALTOR, FITNESS, PET CARE, BAKERY, AUTO, BARBER; 5 tiles glow bright green and read 'OPEN'. Bottom: a green pill-shaped button reading 'Claim Your Spot' and beneath it the URL 'TheZipPilot.com' in white. All text spelled exactly as given, crisp and legible.\n",
+  "refs": [
+    "refs/zippilot-favicon.png"
+  ],
+  "params": {
+    "quality": "high",
+    "width": 1024,
+    "height": 1024,
+    "output_format": "png"
+  },
+  "cost_usd": 0.17,
+  "project": "zippilot",
+  "created": "2026-08-05T00:20:02Z"
+}
