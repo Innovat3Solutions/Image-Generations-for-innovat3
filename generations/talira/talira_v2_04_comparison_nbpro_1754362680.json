@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal.ai",
+  "prompt": "Comparison table concept: THE INTERVIEW IS OVER., Full-time hire vs Talira agent rows (hours, sick days, answer speed, languages, cost), peach highlights and orange checks, no em dashes",
+  "refs": ["generations/refs/talira_logo.png"],
+  "params": { "aspect": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.15,
+  "project": "talira",
+  "created": "2026-08-05T03:10:00Z",
+  "note": ""
+}

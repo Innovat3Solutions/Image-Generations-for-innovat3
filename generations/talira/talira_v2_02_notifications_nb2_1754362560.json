@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt": "Notification stack concept: dark bg, phone lock screen with six missed-call notifications, headline SEEN THIS SCREEN BEFORE?, orange line Each one was a customer., no em dashes",
+  "refs": ["generations/refs/talira_logo.png"],
+  "params": { "aspect": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "talira",
+  "created": "2026-08-05T03:10:00Z",
+  "note": ""
+}

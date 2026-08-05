@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/flux-2-flex/edit",
+  "provider": "fal.ai",
+  "prompt": "After hours office concept: dim office at night, glowing desk phone and cold coffee, headline YOUR TEAM WENT HOME AT 5. YOUR LEADS DIDN'T., no em dashes",
+  "refs": ["generations/refs/talira_logo.png"],
+  "params": { "aspect": "4:5", "resolution": "1024x1280", "output_format": "png" },
+  "cost_usd": 0.13,
+  "project": "talira",
+  "created": "2026-08-05T03:10:00Z",
+  "note": "logo soundwave mark slightly deformed, fix in post for finals"
+}

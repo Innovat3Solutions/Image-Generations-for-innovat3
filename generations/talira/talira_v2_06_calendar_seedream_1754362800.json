@@ -1,0 +1,11 @@
+{
+  "model": "bytedance/seedream/v5/pro/edit",
+  "provider": "fal.ai",
+  "prompt": "Calendar concept: cream bg, week-view calendar with orange appointment blocks tagged booked overnight, headline BOOKED WHILE YOU SLEPT., no em dashes",
+  "refs": ["generations/refs/talira_logo.png"],
+  "params": { "aspect": "4:5", "resolution": "1024x1280", "output_format": "png" },
+  "cost_usd": 0.0675,
+  "project": "talira",
+  "created": "2026-08-05T03:10:00Z",
+  "note": "weekday header labels garbled (Nuo/Wd/Fa) and date numbers inconsistent, re-roll before using as final"
+}

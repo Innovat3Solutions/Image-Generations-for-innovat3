@@ -1,0 +1,11 @@
+{
+  "model": "bytedance/seedream/v5/pro/edit",
+  "provider": "fal.ai",
+  "prompt": "Door note concept: dusk glass shop door, sticky note Sorry we missed you!, headline YOUR DOOR CLOSES AT 5. YOUR PHONE NEVER HAS TO., no em dashes",
+  "refs": ["generations/refs/talira_logo.png"],
+  "params": { "aspect": "4:5", "resolution": "1024x1280", "output_format": "png" },
+  "cost_usd": 0.0675,
+  "project": "talira",
+  "created": "2026-08-05T03:10:00Z",
+  "note": "white logo mark slightly distorted, fix in post or re-roll for finals"
+}

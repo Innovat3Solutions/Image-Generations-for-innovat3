@@ -1,0 +1,11 @@
+{
+  "model": "ideogram/v4",
+  "provider": "fal.ai",
+  "prompt": "Pure typography concept: cream bg, stacked RING. RING. RING. fading gray then ANSWERED. in orange with soundwave, subline Talira picks up in half a second. Every call. 24/7., no em dashes",
+  "refs": [],
+  "params": { "aspect": "4:5", "resolution": "1024x1280", "output_format": "png" },
+  "cost_usd": 0.06,
+  "project": "talira",
+  "created": "2026-08-05T03:10:00Z",
+  "note": "text-to-image model, no logo file support: wordmark absent, add logo in post"
+}

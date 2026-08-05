@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal.ai",
+  "prompt": "Split screen 2:14 AM WITHOUT TALIRA (dark, LEAD LOST) vs 2:14 AM WITH TALIRA (orange, LEAD WON, appointment booked card), cream footer Same call. Different business., no em dashes",
+  "refs": ["generations/refs/talira_logo.png"],
+  "params": { "aspect": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.15,
+  "project": "talira",
+  "created": "2026-08-05T03:10:00Z",
+  "note": ""
+}
