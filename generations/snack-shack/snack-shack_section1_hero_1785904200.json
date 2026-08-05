@@ -1,0 +1,19 @@
+{
+ "model": "fal-ai/nano-banana-2/edit",
+ "provider": "fal.ai (MCP)",
+ "prompt": "Website hero section rendering: nav, headline, Order Ahead CTA, Milk + real cookie polaroids",
+ "refs": [
+  "avatar",
+  "avatar-cookie",
+  "choc-chunk",
+  "strawberry-cheesecake"
+ ],
+ "params": {
+  "resolution": "2K",
+  "aspect": "1:1 avatars / 16:9 sections",
+  "output_format": "png"
+ },
+ "cost_usd": 0.08,
+ "project": "snack-shack",
+ "created": "2026-08-05T04:38:56+00:00"
+}

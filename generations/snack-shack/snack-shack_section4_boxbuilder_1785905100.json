@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/nano-banana-2/edit",
+ "provider": "fal.ai (MCP)",
+ "prompt": "Website section rendering: Build Your Cookie Box picker, $40/6 and $65/12",
+ "refs": [
+  "avatar-wave"
+ ],
+ "params": {
+  "resolution": "2K",
+  "aspect": "1:1 avatars / 16:9 sections",
+  "output_format": "png"
+ },
+ "cost_usd": 0.08,
+ "project": "snack-shack",
+ "created": "2026-08-05T04:38:56+00:00"
+}
