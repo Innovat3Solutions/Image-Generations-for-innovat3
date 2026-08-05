@@ -1,0 +1,131 @@
+/* ZipPilot ad design system — one locked template, ads vary only the middle content.
+   Canvas: 1080x1080 (feed) or 1080x1350 (portrait, body.portrait). */
+
+@font-face { font-family: 'Poppins'; font-weight: 500; src: url('assets/poppins-500.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-weight: 600; src: url('assets/poppins-600.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-weight: 700; src: url('assets/poppins-700.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-weight: 800; src: url('assets/poppins-800.woff2') format('woff2'); }
+
+:root {
+  --navy: #0A1E3C;
+  --navy-2: #10294E;
+  --tile: #132F5A;
+  --blue: #2F80ED;
+  --green: #5BC236;
+  --green-dark: #3E9A1E;
+  --ice: #9DC3F5;
+  --white: #FFFFFF;
+  --pad: 72px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px; height: 1080px; overflow: hidden; position: relative;
+  font-family: 'Poppins', sans-serif; color: var(--white);
+  background: radial-gradient(ellipse 900px 700px at 50% 30%, var(--navy-2) 0%, var(--navy) 70%);
+}
+body.portrait { height: 1350px; }
+
+/* Photo backgrounds: image + navy gradient scrim for legible copy */
+.bg { position: absolute; inset: 0; z-index: 0; }
+.bg img { width: 100%; height: 100%; object-fit: cover; }
+.bg .scrim { position: absolute; inset: 0; }
+.scrim-left  { background: linear-gradient(100deg, var(--navy) 34%, rgba(10,30,60,.82) 52%, rgba(10,30,60,.12) 78%); }
+.scrim-top   { background: linear-gradient(180deg, var(--navy) 30%, rgba(10,30,60,.85) 46%, rgba(10,30,60,.10) 70%, rgba(10,30,60,.88) 96%); }
+.scrim-frame { background: linear-gradient(180deg, rgba(10,30,60,.98) 0%, rgba(10,30,60,.94) 34%, rgba(10,30,60,.72) 52%, rgba(10,30,60,.18) 70%, rgba(10,30,60,.92) 90%); }
+
+.stage { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; padding: 56px var(--pad) 48px; }
+
+/* Brand header — identical on every ad */
+.brand { display: flex; align-items: center; gap: 20px; }
+.brand.center { justify-content: center; }
+.brand img { width: 88px; height: 88px; }
+.brand .word { font-size: 62px; font-weight: 800; letter-spacing: -1px; }
+.brand .word b { color: var(--blue); font-weight: 800; }
+
+/* Type scale */
+h1 { font-weight: 800; font-size: 88px; line-height: 1.06; letter-spacing: -2px; margin-top: 44px; }
+h1 .g { color: var(--green); }
+h1 .b { color: var(--blue); }
+.sub { font-weight: 600; font-size: 40px; line-height: 1.3; color: var(--ice); margin-top: 26px; }
+.note { font-weight: 500; font-size: 30px; color: var(--ice); opacity: .85; }
+
+.grow { flex: 1; }
+
+/* Footer — identical on every ad */
+.foot { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.cta {
+  background: linear-gradient(180deg, #6ED03F, var(--green-dark));
+  color: #06264d; font-weight: 800; font-size: 42px;
+  padding: 24px 64px; border-radius: 999px;
+  box-shadow: 0 10px 34px rgba(91,194,54,.35);
+}
+.site { font-weight: 700; font-size: 34px; }
+
+/* Spot board tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
+.tile { /* height overridden inline where needed */
+  background: var(--tile); border: 2px solid rgba(157,195,245,.25); border-radius: 18px;
+  height: 98px; display: flex; align-items: center; justify-content: center; text-align: center;
+  font-weight: 700; font-size: 24px; letter-spacing: .5px; color: var(--ice); padding: 8px;
+}
+.tile.you {
+  background: linear-gradient(180deg, #6ED03F, var(--green-dark));
+  border-color: transparent; color: #06264d; font-weight: 800;
+  box-shadow: 0 0 44px rgba(91,194,54,.5);
+}
+
+/* Comparison / stat cards */
+.cards { display: flex; gap: 28px; margin-top: 44px; }
+.card {
+  flex: 1; background: var(--navy-2); border: 2px solid rgba(157,195,245,.22);
+  border-radius: 26px; padding: 40px 36px; text-align: center;
+}
+.card.win { border-color: var(--green); box-shadow: 0 0 50px rgba(91,194,54,.22); }
+.card .big { font-weight: 800; font-size: 74px; letter-spacing: -1px; }
+.card .big.strike { text-decoration: line-through; text-decoration-thickness: 6px; color: #8FA6C6; }
+.card .big .g { color: var(--green); }
+.card .label { font-weight: 600; font-size: 30px; color: var(--ice); margin-top: 14px; line-height: 1.3; }
+
+/* Math rows */
+.rows { display: flex; flex-direction: column; gap: 24px; margin-top: 48px; }
+.row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--navy-2); border: 2px solid rgba(157,195,245,.22);
+  border-radius: 22px; padding: 26px 40px; font-weight: 700; font-size: 40px;
+}
+.row .amt { font-weight: 800; }
+.row.win { background: linear-gradient(180deg, #6ED03F, var(--green-dark)); border-color: transparent; color: #06264d; justify-content: center; font-weight: 800; font-size: 50px; }
+
+/* How-it-works steps */
+.steps { display: flex; flex-direction: column; gap: 26px; margin-top: 46px; }
+.step { display: flex; align-items: center; gap: 30px; background: var(--navy-2); border: 2px solid rgba(157,195,245,.22); border-radius: 22px; padding: 28px 36px; }
+.step .n {
+  min-width: 74px; height: 74px; border-radius: 50%; background: var(--blue);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 40px;
+}
+.step .t { font-weight: 600; font-size: 36px; line-height: 1.25; }
+.step .t b { color: var(--green); font-weight: 800; }
+
+/* Pricing tiers */
+.tiers { display: flex; gap: 24px; margin-top: 44px; align-items: stretch; }
+.tier {
+  flex: 1; background: var(--navy-2); border: 2px solid rgba(157,195,245,.22);
+  border-radius: 26px; padding: 36px 24px; text-align: center; position: relative;
+}
+.tier.pop { border-color: var(--blue); box-shadow: 0 0 44px rgba(47,128,237,.35); }
+.tier .badge {
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+  background: var(--blue); border-radius: 999px; padding: 8px 26px;
+  font-weight: 700; font-size: 22px; white-space: nowrap;
+}
+.tier .name { font-weight: 700; font-size: 30px; color: var(--ice); }
+.tier .price { font-weight: 800; font-size: 64px; margin-top: 12px; letter-spacing: -1px; }
+.tier .price span { font-size: 30px; font-weight: 600; color: var(--ice); }
+.tier .slot { font-weight: 600; font-size: 26px; color: var(--ice); margin-top: 10px; }
+
+/* QR block */
+.qr-wrap { display: flex; align-items: center; gap: 48px; margin-top: 48px; }
+.qr-card { background: var(--white); border-radius: 26px; padding: 26px; box-shadow: 0 0 60px rgba(47,128,237,.35); }
+.qr-card img { width: 330px; height: 330px; display: block; }

@@ -1,0 +1,14 @@
+{
+  "model": "html-template + chromium screenshot",
+  "provider": "local render (playwright); backgrounds: fal-ai/nano-banana-2 @2K",
+  "prompt": "Rendered from ad-templates/ad07_community.html — edit the HTML/CSS and re-run ad-templates/render.js to regenerate.",
+  "refs": [
+    "ad-templates/assets/logo-mark.png"
+  ],
+  "params": {
+    "width": 1080
+  },
+  "cost_usd": 0,
+  "project": "zippilot",
+  "created": "2026-08-05T02:09:24Z"
+}
