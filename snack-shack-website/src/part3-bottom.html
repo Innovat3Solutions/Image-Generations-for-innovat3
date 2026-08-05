@@ -1,0 +1,398 @@
+<!-- ============ SECTION: BUILD A BOX ============ -->
+<section class="box-sec sec" id="box">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg> Bundle up and save</span>
+      <h2>Build your cookie box</h2>
+      <p>Pick a box size, then fill it with any deep dish flavors you like.</p>
+    </div>
+    <div class="box-grid">
+      <div>
+        <div class="box-sizes">
+          <button class="size-pick" data-size="6" aria-pressed="true">
+            <b><svg class="icon" aria-hidden="true"><use href="#i-cookie"/></svg> Cookie Rookie</b>
+            <span>6 handpicked jumbos</span>
+            <div class="p-price">$40 <span style="text-decoration:line-through;font-size:.85rem">$42</span></div>
+          </button>
+          <button class="size-pick" data-size="12" aria-pressed="false">
+            <b><svg class="icon" aria-hidden="true"><use href="#i-basket"/></svg> The Snack Pack</b>
+            <span>12 jumbos, permanent flavors only</span>
+            <div class="p-price">$65 <span style="text-decoration:line-through;font-size:.85rem">$84</span></div>
+          </button>
+        </div>
+        <div class="flavor-grid" id="flavorGrid"></div>
+      </div>
+      <aside class="box-summary sticker">
+        <h3><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg> Your box</h3>
+        <div class="box-meter" role="progressbar" aria-label="Box progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" id="boxMeterBar"><div id="boxMeter"></div></div>
+        <p class="box-count" id="boxCount">0 of 6 cookies picked</p>
+        <ul class="box-picks" id="boxPicks"></ul>
+        <button class="btn btn-primary" id="boxAdd" disabled>
+          <svg class="icon" aria-hidden="true"><use href="#i-basket"/></svg> Add box to cart, <span id="boxPrice">$40</span>
+        </button>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: HOW ORDERING WORKS ============ -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>How ordering works</h2>
+      <p>Everything is baked to order, so the shack runs on a simple rhythm.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <svg class="icon" aria-hidden="true"><use href="#i-cookie"/></svg>
+        <h3>Pick your snacks</h3>
+        <p>Fill your cart with a <b>$20 minimum</b>. One order per person per day keeps the ovens sane.</p>
+      </div>
+      <div class="step">
+        <svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg>
+        <h3>Choose your date</h3>
+        <p>Orders need <b>9 days of lead time</b>. Delivery runs as late as 11 PM if you need it.</p>
+      </div>
+      <div class="step">
+        <svg class="icon" aria-hidden="true"><use href="#i-money"/></svg>
+        <h3>Pay to lock it in</h3>
+        <p>Venmo, Cash App or Zelle <b>within a couple hours</b> of ordering. Pre-orders can't take cash.</p>
+      </div>
+      <div class="step">
+        <svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>
+        <h3>Grab it fresh</h3>
+        <p>We text you a <b>cooler slot and passcode</b> when it's ready. Pickup is free, Deltona delivery is $10.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: ORDER TRACKING ============ -->
+<section class="track-sec sec" id="track">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-mobile"/></svg> Live order tracking</span>
+      <h2>Where's my cookie?</h2>
+      <p>Every order gets a number and text updates at each step. Try it with the sample order below.</p>
+    </div>
+    <div class="track-panel sticker reveal">
+      <div class="track-main">
+        <form class="track-form" id="trackForm">
+          <label class="sr-only" for="trackInput">Order number</label>
+          <input id="trackInput" name="order" placeholder="Order number, like SS-1024" autocomplete="off">
+          <button class="btn btn-primary" type="submit">Track</button>
+          <button class="btn btn-sm" type="button" id="trackDemoBtn">Advance demo</button>
+        </form>
+        <span class="demo-tag">Demo with sample data</span>
+        <div class="timeline" id="timeline" aria-live="polite"></div>
+      </div>
+      <aside class="track-side">
+        <div class="sms"><b>Text update</b><span id="smsBody">Hi Casey! Order SS-1024 is confirmed for Sat, Aug 15. Reply here anytime.</span></div>
+        <div class="sms"><b>When it's ready</b>Your snacks are in cooler slot 4. Passcode 2611. See you before close!</div>
+        <svg class="peek" viewBox="0 0 220 150" aria-hidden="true"><use href="#milk-peek"/></svg>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: MEET MILK ============ -->
+<section class="sec" id="milk">
+  <div class="wrap">
+    <div class="milk-grid">
+      <div class="milk-stage reveal">
+        <div class="bubble">Fresh out of the oven, promise!</div>
+        <svg class="big-milk" viewBox="0 0 240 320" aria-label="Milk the raccoon standing in a chef hat and green apron"><use href="#milk-full"/></svg>
+        <div class="grass-floor"></div>
+      </div>
+      <div class="milk-copy reveal">
+        <h2>Meet Milk, the raccoon running the place</h2>
+        <p>Milk has been on every cooler, flyer and sticker since day one. The humans behind him have been practicing food alchemy since 2019 and opened the bakery in 2024, baking every original recipe out of Deltona.</p>
+        <p>No franchises, no shortcuts, no raisins pretending to be chocolate chips. Just a small Florida bakery with a very serious raccoon.</p>
+        <div class="milk-facts">
+          <span class="fact"><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg> Original recipes since 2019</span>
+          <span class="fact"><svg class="icon" aria-hidden="true"><use href="#i-store"/></svg> Bakery opened 2024</span>
+          <span class="fact"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Food handler certified</span>
+          <span class="fact"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg> Deltona born and raised</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: MERCH ============ -->
+<section class="merch-sec sec" id="merch">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>The Milk merch shelf</h2>
+      <p>Represent the most popular bakery in all of Deltona.</p>
+    </div>
+    <div class="merch-grid reveal">
+      <article class="merch-card wide">
+        <div class="ph"><img src="{{IMG:blanket}}" alt="OG Snack Shack blanket with Milk the raccoon design"></div>
+        <div class="p-body"><h3>OG Snack Shack Blanket</h3><p>Soft, warm and covered in Milk.</p>
+        <div class="p-foot"><span class="p-price">$10</span><button class="btn btn-primary btn-sm" data-add="blanket">Add</button></div></div>
+      </article>
+      <article class="merch-card">
+        <div class="ph"><img src="{{IMG:keychain}}" alt="Milk the raccoon keychain"></div>
+        <div class="p-body"><h3>Milk Keychain</h3><p>Carry the baker everywhere.</p>
+        <div class="p-foot"><span class="p-price">$1</span><button class="btn btn-primary btn-sm" data-add="keychain">Add</button></div></div>
+      </article>
+      <article class="merch-card">
+        <div class="ph"><img src="{{IMG:sticker}}" alt="Milk the raccoon baker bumper sticker"></div>
+        <div class="p-body"><h3>Milk Bumper Sticker</h3><p>6.8 by 4 inches of raccoon.</p>
+        <div class="p-foot"><span class="p-price">$5</span><button class="btn btn-primary btn-sm" data-add="sticker">Add</button></div></div>
+      </article>
+      <article class="merch-card">
+        <div class="ph"><img src="{{IMG:tote}}" alt="Snack Shack tote bag"></div>
+        <div class="p-body"><h3>Snack Shack Tote</h3><p>Fits at least nine jumbos. We counted.</p>
+        <div class="p-foot"><span class="p-price">$5</span><button class="btn btn-primary btn-sm" data-add="tote">Add</button></div></div>
+      </article>
+      <article class="merch-card">
+        <div class="ph"><img src="{{IMG:snack-pack}}" alt="The Snack Pack cookie bundle box"></div>
+        <div class="p-body"><h3>Handpainted Milk Canvas</h3><p>A small acrylic original, painted in house.</p>
+        <div class="p-foot"><span class="p-price">$3</span><button class="btn btn-primary btn-sm" data-add="canvas">Add</button></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: REVIEWS ============ -->
+<section class="sec" id="reviews">
+  <div class="wrap">
+    <div class="rev-head reveal">
+      <div class="stars" aria-label="Rated 5 out of 5 stars">
+        <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
+      </div>
+      <h2>5.0 from 19 reviews</h2>
+      <p>Real reviews from the shop's Bakesy page.</p>
+    </div>
+    <div class="rev-grid">
+      <article class="rev-card sticker reveal">
+        <h3>"100/10 !!!"</h3>
+        <p>"Hands down the best brownie cookies and chocolate chip cookies I've ever had. Fresh, super soft, and the perfect balance of rich and sweet."</p>
+        <div class="rev-who"><span class="rev-ava">S</span><span>Sarah R<small>Verified order</small></span></div>
+      </article>
+      <article class="rev-card sticker reveal">
+        <h3>"Crave cookies? Get it here!"</h3>
+        <p>"Each item was fresh, flavorful, and clearly made with care. The ordering process was smooth and everything arrived in perfect condition."</p>
+        <div class="rev-who"><span class="rev-ava">J</span><span>Jason<small>Verified order</small></span></div>
+      </article>
+      <article class="rev-card sticker reveal">
+        <h3>"About to spend my savings"</h3>
+        <p>"There is not a bad cookie that I've tried. I customized some cookies that I really love and I wasn't disappointed at all. 10000/10 recommend."</p>
+        <div class="rev-who"><span class="rev-ava">S</span><span>Samantha Clarke<small>Verified order</small></span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: FAQ & POLICIES ============ -->
+<section class="sec" id="faq" style="background:var(--cream-2);border-top:var(--line)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Good to know before you order</h2>
+      <p>The straight answers, from the bakers themselves.</p>
+    </div>
+    <div class="faq-wrap reveal">
+      <details class="faq" open>
+        <summary>How far ahead do I need to order? <svg class="icon" aria-hidden="true"><use href="#i-caret"/></svg></summary>
+        <div class="faq-body">Pre-orders need 9 days of lead time since everything is baked fresh to your date. Need something big like catering? Text (939) 639-7268 and we'll figure it out.</div>
+      </details>
+      <details class="faq">
+        <summary>How do payments work? <svg class="icon" aria-hidden="true"><use href="#i-caret"/></svg></summary>
+        <div class="faq-body">Full payment locks in your order, through Venmo, Cash App or Zelle, within a couple hours of placing it. Pre-orders can't take cash, but the self-serve Snack Station happily does.</div>
+      </details>
+      <details class="faq">
+        <summary>How does pickup work? <svg class="icon" aria-hidden="true"><use href="#i-caret"/></svg></summary>
+        <div class="faq-body">On your date we text you a cooler slot number and passcode at 679 Alexander Ave. Pickup is free. Please pick up the same day, or your snacks find a new home the next day.</div>
+      </details>
+      <details class="faq">
+        <summary>Do you deliver? <svg class="icon" aria-hidden="true"><use href="#i-caret"/></svg></summary>
+        <div class="faq-body">Yes. $10 within Deltona, $15 to surrounding cities, as late as 11 PM. Shipping outside the area is temporarily paused, follow the socials for when it returns.</div>
+      </details>
+      <details class="faq">
+        <summary>What about allergens? <svg class="icon" aria-hidden="true"><use href="#i-caret"/></svg></summary>
+        <div class="faq-body">The kitchen uses eggs, peanuts, tree nuts, dairy and wheat. Every item is labeled, so please double check before ordering if you have an allergy.</div>
+      </details>
+      <details class="faq">
+        <summary>Can I change my order after placing it? <svg class="icon" aria-hidden="true"><use href="#i-caret"/></svg></summary>
+        <div class="faq-body">Once an order is placed it can't be edited, since ingredients get planned per batch. Message us right away if something is wrong and we'll do our best.</div>
+      </details>
+      <details class="faq">
+        <summary>Do you sell at farmers markets? <svg class="icon" aria-hidden="true"><use href="#i-caret"/></svg></summary>
+        <div class="faq-body">When we do, we announce every appearance on the Facebook page and Instagram first. Keep an eye on the socials.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: VISIT ============ -->
+<section class="visit-sec sec" id="visit">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> Deltona, Florida</span>
+      <h2>Come say hi to Milk</h2>
+    </div>
+    <div class="visit-grid reveal">
+      <div class="visit-card sticker">
+        <h3>The Snack Shack Bakery</h3>
+        <div class="v-row"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><div><b>679 Alexander Ave</b><span>Deltona, FL 32725</span></div></div>
+        <div class="v-row"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><div><b>7 AM until sold out</b><span>Snack Station, self serve, 7 days a week</span></div></div>
+        <div class="v-row"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><div><b>(939) 639-7268</b><span>Text is fastest, we bake with our hands full</span></div></div>
+        <div class="v-row"><svg class="icon" aria-hidden="true"><use href="#i-money"/></svg>
+          <div><b>At the station</b>
+            <div class="pay-chips" style="margin-top:6px"><span>Cash</span><span>Venmo</span><span>Cash App</span><span>Zelle</span></div>
+          </div>
+        </div>
+        <div class="visit-cta">
+          <a class="btn btn-primary" href="https://www.google.com/maps/search/?api=1&query=679+Alexander+Ave+Deltona+FL+32725" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> Open in Maps</a>
+          <a class="btn" href="https://www.instagram.com/thesnackshackofficial" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-ig"/></svg> @thesnackshackofficial</a>
+        </div>
+      </div>
+      <div class="map-card" aria-label="Stylized map showing The Snack Shack at 679 Alexander Ave, Deltona">
+        <svg class="map-inner" viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="500" height="400" fill="#a8d18a"/>
+          <path d="M-20 90 C120 70 200 130 320 110 C400 96 470 120 520 105 L520 145 C460 158 380 136 300 150 C200 168 100 120 -20 130 Z" fill="#fdf6e3" stroke="#332a20" stroke-width="4"/>
+          <path d="M210 -20 C200 90 230 200 210 300 C202 350 210 390 214 420 L254 420 C248 380 242 340 250 300 C270 200 240 90 250 -20 Z" fill="#fdf6e3" stroke="#332a20" stroke-width="4"/>
+          <circle cx="90" cy="270" r="34" fill="#7db85c" stroke="#332a20" stroke-width="4"/>
+          <circle cx="126" cy="292" r="24" fill="#7db85c" stroke="#332a20" stroke-width="4"/>
+          <circle cx="420" cy="80" r="28" fill="#7db85c" stroke="#332a20" stroke-width="4"/>
+          <path d="M330 250 C330 250 380 250 390 250 C404 250 404 270 390 270 L330 270 Z" fill="#8ecae6" stroke="#332a20" stroke-width="4"/>
+          <g transform="translate(232,150)">
+            <path d="M0 26 L28 0 L56 26 L48 26 L48 54 L8 54 L8 26 Z" fill="#e0aa60" stroke="#332a20" stroke-width="4" stroke-linejoin="round"/>
+            <rect x="22" y="36" width="12" height="18" fill="#332a20"/>
+          </g>
+          <g transform="translate(238,96)">
+            <path d="M22 62 C6 42 0 30 0 20 C0 8 10 0 22 0 C34 0 44 8 44 20 C44 30 38 42 22 62 Z" fill="#cf4a35" stroke="#332a20" stroke-width="4"/>
+            <circle cx="22" cy="20" r="9" fill="#fff" stroke="#332a20" stroke-width="3.5"/>
+          </g>
+        </svg>
+        <div class="map-pin-label" style="top:56%">The Snack Shack<small>679 Alexander Ave</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION: FOOTER ============ -->
+<footer>
+  <div class="foot-grass">
+    <svg class="peek" viewBox="0 0 220 150" aria-hidden="true"><use href="#milk-peek"/></svg>
+  </div>
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <div class="foot-logo">
+        <svg viewBox="0 0 120 110" aria-hidden="true"><use href="#milk-head"/></svg>
+        The Snack Shack
+      </div>
+      <p>A small Deltona bakery crafting original recipes, with every snack made with love, care and one very supervisory raccoon.</p>
+    </div>
+    <div>
+      <h4>The good stuff</h4>
+      <ul>
+        <li><a href="#menu">Full menu</a></li>
+        <li><a href="#box">Build a box</a></li>
+        <li><a href="#merch">Milk merch</a></li>
+        <li><a href="#track">Track an order</a></li>
+        <li><a href="#faq">Ordering FAQ</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Find us</h4>
+      <ul>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=679+Alexander+Ave+Deltona+FL+32725" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> 679 Alexander Ave, Deltona</a></li>
+        <li><a href="sms:+19396397268"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg> (939) 639-7268</a></li>
+        <li><a href="https://www.instagram.com/thesnackshackofficial" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-ig"/></svg> Instagram</a></li>
+        <li><a href="https://www.facebook.com/" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-fb"/></svg> Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-base">
+    <div class="wrap">
+      <span>The Snack Shack Bakery, Deltona FL</span>
+      <span>Design concept by Innovat3 Solutions. Demo checkout, no payments processed.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ CART FAB ============ -->
+<button class="fab" data-open-cart aria-label="Open cart">
+  <svg class="icon" aria-hidden="true"><use href="#i-basket"/></svg>
+  <span class="fab-count" data-cart-count>0</span>
+</button>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Your cart">
+  <div class="drawer-head">
+    <h3>Your snack stash</h3>
+    <button data-close-cart aria-label="Close cart"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="drawer-items" id="cartItems"></div>
+  <div class="drawer-foot">
+    <div class="min-warn" id="minWarn"><svg class="icon" aria-hidden="true"><use href="#i-warn"/></svg><span></span></div>
+    <div class="sum-row"><span>Subtotal</span><b id="cartSubtotal">$0</b></div>
+    <div class="sum-row"><span>Pickup at the shack</span><b>Free</b></div>
+    <div class="sum-row total"><span>Total today</span><b id="cartTotal">$0</b></div>
+    <button class="btn btn-primary" id="checkoutBtn" disabled><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Check out</button>
+  </div>
+</aside>
+
+<!-- ============ CHECKOUT MODAL ============ -->
+<div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="checkoutTitle">Lock in your order</h3>
+      <button data-close-modal aria-label="Close checkout"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <form class="modal-body" id="checkoutForm">
+      <span class="demo-tag">Demo mode, nothing is charged</span>
+      <div class="f-2col">
+        <div class="f-field">
+          <label for="coName">Name</label>
+          <input id="coName" name="name" required autocomplete="name">
+        </div>
+        <div class="f-field">
+          <label for="coPhone">Phone for text updates</label>
+          <input id="coPhone" name="phone" type="tel" required autocomplete="tel" placeholder="(386) 555 0123">
+        </div>
+      </div>
+      <div class="f-field">
+        <label for="coDate">Pickup or delivery date</label>
+        <input id="coDate" name="date" type="date" required>
+        <span class="hint">Everything is baked to order, so dates start 9 days out.</span>
+      </div>
+      <div class="f-field">
+        <label>How are you getting it?</label>
+        <div class="radio-cards">
+          <label><input type="radio" name="fulfil" value="pickup" checked><span>Pickup</span><small>Free, cooler slot + passcode</small></label>
+          <label><input type="radio" name="fulfil" value="deltona"><span>Deltona delivery</span><small>$10, as late as 11 PM</small></label>
+          <label><input type="radio" name="fulfil" value="nearby"><span>Nearby cities</span><small>$15, as late as 11 PM</small></label>
+        </div>
+      </div>
+      <div class="f-field">
+        <label>Pay with</label>
+        <div class="radio-cards">
+          <label><input type="radio" name="pay" value="venmo" checked><span>Venmo</span><small>handle sent by text</small></label>
+          <label><input type="radio" name="pay" value="cashapp"><span>Cash App</span><small>tag sent by text</small></label>
+          <label><input type="radio" name="pay" value="zelle"><span>Zelle</span><small>number sent by text</small></label>
+        </div>
+        <span class="hint">Full payment within a couple hours keeps your slot. Pre-orders can't take cash.</span>
+      </div>
+      <div class="sum-row total"><span>Order total</span><b id="coTotal">$0</b></div>
+      <button class="btn btn-primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Place order</button>
+    </form>
+    <div class="modal-body order-success" id="orderSuccess" hidden>
+      <svg viewBox="0 0 240 320" aria-hidden="true"><use href="#milk-cookie"/></svg>
+      <h3>Order received!</h3>
+      <div class="order-num" id="orderNum">SS-1024</div>
+      <p style="font-weight:600;color:var(--ink-soft)">Payment instructions are on their way to your phone. Track your order any time with the number above.</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="successTrack"><svg class="icon" aria-hidden="true"><use href="#i-mobile"/></svg> Track it now</button>
+        <button class="btn" data-close-modal>Keep browsing</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast" role="status"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span id="toastMsg">Added to cart</span></div>

@@ -1,0 +1,387 @@
+<script>
+(function(){
+"use strict";
+var $ = function(s, c){ return (c||document).querySelector(s); };
+var $$ = function(s, c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
+
+/* ============ CATALOG ============ */
+var PRODUCTS = {
+  "choc-chunk":{name:"Jumbo Chocolate Chunk", price:6, img:true},
+  "cookies-cream":{name:"Cookies And Cream", price:6, img:true},
+  "churro":{name:"Churro Cookie", price:6, img:true},
+  "lemon-vanilla":{name:"Lemon Vanilla", price:6, img:true},
+  "kitchen-sink":{name:"Kitchen Sink Cookie", price:6, img:true},
+  "brownie-chunk":{name:"Brownie Chocolate Chunk", price:6},
+  "brown-velvet":{name:"Brown Velvet", price:6},
+  "cosmic":{name:"Cosmic Brownie Cookie", price:6},
+  "naked":{name:"Naked Cookie", price:5},
+  "biscoff-nutella":{name:"Biscoff Nutella", price:7, img:true},
+  "cheesecake":{name:"Cheesecake Cookie", price:7, img:true},
+  "smores":{name:"S'mores Cookie", price:7, img:true},
+  "reeses":{name:"Reese's Chocolate Cookie", price:7, img:true},
+  "lava":{name:"Lava Cake Cookie", price:7, img:true},
+  "lemon-blueberry":{name:"Lemon Blueberry", price:7, img:true},
+  "guava":{name:"Guavamente", price:7},
+  "banana-pudding":{name:"Banana Pudding Cookie", price:7},
+  "dubai":{name:"Dubai Cookie", price:10, img:true},
+  "boston-cream":{name:"Boston Cream Pie Sandwich", price:8, img:true},
+  "alfajor":{name:"Jumbo Alfajor Sandwich", price:8, img:true},
+  "death-choc":{name:"Death By Chocolate Sandwich", price:8},
+  "rasp-choc":{name:"Raspberry Chocolate Sandwich", price:8},
+  "lemon-guava":{name:"Lemon Guava Sandwich", price:8},
+  "apple-pancake":{name:"Apple Pancake Sandwich", price:8},
+  "brookie":{name:"Brookie Cake", price:10},
+  "oreo-cake":{name:"Cookies N Cream Milkshake Cake", price:10, img:true},
+  "secante":{name:"Secante Cake", price:10},
+  "biscoff-cake":{name:"Biscoff S'mores Cake", price:10},
+  "baby-goliath":{name:"Baby Goliath Cookie Cake", price:25, img:true},
+  "goliath":{name:"The Goliath, Non-stuffed", price:45, img:true},
+  "goliath-stuffed":{name:"The Goliath, Stuffed", price:55},
+  "goliath-dubai":{name:"The Goliath, Dubai", price:70},
+  "bucket":{name:"Bucket Of Chocolate Chip Cookies", price:25, img:true},
+  "bucket-brownie":{name:"Bucket Of Brownie Bites", price:25},
+  "brazo":{name:"Brazo Gitano, Nutella", price:25, img:true},
+  "brazo-guava":{name:"Brazo Gitano, Guava", price:25},
+  "tray-brownies":{name:"Full Tray Of Brownies", price:40},
+  "tray-blondies":{name:"Tray Full Of Blondies", price:40},
+  "xl-secante":{name:"XL Secante Cake", price:40},
+  "keychain":{name:"Milk Keychain", price:1, img:true},
+  "sticker":{name:"Milk Bumper Sticker", price:5, img:true},
+  "tote":{name:"Snack Shack Tote", price:5, img:true},
+  "canvas":{name:"Handpainted Milk Canvas", price:3},
+  "blanket":{name:"OG Snack Shack Blanket", price:10, img:true},
+  "box-6":{name:"Cookie Rookie Box (6)", price:40},
+  "box-12":{name:"The Snack Pack (12)", price:65}
+};
+var IMGS = {{IMGMAP}};
+
+/* ============ STATE ============ */
+var MIN_ORDER = 20;
+var cart = {};
+try { cart = JSON.parse(localStorage.getItem("ss-cart") || "{}"); } catch(e){ cart = {}; }
+var save = function(){ try { localStorage.setItem("ss-cart", JSON.stringify(cart)); } catch(e){} };
+var money = function(n){ return "$" + (n % 1 === 0 ? n : n.toFixed(2)); };
+var subtotal = function(){
+  var t = 0;
+  Object.keys(cart).forEach(function(id){
+    var p = PRODUCTS[id]; if (p) t += p.price * cart[id].qty;
+  });
+  return t;
+};
+var count = function(){
+  var c = 0;
+  Object.keys(cart).forEach(function(id){ c += cart[id].qty; });
+  return c;
+};
+
+/* ============ TOAST ============ */
+var toastTimer;
+function toast(msg){
+  var el = $("#toast");
+  $("#toastMsg").textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2200);
+}
+
+/* ============ CART RENDER ============ */
+function renderCart(){
+  var wrap = $("#cartItems");
+  var ids = Object.keys(cart).filter(function(id){ return cart[id].qty > 0; });
+  $$("[data-cart-count]").forEach(function(el){ el.textContent = count(); });
+  if (!ids.length){
+    wrap.innerHTML = '<div class="cart-empty">' +
+      '<svg viewBox="0 0 220 150" aria-hidden="true"><use href="#milk-peek"/></svg>' +
+      'Nothing in here yet. Milk is judging, gently.</div>';
+  } else {
+    wrap.innerHTML = ids.map(function(id){
+      var p = PRODUCTS[id], line = cart[id];
+      var pic = (p.img && IMGS[id])
+        ? '<img src="' + IMGS[id] + '" alt="">'
+        : '<span class="noimg"><svg class="icon" aria-hidden="true"><use href="#i-cookie"/></svg></span>';
+      var note = line.note ? '<small style="display:block;color:var(--ink-soft);font-weight:600">' + line.note + '</small>' : "";
+      return '<div class="c-item">' + pic +
+        '<div><b>' + p.name + '</b>' + note + '<small>' + money(p.price) + ' each</small></div>' +
+        '<div class="c-qty">' +
+          '<button data-dec="' + id + '" aria-label="One less ' + p.name + '"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg></button>' +
+          '<b>' + line.qty + '</b>' +
+          '<button data-inc="' + id + '" aria-label="One more ' + p.name + '"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>' +
+        '</div></div>';
+    }).join("");
+  }
+  var sub = subtotal();
+  $("#cartSubtotal").textContent = money(sub);
+  $("#cartTotal").textContent = money(sub);
+  var warn = $("#minWarn");
+  var gap = MIN_ORDER - sub;
+  if (!ids.length){
+    warn.classList.remove("ok");
+    warn.lastElementChild.textContent = "Pre-orders have a " + money(MIN_ORDER) + " minimum.";
+    $("#checkoutBtn").disabled = true;
+  } else if (gap > 0){
+    warn.classList.remove("ok");
+    warn.lastElementChild.textContent = money(gap) + " to go. Pre-orders have a " + money(MIN_ORDER) + " minimum.";
+    $("#checkoutBtn").disabled = true;
+  } else {
+    warn.classList.add("ok");
+    warn.lastElementChild.textContent = "Minimum met. Milk approves this order.";
+    $("#checkoutBtn").disabled = false;
+  }
+}
+function addToCart(id, qty, note){
+  if (!PRODUCTS[id]) return;
+  if (!cart[id]) cart[id] = { qty: 0 };
+  cart[id].qty += (qty || 1);
+  if (note) cart[id].note = note;
+  save(); renderCart();
+  toast(PRODUCTS[id].name + " added");
+}
+
+/* ============ DRAWER ============ */
+var lastFocus = null;
+function openCart(){
+  lastFocus = document.activeElement;
+  $("#drawer").classList.add("show");
+  $("#scrim").classList.add("show");
+  $("#drawer [data-close-cart]").focus();
+}
+function closeCart(){
+  $("#drawer").classList.remove("show");
+  $("#scrim").classList.remove("show");
+  if (lastFocus) lastFocus.focus();
+}
+document.addEventListener("click", function(e){
+  var t = e.target;
+  var openBtn = t.closest("[data-open-cart]");
+  if (openBtn){ openCart(); return; }
+  if (t.closest("[data-close-cart]")){ closeCart(); return; }
+  var add = t.closest("[data-add]");
+  if (add){ addToCart(add.getAttribute("data-add")); return; }
+  var inc = t.closest("[data-inc]");
+  if (inc){ cart[inc.getAttribute("data-inc")].qty++; save(); renderCart(); return; }
+  var dec = t.closest("[data-dec]");
+  if (dec){
+    var id = dec.getAttribute("data-dec");
+    cart[id].qty--;
+    if (cart[id].qty <= 0) delete cart[id];
+    save(); renderCart(); return;
+  }
+  if (t.closest("[data-close-modal]")){ closeModal(); return; }
+});
+$("#scrim").addEventListener("click", function(){ closeCart(); });
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape"){ closeCart(); closeModal(); }
+});
+
+/* ============ NAV BURGER ============ */
+$("#navBurger").addEventListener("click", function(){
+  var links = $("#navLinks");
+  var open = links.classList.toggle("open");
+  this.setAttribute("aria-expanded", open ? "true" : "false");
+});
+$$("#navLinks a").forEach(function(a){
+  a.addEventListener("click", function(){
+    $("#navLinks").classList.remove("open");
+    $("#navBurger").setAttribute("aria-expanded", "false");
+  });
+});
+
+/* ============ RAIL ARROWS ============ */
+$$("[data-rail]").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    $("#rail").scrollBy({ left: 272 * Number(btn.getAttribute("data-rail")), behavior: "smooth" });
+  });
+});
+
+/* ============ MENU TABS ============ */
+$$(".tab").forEach(function(tab){
+  tab.addEventListener("click", function(){
+    $$(".tab").forEach(function(t){ t.setAttribute("aria-selected", "false"); });
+    tab.setAttribute("aria-selected", "true");
+    var key = tab.getAttribute("data-tab");
+    $$(".tab-panel").forEach(function(p){
+      p.hidden = p.getAttribute("data-panel") !== key;
+    });
+  });
+});
+
+/* ============ BUILD A BOX ============ */
+var FLAVORS = ["Jumbo Chocolate Chunk","Cookies And Cream","Churro","Lemon Vanilla","Brown Velvet","Kitchen Sink","Cosmic Brownie","M&M Jumbo","Brownie Chocolate Chunk","Butterscotch White Choc","Oatmeal Chocolate Chip","Flutter Nutter"];
+var boxSize = 6;
+var boxPicks = {};
+function renderFlavors(){
+  $("#flavorGrid").innerHTML = FLAVORS.map(function(f, i){
+    var q = boxPicks[i] || 0;
+    return '<div class="fl-chip"><b>' + f + '</b><span class="qty">' +
+      '<button data-fdec="' + i + '" aria-label="One less ' + f + '"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg></button>' +
+      '<b>' + q + '</b>' +
+      '<button data-finc="' + i + '" aria-label="One more ' + f + '"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>' +
+      '</span></div>';
+  }).join("");
+}
+function boxTotal(){
+  var t = 0;
+  Object.keys(boxPicks).forEach(function(k){ t += boxPicks[k]; });
+  return t;
+}
+function renderBox(){
+  var total = boxTotal();
+  $("#boxMeter").style.width = Math.min(100, total / boxSize * 100) + "%";
+  var bar = $("#boxMeterBar");
+  bar.setAttribute("aria-valuemax", boxSize);
+  bar.setAttribute("aria-valuenow", total);
+  $("#boxCount").textContent = total + " of " + boxSize + " cookies picked";
+  $("#boxPrice").textContent = money(boxSize === 6 ? 40 : 65);
+  $("#boxPicks").innerHTML = Object.keys(boxPicks).filter(function(k){ return boxPicks[k] > 0; })
+    .map(function(k){ return "<li><span>" + FLAVORS[k] + "</span><b>x" + boxPicks[k] + "</b></li>"; }).join("");
+  $("#boxAdd").disabled = total !== boxSize;
+}
+document.addEventListener("click", function(e){
+  var inc = e.target.closest("[data-finc]");
+  if (inc){
+    var i = inc.getAttribute("data-finc");
+    if (boxTotal() < boxSize){ boxPicks[i] = (boxPicks[i] || 0) + 1; renderFlavors(); renderBox(); }
+    else { toast("Box is full! Bump it to the Snack Pack for 12."); }
+    return;
+  }
+  var dec = e.target.closest("[data-fdec]");
+  if (dec){
+    var j = dec.getAttribute("data-fdec");
+    if (boxPicks[j]){ boxPicks[j]--; renderFlavors(); renderBox(); }
+    return;
+  }
+});
+$$(".size-pick").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    $$(".size-pick").forEach(function(b){ b.setAttribute("aria-pressed", "false"); });
+    btn.setAttribute("aria-pressed", "true");
+    boxSize = Number(btn.getAttribute("data-size"));
+    var total = boxTotal();
+    if (total > boxSize){ boxPicks = {}; renderFlavors(); }
+    renderBox();
+  });
+});
+$("#boxAdd").addEventListener("click", function(){
+  var note = Object.keys(boxPicks).filter(function(k){ return boxPicks[k] > 0; })
+    .map(function(k){ return FLAVORS[k] + " x" + boxPicks[k]; }).join(", ");
+  addToCart(boxSize === 6 ? "box-6" : "box-12", 1, note);
+  boxPicks = {}; renderFlavors(); renderBox();
+  openCart();
+});
+renderFlavors(); renderBox();
+
+/* ============ ORDER TRACKING DEMO ============ */
+var STAGES = [
+  { icon: "i-check",  title: "Order received",     desc: "We got your order and slotted your bake date." },
+  { icon: "i-money",  title: "Payment confirmed",  desc: "Paid and locked in. Your ingredients are reserved." },
+  { icon: "i-oven",   title: "In the oven",        desc: "Baking day! Everything is made fresh this morning." },
+  { icon: "i-lock",   title: "Ready for pickup",   desc: "Cooler slot 4, passcode 2611. Texted to your phone." },
+  { icon: "i-heart",  title: "Picked up",          desc: "Enjoy! Tell Milk how it was in a review." }
+];
+var demoStage = 2;
+var demoOrder = "SS-1024";
+function renderTimeline(stage, orderNum){
+  $("#timeline").innerHTML = STAGES.map(function(s, i){
+    var cls = i < stage ? "done" : (i === stage ? "now" : "todo");
+    return '<div class="t-step ' + cls + '">' +
+      '<span class="t-dot"><svg class="icon" aria-hidden="true"><use href="#' + s.icon + '"/></svg></span>' +
+      '<div class="t-body"><b>' + s.title + '</b><span>' + s.desc + '</span></div></div>';
+  }).join("");
+  var sms = [
+    "Hi Casey! Order " + orderNum + " is confirmed for Sat. Reply here anytime.",
+    "Payment received for " + orderNum + ". You're locked in!",
+    "It's baking day for " + orderNum + ". Fresh batch going in now.",
+    "Order " + orderNum + " is ready! Cooler slot 4, passcode 2611.",
+    "Hope you loved it! Milk says come back soon."
+  ];
+  $("#smsBody").textContent = sms[Math.min(stage, sms.length - 1)];
+}
+$("#trackForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var val = $("#trackInput").value.trim().toUpperCase() || demoOrder;
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem("ss-demo-order") || "null"); } catch(err){}
+  if (saved && val === saved.num){
+    renderTimeline(saved.stage || 0, saved.num);
+    toast("Tracking " + saved.num);
+  } else {
+    renderTimeline(demoStage, val);
+    toast("Tracking " + val + " (sample)");
+  }
+});
+$("#trackDemoBtn").addEventListener("click", function(){
+  demoStage = (demoStage + 1) % STAGES.length;
+  renderTimeline(demoStage, $("#trackInput").value.trim().toUpperCase() || demoOrder);
+});
+renderTimeline(demoStage, demoOrder);
+
+/* ============ CHECKOUT ============ */
+function openModal(){
+  $("#checkoutModal").classList.add("show");
+  $("#scrim").classList.add("show");
+  $("#coTotal").textContent = money(subtotal());
+  $("#checkoutForm").hidden = false;
+  $("#orderSuccess").hidden = true;
+  var d = new Date();
+  d.setDate(d.getDate() + 9);
+  $("#coDate").min = d.toISOString().slice(0, 10);
+  if (!$("#coDate").value) $("#coDate").value = $("#coDate").min;
+  $("#coName").focus();
+}
+function closeModal(){
+  $("#checkoutModal").classList.remove("show");
+  if (!$("#drawer").classList.contains("show")) $("#scrim").classList.remove("show");
+}
+$("#checkoutBtn").addEventListener("click", function(){
+  closeCart();
+  $("#scrim").classList.add("show");
+  openModal();
+});
+var FEES = { pickup: 0, deltona: 10, nearby: 15 };
+$$("#checkoutForm input[name=fulfil]").forEach(function(r){
+  r.addEventListener("change", function(){
+    $("#coTotal").textContent = money(subtotal() + FEES[r.value]);
+  });
+});
+$("#checkoutForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var num = "SS-" + (1000 + Math.floor(Math.random() * 9000));
+  try { localStorage.setItem("ss-demo-order", JSON.stringify({ num: num, stage: 0 })); } catch(err){}
+  $("#orderNum").textContent = num;
+  $("#checkoutForm").hidden = true;
+  $("#orderSuccess").hidden = false;
+  cart = {}; save(); renderCart();
+});
+$("#successTrack").addEventListener("click", function(){
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem("ss-demo-order") || "null"); } catch(err){}
+  closeModal();
+  if (saved){
+    $("#trackInput").value = saved.num;
+    renderTimeline(0, saved.num);
+  }
+  document.getElementById("track").scrollIntoView({ behavior: "smooth" });
+});
+
+/* ============ TODAY'S DATE ON BOARD ============ */
+var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var now = new Date();
+$("[data-today]").textContent = days[now.getDay()] + ", " + months[now.getMonth()] + " " + now.getDate();
+
+/* ============ SCROLL REVEALS ============ */
+var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (reduce || !("IntersectionObserver" in window)){
+  $$(".reveal").forEach(function(el){ el.classList.add("in"); });
+} else {
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.15 });
+  $$(".reveal").forEach(function(el){ io.observe(el); });
+}
+
+renderCart();
+})();
+</script>
