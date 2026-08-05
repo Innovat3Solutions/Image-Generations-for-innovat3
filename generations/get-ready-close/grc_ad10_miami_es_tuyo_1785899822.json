@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Aspirational skyline: elegant Hispanic couple from behind on Brickell balcony at sunset, wine, Miami skyline and Biscayne Bay, cinematic dusk. White GRC logo top center from ref. Headline 'Miami es tuyo. Reclamalo.' subline 'Expertos locales del mercado del sur de la Florida. Aqui vivimos, aqui cerramos.' Outline pill CTA 'Reclama lo tuyo en grclending.com', '(305) 201-0472'. Footer NMLS# 2117171 | Equal Housing Lender. Stripes accent. No em dashes.",
+  "refs": ["refs/grc_logo_white.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "10 Miami Es Tuyo",
+  "created": "2026-08-05T03:28:00Z"
+}

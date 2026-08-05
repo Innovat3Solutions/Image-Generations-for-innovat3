@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Wedding proposal concept: hands holding open red velvet ring box with glowing miniature luxury house and brass key inside, dark burgundy background. White GRC logo top center from ref. Headline: 'Le dices que si?' script line 'dile si a tu casa propia', subline 'Del papeleo nos encargamos nosotros.' CTA pill: 'Comienza en grclending.com (305) 201-0472'. Footer NMLS# 2117171 | Equal Housing Lender. Stripes accent. No em dashes.",
+  "refs": ["refs/grc_logo_white.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "02 La Propuesta",
+  "created": "2026-08-05T03:12:00Z"
+}

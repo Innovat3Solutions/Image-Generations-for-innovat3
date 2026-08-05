@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Premium social media advertisement for a Miami mortgage lender, vertical 4:5 poster. Scene: a warm sunlit Cuban ventanita coffee window counter in Little Havana Miami, a small white colada espresso cup with crema, and next to it a set of shiny brass house keys with a small house shaped keychain, styled product photography, shallow depth of field, cream and warm terracotta palette. Layout: at the top center place the EXACT black GRC logo from the reference image, unaltered and proportional, on a clean cream background band. Below it the main headline in large bold black modern sans serif typography: 'Tu cafecito. Tus llaves. Tu casa.' with the word 'casa' in red. Below the photo a subheadline in smaller black text: 'Empieza tu pre-aprobacion en lo que dura un cafecito.' At the bottom a red horizontal CTA bar with white text: 'Hablemos hoy (305) 201-0472'. Very bottom footer in tiny dark gray text: 'grclending.com | NMLS# 2117171 | Equal Housing Lender'. Three thin diagonal stripes accent in red green cyan. No em dashes.",
+  "refs": ["refs/grc_logo_color.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "01 Cafecito y Llaves",
+  "created": "2026-08-05T03:10:00Z"
+}

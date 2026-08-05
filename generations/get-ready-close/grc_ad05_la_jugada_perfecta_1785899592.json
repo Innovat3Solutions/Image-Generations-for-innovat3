@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Little Havana dominoes: overhead Cuban domino table, elderly and young hands, tiles forming house silhouette, cafe con leche, warm light. Black GRC logo top center on cream band from ref. Headline 'Juega bien tus fichas.' subline 'Con mas de 25 anos de experiencia, tu jugada siempre cierra.' Green CTA bar 'Haz tu jugada en grclending.com (305) 201-0472'. Footer NMLS# 2117171 | Equal Housing Lender. Stripes accent. No em dashes.",
+  "refs": ["refs/grc_logo_color.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "05 La Jugada Perfecta",
+  "created": "2026-08-05T03:18:00Z"
+}

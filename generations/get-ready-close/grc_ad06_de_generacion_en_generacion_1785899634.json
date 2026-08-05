@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Multigenerational family: golden hour porch, Hispanic abuela handing keys to granddaughter, young couple and child, terracotta Florida home, bougainvillea. Black GRC logo top center on cream band from ref. Headline 'El sueno de toda la familia.' subline 'La primera casa propia se celebra en grande. Te acompanamos hasta las llaves.' Terracotta CTA bar 'Empecemos juntos (305) 201-0472'. Footer grclending.com | NMLS# 2117171 | Equal Housing Lender. Stripes accent. No em dashes.",
+  "refs": ["refs/grc_logo_color.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "06 De Generacion en Generacion",
+  "created": "2026-08-05T03:20:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Racing finish line concept: modern family home at race track finish line, checkered flag, red/green/cyan speed streaks, blue Miami sky. Black GRC logo top center on white band from ref. Headline 'En sus marcas. Listos. A cerrar.' subline 'Cierres rapidos y sin sorpresas. Por algo nos llamamos Get Ready Close.' CTA bar 'Arranca hoy (305) 201-0472 grclending.com'. Footer NMLS# 2117171 | Equal Housing Lender. No em dashes.",
+  "refs": ["refs/grc_logo_color.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "04 La Recta Final",
+  "created": "2026-08-05T03:16:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Renter to owner: young Hispanic couple tossing rent receipts like confetti outside new Florida townhouse, moving boxes, box labeled ADIOS RENTA. Black GRC logo top center on white band from ref. Headline 'Deja de pagar la casa de otro.' subline 'Si puedes con la renta, puedes con tu hipoteca. Te lo demostramos gratis.' Cyan CTA bar 'Calcula lo tuyo en grclending.com', '(305) 201-0472'. Footer NMLS# 2117171 | Equal Housing Lender. Stripes accent. No em dashes.",
+  "refs": ["refs/grc_logo_color.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "07 Adios Renta",
+  "created": "2026-08-05T03:22:00Z"
+}

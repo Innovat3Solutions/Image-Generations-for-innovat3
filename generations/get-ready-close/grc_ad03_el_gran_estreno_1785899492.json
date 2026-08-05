@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Luxury reveal: silk sheet in red/green/cyan lifted off modern Miami home at dusk, palms, dark teal bg. White GRC logo top center from ref. Headline 'Llego tu momento.' subline 'Financiamiento a tu medida, desde tu primer hogar hasta el frente al mar.' CTA 'Descubre tu opcion en grclending.com' '(305) 201-0472'. Footer NMLS# 2117171 | Equal Housing Lender. No em dashes.",
+  "refs": ["refs/grc_logo_white.png"],
+  "params": { "aspect": "4:5", "resolution": "1K" },
+  "cost_usd": 0.08,
+  "project": "get-ready-close",
+  "concept": "03 El Gran Estreno",
+  "created": "2026-08-05T03:14:00Z"
+}
