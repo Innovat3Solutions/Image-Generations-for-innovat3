@@ -1,0 +1,31 @@
+# Render Blueprint — deploys the Innovat3 Prospect Engine as an always-on
+# web service with a persistent disk for the SQLite DB and state extracts.
+#
+# One-time setup: https://dashboard.render.com/blueprints → New Blueprint
+# Instance → connect this repo, pick the branch, and Render reads this file.
+# Set DASHBOARD_PASSWORD when prompted (everything else has a default).
+services:
+  - type: web
+    name: innovat3-prospect-engine
+    runtime: docker
+    plan: starter          # always-on; free plan sleeps + has no disk
+    autoDeploy: true
+    healthCheckPath: /api/meta
+    disk:
+      name: prospect-data
+      mountPath: /app/data
+      sizeGB: 5            # extracts are ~130 MB/day cached + DB growth
+    envVars:
+      - key: DASHBOARD_USER
+        value: innovat3
+      - key: DASHBOARD_PASSWORD
+        sync: false        # prompted at blueprint creation — pick a team password
+      - key: DAILY_RUN_HOUR
+        value: "7"         # auto-run the pipeline at 7am ET every day
+      - key: DAILY_RUN_LIMIT
+        value: "100"
+      # Optional enrichment upgrades — add values in the Render dashboard:
+      # - key: SERPER_API_KEY
+      #   sync: false
+      # - key: HUNTER_API_KEY
+      #   sync: false

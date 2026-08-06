@@ -11,6 +11,25 @@ import { log } from './util.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+
+// Password-protect everything when DASHBOARD_PASSWORD is set (required for
+// any public deployment). Reps sign in once; browsers cache the credentials.
+const AUTH_USER = process.env.DASHBOARD_USER || 'innovat3';
+const AUTH_PASS = process.env.DASHBOARD_PASSWORD;
+if (AUTH_PASS) {
+  app.use((req, res, next) => {
+    const header = req.headers.authorization || '';
+    const [scheme, encoded] = header.split(' ');
+    if (scheme === 'Basic' && encoded) {
+      const [user, ...rest] = Buffer.from(encoded, 'base64').toString().split(':');
+      const pass = rest.join(':');
+      if (user === AUTH_USER && pass === AUTH_PASS) return next();
+    }
+    res.set('WWW-Authenticate', 'Basic realm="Innovat3 Prospect Engine"');
+    res.status(401).send('Authentication required');
+  });
+}
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -129,6 +148,31 @@ app.get('/api/export.csv', (req, res) => {
   res.setHeader('Content-Disposition', 'attachment; filename="prospects.csv"');
   res.send(csv);
 });
+
+// Built-in daily scheduler for hosted deployments (no external cron needed).
+// Set DAILY_RUN_HOUR (0-23, America/New_York) to auto-run the pipeline once
+// per day; DAILY_RUN_LIMIT controls batch size (default 100).
+const DAILY_RUN_HOUR = process.env.DAILY_RUN_HOUR !== undefined ? Number(process.env.DAILY_RUN_HOUR) : null;
+if (DAILY_RUN_HOUR !== null && Number.isInteger(DAILY_RUN_HOUR) && DAILY_RUN_HOUR >= 0 && DAILY_RUN_HOUR <= 23) {
+  const limit = Number(process.env.DAILY_RUN_LIMIT) || 100;
+  setInterval(async () => {
+    const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    if (nowET.getHours() !== DAILY_RUN_HOUR) return;
+    if (activeRuns.size > 0) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const already = db.prepare("SELECT id FROM runs WHERE started_at >= ? AND status != 'failed'").get(today);
+    if (already) return;
+    log(`scheduler: starting daily run (limit ${limit})`);
+    const runId = createRun({ limit, scheduled: true });
+    activeRuns.add(runId);
+    try {
+      await executeRun({ limit, runId });
+    } catch { /* recorded on the run row */ } finally {
+      activeRuns.delete(runId);
+    }
+  }, 60000);
+  log(`scheduler: daily pipeline run enabled at ${DAILY_RUN_HOUR}:00 America/New_York (limit ${Number(process.env.DAILY_RUN_LIMIT) || 100})`);
+}
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => log(`Innovat3 Prospect Engine → http://localhost:${port}`));

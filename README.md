@@ -79,6 +79,38 @@ morning.
   **Re-enrich** button.
 - **Export CSV** — the whole book, ready for your CRM.
 
+## Deploying for the whole team
+
+The app is stateful (SQLite + multi-minute scrape jobs), so it wants an
+**always-on host with a persistent disk** — not serverless.
+
+### Render (recommended, ~$8/mo, one click)
+
+1. Push/keep this repo on GitHub.
+2. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints)
+   → **New Blueprint Instance** → connect this repo + branch. Render reads
+   `render.yaml` and provisions the service, disk, and daily 7am ET auto-run.
+3. Set a team `DASHBOARD_PASSWORD` when prompted. Done — share the URL +
+   password with your reps.
+
+### Any VPS with Docker
+
+```bash
+DASHBOARD_PASSWORD=yourteampassword docker compose up -d --build
+```
+
+### Deployment behaviors
+
+- `DASHBOARD_PASSWORD` — when set, everything sits behind a sign-in
+  (user `innovat3` by default). **Always set this on a public URL.**
+- `DAILY_RUN_HOUR=7` — the server runs the pipeline itself every day at
+  7am ET (`DAILY_RUN_LIMIT` prospects), so reps wake up to a fresh sheet.
+  No external cron needed.
+- `DATA_DIR` — point at the mounted disk (the Docker image defaults to
+  `/app/data`).
+- Bonus: hosted platforms don't block SFTP, so the Sunbiz new-LLC feed
+  works out of the box.
+
 ## Configuration
 
 ### API keys (`.env`, all optional)

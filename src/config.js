@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(__dirname, '..');
-export const DATA_DIR = path.join(ROOT, 'data');
+// DATA_DIR env override lets hosted deployments point at a mounted disk
+export const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(ROOT, 'data');
 export const DOWNLOADS_DIR = path.join(DATA_DIR, 'downloads');
 
 fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });

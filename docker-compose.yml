@@ -1,0 +1,21 @@
+# Self-hosting on any VPS with Docker:
+#   DASHBOARD_PASSWORD=yourpassword docker compose up -d --build
+services:
+  prospect-engine:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DASHBOARD_USER: ${DASHBOARD_USER:-innovat3}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:?set DASHBOARD_PASSWORD}
+      DAILY_RUN_HOUR: ${DAILY_RUN_HOUR:-7}
+      DAILY_RUN_LIMIT: ${DAILY_RUN_LIMIT:-100}
+      SERPER_API_KEY: ${SERPER_API_KEY:-}
+      HUNTER_API_KEY: ${HUNTER_API_KEY:-}
+      ZEROBOUNCE_API_KEY: ${ZEROBOUNCE_API_KEY:-}
+    volumes:
+      - prospect-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  prospect-data:
