@@ -52,6 +52,24 @@ contain em dashes; re-run them before trafficking.
 | `mb_c1_first_offer_en_story916` | Flagship EN 9:16 story | Re-run once for an OFFER typo; current file is clean. |
 | `mb_c1_primera_oferta_es_story916` | Flagship ES 9:16 story | Clean. |
 
+## Round 4 — "Completely different" set (`alt_` prefix, one distinct art direction per concept)
+
+Ten posts, ten unrelated visual worlds. Brand anchors kept constant: RL logo, gold accent,
+phone number, Miami FL, required disclaimers, no em dashes.
+
+| File (prefix) | Concept | Art direction |
+|---|---|---|
+| `alt_c1_newspaper` | 1 First Offer | Vintage broadsheet front page, THE RUIZ REPORT, halftone photo, gold DON'T SIGN YET stamp. |
+| `alt_c2_swiss_infographic` | 2 Worth | Swiss International Style data-viz poster, segmented bar chart. |
+| `alt_c3_miami_deco` | 3 Hablamos (ES) | Miami Art Deco travel poster, marquee fin sign, sunset palette. |
+| `alt_c4_graphic_novel` | 4 Team | Noir 3-panel comic page, Dramatization tag. |
+| `alt_c5_documentary` | 5 Storm | 35mm photojournalism still life, DENIED stamp, typewriter caption. |
+| `alt_c6_synthwave_ui` | 6 Rideshare | Neon night scene + floating insurer app-UI blame cards. |
+| `alt_c7_whiteboard` | 7 No Fees | Hand-drawn whiteboard fee flowchart, attorney presenting. |
+| `alt_c8_neon_sign` | 8 24/7 | Retro roadside neon sign noir, OPEN 24/7, payphone booth. |
+| `alt_c9_evidence_board` | 9 72 Hours | Evidence-board flat-lay, polaroids + gold string, true-crime. |
+| `alt_c10_magazine_cover` | 10 Relentless | Fashion magazine cover, RELENTLESS masthead, cover lines, Advertisement tag. |
+
 ## Model comparison verdict (round 1)
 
 1. **Nano Banana 2 (Google, via fal.ai)** — best all-rounder: only model that held Santino's exact likeness, rendered clean long-form typography, and placed the logo correctly (mostly). Use for face composites and text-heavy layouts. ~$0.08/img at 2K.

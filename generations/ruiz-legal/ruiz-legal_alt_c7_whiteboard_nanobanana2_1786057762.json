@@ -1,0 +1,11 @@
+{
+  "concept": "7 - No Fees, ALT style: hand-drawn whiteboard explainer with attorney presenting, costs note hand-written",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Whiteboard explainer photo: handwritten title 'WHAT NO FEES UNLESS WE WIN ACTUALLY MEANS', marker flowchart recover/no-recovery, *costs and expenses note, attorney (ref) presenting with gold marker, contact band + dark logo. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_dark.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T23:53:00Z"
+}

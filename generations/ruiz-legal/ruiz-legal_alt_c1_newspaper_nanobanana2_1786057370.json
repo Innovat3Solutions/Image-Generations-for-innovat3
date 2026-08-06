@@ -1,0 +1,11 @@
+{
+  "concept": "1 - First Offer, ALT style: vintage broadsheet newspaper front page (THE RUIZ REPORT), halftone photo, gold DON'T SIGN YET stamp",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Vintage newspaper front page ad, masthead THE RUIZ REPORT, headline 'FIRST OFFER EXPOSED: IT WAS NEVER THEIR BEST.', halftone attorney photo, gold stamp, classified CTA box, Advertisement + costs disclaimer footer. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_dark.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T23:40:00Z"
+}

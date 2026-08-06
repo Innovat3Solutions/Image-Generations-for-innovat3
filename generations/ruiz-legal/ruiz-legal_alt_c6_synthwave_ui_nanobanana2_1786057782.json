@@ -1,0 +1,11 @@
+{
+  "concept": "6 - Rideshare, ALT style: synthwave neon night with floating app-UI blame cards",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Synthwave Miami night, rideshare sedan with hazards, three floating insurer UI cards ('NOT OUR PROBLEM' / 'CLAIM PENDING' / 'COVERAGE DISPUTED'), neon gold headline 'HIT IN A RIDESHARE?', subline, contact bar + logo + Dramatization + costs disclaimer. No em dashes.",
+  "refs": ["refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T23:54:00Z"
+}

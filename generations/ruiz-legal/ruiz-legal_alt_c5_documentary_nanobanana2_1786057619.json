@@ -1,0 +1,11 @@
+{
+  "concept": "5 - After the Storm, ALT style: documentary photojournalism, kitchen-table still life with DENIED claim stamp",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Documentary 35mm still life: post-hurricane kitchen table, denied claim paperwork, candle, tarps through window, typewriter caption 'THE STORM LASTED SIX HOURS. THE CLAIM FIGHT LASTS MONTHS. IT SHOULDN'T.', CTA line, logo + costs disclaimer + Dramatization footer. No em dashes.",
+  "refs": ["refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T23:48:00Z"
+}

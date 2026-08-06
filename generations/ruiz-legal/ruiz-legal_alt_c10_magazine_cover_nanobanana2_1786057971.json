@@ -1,0 +1,11 @@
+{
+  "concept": "10 - Relentless, ALT style: high-fashion magazine cover (RELENTLESS masthead, cover lines, barcode, Advertisement tag)",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Fashion magazine cover: RELENTLESS masthead, B&W studio portrait of attorney (ref), gold-keyword cover lines including 'Why the first offer is never the best offer', RL logo + barcode + Advertisement tag. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-07T00:00:00Z"
+}
