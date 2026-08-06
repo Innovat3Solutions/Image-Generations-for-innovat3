@@ -1,0 +1,11 @@
+{
+  "concept": "1 - The First Offer Is Never Their Best Offer (flagship, bake-off entry A)",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Create a premium social media ad for a personal injury law firm using the two provided images. Attorney photo right third unchanged; gold RL logo top-left unaltered; matte black studio; settlement check with gold-foil THINK TWICE stamp; headline 'THE FIRST OFFER IS NEVER THEIR BEST OFFER.'; 'Free consultation · 305-771-6801'; footer 'Ruiz Legal · Miami, FL · No fees unless we win; clients are responsible for costs and expenses.' Editorial black/gold, cinematic rim lighting.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T21:55:00Z"
+}

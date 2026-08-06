@@ -1,0 +1,32 @@
+# Ruiz Legal — Generated Ad Assets (Round 1 drafts)
+
+Each image has a sidecar `.json` with the exact model, provider, prompt, and refs.
+All are **drafts for concept selection** — final type/disclaimers should be re-set in
+Figma/Photoshop before trafficking (see strategy doc §5).
+
+| File (prefix) | Concept | Model | Notes |
+|---|---|---|---|
+| `c1_first_offer_nanobanana2` | 1 — First Offer (bake-off A) | Nano Banana 2 (Google, via fal.ai) | **Winner.** Perfect likeness, clean typography, correct disclaimer footer, logo intact. |
+| `c1_first_offer_magnific` | 1 — First Offer (bake-off B) | Magnific auto | Strong photographic look, good likeness; check text garbled, lower res. Good B-test. |
+| `c2_iceberg_recraftv3` | 2 — Know What It's Worth | Recraft V3 (via fal.ai) | Illustration/infographic style. |
+| `c3_hablamos_seguro_nanobanana2` | 3 — We Speak Insurance (ES) | Nano Banana 2 | Spanish headline + EXCLUSIÓN macro. |
+| `c4_they_have_a_team_nanobanana2` | 4 — They Have a Team | Nano Banana 2 | Face composite vs. corporate wall. |
+| `c5_after_the_storm_magnific` | 5 — After the Storm | Magnific auto | Headline space top; type in post. |
+| `c6_rideshare_flux11ultra` | 6 — Hit in a Rideshare | FLUX 1.1 Pro Ultra (via fal.ai) | Deliberately text-free; type in post. |
+| `c7_no_fees_explainer_nanobanana2` | 7 — No Fees Unless We Win | Nano Banana 2 | Includes costs/expenses disclaimer. |
+| `c8_247_phone_magnific` | 8 — 24/7 | Magnific auto | Phone dialer scene. |
+| `c9_first_72_hours_nanobanana2` | 9 — First 72 Hours | Nano Banana 2 | Checklist carousel cover; footer logo sits on a black box — redo or crop in post. |
+| `c10_relentless_brand_nanobanana2` | 10 — Relentless | Nano Banana 2 | Stunning B&W still; **logo was embellished with invented "LAW FIRM / PROFESSIONAL PA" text — must be replaced with the real logo in post.** |
+
+## Model comparison verdict (round 1)
+
+1. **Nano Banana 2 (Google, via fal.ai)** — best all-rounder: only model that held Santino's exact likeness, rendered clean long-form typography, and placed the logo correctly (mostly). Use for face composites and text-heavy layouts. ~$0.08/img at 2K.
+2. **Magnific (auto)** — best pure-photo texture and lighting; likeness good but small text garbles. Use for background plates and photographic scenes. 60 credits/img.
+3. **FLUX 1.1 Pro Ultra** — best cinematic scene realism; keep it away from any text. ~$0.06/img.
+4. **Recraft V3** — the only good option for vector-ish infographic/illustration looks. ~$0.04/img.
+5. **Higgsfield** — could not be tested: workspace out of credits (top up and re-run if you want Soul-style portraits in the bake-off).
+
+## Compliance reminder for every asset before trafficking
+- Re-set footer disclaimers in real type: "Ruiz Legal · Miami, FL · No fees unless we win; clients are responsible for costs and expenses."
+- Any image that depicts an accident/client scene runs with "DRAMATIZATION" if it could be read as real.
+- File with The Florida Bar ($150/ad, 20 days ahead) for anything beyond the safe-harbor exemption.

@@ -1,0 +1,11 @@
+{
+  "concept": "1 - The First Offer Is Never Their Best Offer (bake-off entry B)",
+  "model": "magnific auto (Freepik/Magnific default image model)",
+  "provider": "magnific (MCP)",
+  "prompt": "Premium social media advertisement for a personal injury law firm, 4:5. Attorney reference photo right side, likeness consistent; gold RL RUIZ LEGAL logo top-left; matte black studio; settlement check with gold-foil THINK TWICE stamp; headline 'THE FIRST OFFER IS NEVER THEIR BEST OFFER.'; contact + costs disclaimer footer. Editorial black/gold, cinematic rim lighting.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspectRatio": "4:5", "mode": "auto"},
+  "cost_credits": 60,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T21:57:00Z"
+}

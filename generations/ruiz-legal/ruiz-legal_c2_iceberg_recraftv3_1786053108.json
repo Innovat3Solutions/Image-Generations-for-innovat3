@@ -1,0 +1,11 @@
+{
+  "concept": "2 - Know What It's Really Worth (iceberg of hidden damages)",
+  "model": "fal-ai/recraft/v3/text-to-image",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Gold line-work iceberg on near-black ocean; small check labeled FIRST OFFER above waterline; hidden mass below labeled FUTURE TREATMENT, LOST INCOME, PAIN & SUFFERING; luxury minimalist infographic, negative space for headline.",
+  "refs": [],
+  "params": {"image_size": "portrait_4_3", "style": "digital_illustration"},
+  "cost_usd": 0.04,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:07:00Z"
+}

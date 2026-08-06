@@ -1,0 +1,11 @@
+{
+  "concept": "7 - No Fees Unless We Win (contingency transparency)",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Attorney (ref photo) at dark walnut desk explaining to camera; gold chalk typography 'NO FEES UNLESS WE WIN' with Recovery→Fee / No recovery→No fee diagram; RL logo top right; footer costs-and-expenses disclaimer + contact; warm editorial black/gold.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:02:00Z"
+}

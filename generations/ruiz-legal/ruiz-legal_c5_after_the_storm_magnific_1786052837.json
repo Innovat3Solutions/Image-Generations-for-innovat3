@@ -1,0 +1,11 @@
+{
+  "concept": "5 - After the Storm (hurricane/first-party claims seasonal)",
+  "model": "magnific auto (Freepik/Magnific default image model)",
+  "provider": "magnific (MCP)",
+  "prompt": "South Florida rooftop with hurricane damage (torn shingles, blue tarp) under dark storm sky breaking open with golden sunrise light; cinematic desaturated slate/black palette with gold accent; clean dark headline space at top; no text, no logos, no people.",
+  "refs": [],
+  "params": {"aspectRatio": "4:5", "mode": "auto"},
+  "cost_credits": 60,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T21:57:00Z"
+}

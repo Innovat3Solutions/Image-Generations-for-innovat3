@@ -1,0 +1,11 @@
+{
+  "concept": "9 - The First 72 Hours (value-first checklist carousel cover)",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Checklist carousel cover: gold serif 72, headline 'WHAT YOU DO IN THE FIRST 72 HOURS CHANGES EVERYTHING.', 4-item gold-check checklist, RL logo watermark bottom center, matte black with night-road bokeh texture, premium minimalist black/gold.",
+  "refs": ["refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:13:00Z"
+}

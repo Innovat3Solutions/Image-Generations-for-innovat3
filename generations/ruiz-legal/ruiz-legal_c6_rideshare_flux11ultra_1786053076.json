@@ -1,0 +1,12 @@
+{
+  "concept": "6 - Hit in a Rideshare? (niche liability)",
+  "model": "fal-ai/flux-pro/v1.1-ultra",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Cinematic night photograph of rain-slicked Brickell Miami street, white sedan with rideshare beacon and hazards on after minor collision, teal/gold neon reflections, no people, no text, headline negative space in sky.",
+  "refs": [],
+  "params": {"aspect_ratio": "3:4", "seed": 3615460233},
+  "cost_usd": 0.06,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:05:00Z",
+  "note": "Type to be set in post (FLUX weak at typography). Headline: 'Hit in an Uber? Who pays isn't simple.'"
+}
