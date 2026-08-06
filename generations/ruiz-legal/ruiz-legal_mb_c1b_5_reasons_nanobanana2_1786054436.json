@@ -1,0 +1,11 @@
+{
+  "concept": "1b - 5 Reasons Not To Sign The First Offer, mood-board listicle style (gold panel, ghost 5, cutout, numbered chips)",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Mood-board listicle card: gold textured panel with ghost 5, black side panel, attorney cutout, headline '5 REASONS NOT TO SIGN THE FIRST OFFER' with black highlight block, 5 numbered white chips, swipe pill CTA, black footer strip with gold logo + contact.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:41:00Z"
+}

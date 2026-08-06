@@ -18,6 +18,22 @@ Figma/Photoshop before trafficking (see strategy doc §5).
 | `c9_first_72_hours_nanobanana2` | 9 — First 72 Hours | Nano Banana 2 | Checklist carousel cover; footer logo sits on a black box — redo or crop in post. |
 | `c10_relentless_brand_nanobanana2` | 10 — Relentless | Nano Banana 2 | Stunning B&W still; **logo was embellished with invented "LAW FIRM / PROFESSIONAL PA" text — must be replaced with the real logo in post.** |
 
+## Round 2 — Mood-board style system (`mb_` prefix, all Nano Banana 2)
+
+Client mood board (@mrx_cursos-style course ads) translated into a Ruiz Legal design system:
+**gold (#C9A227) color-blocking doing the job orange does in the reference; off-white paper +
+architectural grid texture; oversized ghost typography behind a cutout of Santino with a white
+sticker outline; white rounded checklist chips with gold checkmarks; black/gold pill CTA buttons;
+black footer strip with logo + disclaimer.** This is now the recommended production system for
+the social carousel layer (Concepts 1, 2, 7, 9 and the listicle variants).
+
+| File (prefix) | Card | Notes |
+|---|---|---|
+| `mb_c1_first_offer_en` | Flagship EN | Paper texture + gold panel; disclaimer footer correct. |
+| `mb_c1_primera_oferta_es` | Flagship ES | Full-gold panel variant; Spanish disclaimer correct (Bar rule: same language as ad). |
+| `mb_c1b_5_reasons` | Listicle ("10 razões" analog) | 5 numbered chips; swipe CTA for carousel. |
+| `mb_c9_72_hours` | 72-hours checklist restyle | Keys prop + ghost 72; dual pill CTAs. |
+
 ## Model comparison verdict (round 1)
 
 1. **Nano Banana 2 (Google, via fal.ai)** — best all-rounder: only model that held Santino's exact likeness, rendered clean long-form typography, and placed the logo correctly (mostly). Use for face composites and text-heavy layouts. ~$0.08/img at 2K.

@@ -1,0 +1,11 @@
+{
+  "concept": "1 - flagship, English, mood-board style (paper texture + gold block, ghost OFFER type, cutout, checklist chips, pill CTA)",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Mood-board style card: off-white paper + grid texture, gold right panel, ghost OFFER type, attorney cutout with sticker outline, headline 'THE FIRST OFFER IS NEVER THEIR BEST OFFER.' with gold highlight block, 3 checklist chips, black pill CTA 'Don't sign yet - call 305-771-6801', dark logo + costs disclaimer footer.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_dark.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:36:00Z"
+}

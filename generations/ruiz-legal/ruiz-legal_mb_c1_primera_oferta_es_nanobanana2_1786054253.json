@@ -1,0 +1,11 @@
+{
+  "concept": "1 - flagship, Spanish, mood-board style (gold color-block, ghost OFERTA type, cutout, chips, pill CTA)",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Mood-board style card: full gold panel, ghost OFERTA type, attorney cutout, headline 'LA PRIMERA OFERTA NUNCA ES SU MEJOR OFERTA.' with black highlight blocks, ES chips (Hablamos espanol / 24/7 / Sin honorarios si no ganamos*), pill CTA with phone, black footer strip with logo + Spanish costs disclaimer.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:35:00Z"
+}
