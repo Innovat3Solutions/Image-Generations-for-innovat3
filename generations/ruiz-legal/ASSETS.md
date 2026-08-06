@@ -30,7 +30,9 @@ the social carousel layer (Concepts 1, 2, 7, 9 and the listicle variants).
 | File (prefix) | Card | Notes |
 |---|---|---|
 | `mb_c1_first_offer_en` | Flagship EN | Paper texture + gold panel; disclaimer footer correct. |
-| `mb_c1_primera_oferta_es` | Flagship ES | Full-gold panel variant; Spanish disclaimer correct (Bar rule: same language as ad). |
+| `mb_c1_primera_oferta_es` | Flagship ES (v1) | **Superseded** — client felt the hero cutout looked pasted-on (flat gold, no outline/shadow). |
+| `mb_c1_primera_oferta_es_v2a` | Flagship ES v2a | Fix: gold/black split, sticker outline + drop shadow, ghost type clipped behind subject. |
+| `mb_c1_primera_oferta_es_v2b` | Flagship ES v2b | Fix: mirror of the EN layout — full-body cutout left over gold band, text stack right. |
 | `mb_c1b_5_reasons` | Listicle ("10 razões" analog) | 5 numbered chips; swipe CTA for carousel. |
 | `mb_c9_72_hours` | 72-hours checklist restyle | Keys prop + ghost 72; dual pill CTAs. |
 

@@ -1,0 +1,12 @@
+{
+  "concept": "1 - flagship ES v2b: mirror of EN layout - paper texture, gold band left, full-body cutout left with sticker outline, text stack right",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "ES flagship redo variant B: paper+grid texture, gold color band left, full-body attorney cutout with white sticker outline overlapping the band, ghost serif OFERTA behind, right text stack with eyebrow chip, gold-highlight headline, chips, black pill CTA, dark logo + Spanish costs disclaimer footer.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_dark.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T22:50:00Z",
+  "supersedes": "ruiz-legal_mb_c1_primera_oferta_es_nanobanana2_1786054253.png"
+}
