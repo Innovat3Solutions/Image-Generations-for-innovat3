@@ -1,0 +1,11 @@
+{
+  "concept": "1 - flagship EN, 9:16 story version, v2b treatment, no em dashes (CTA 'Don't sign yet. Call ...')",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "9:16 story, v2b system: paper+grid, gold band left, attorney cutout sticker outline + shadow, ghost OFFER type, EN headline + chips + pill CTA without em dashes, dark logo + costs disclaimer footer, platform-safe margins.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_dark.png"],
+  "params": {"aspect_ratio": "9:16", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T23:20:00Z"
+}

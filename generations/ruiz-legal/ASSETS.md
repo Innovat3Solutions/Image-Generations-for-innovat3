@@ -36,6 +36,22 @@ the social carousel layer (Concepts 1, 2, 7, 9 and the listicle variants).
 | `mb_c1b_5_reasons` | Listicle ("10 razões" analog) | 5 numbered chips; swipe CTA for carousel. |
 | `mb_c9_72_hours` | 72-hours checklist restyle | Keys prop + ghost 72; dual pill CTAs. |
 
+## Round 3 — v2b rollout (client-selected treatment; copy rule: NO em dashes)
+
+Client picked **v2b** (paper texture + gold band, full-body sticker-outline cutout, text stack right)
+as the production layout. Copy rule from the client: **no em dashes in any ad copy** (use periods
+or commas). Note: round-2 files `mb_c1_first_offer_en` (CTA) and `mb_c9_72_hours` (chip 1) still
+contain em dashes; re-run them before trafficking.
+
+| File (prefix) | Card | Notes |
+|---|---|---|
+| `mb_c4_they_have_a_team_v2b` | Concept 4 | Cutout hero, ghost TEAM type. |
+| `mb_c7_no_fees_v2b` | Concept 7 | Ghost WIN type; costs disclaimer footer. |
+| `mb_c2_iceberg_v2b` | Concept 2 | Iceberg graphic as the hero instead of a person. |
+| `mb_c3_hablamos_v2b` | Concept 3 (ES) | Magnifying glass EXCLUSIÓN hero; Spanish disclaimer. |
+| `mb_c1_first_offer_en_story916` | Flagship EN 9:16 story | Re-run once for an OFFER typo; current file is clean. |
+| `mb_c1_primera_oferta_es_story916` | Flagship ES 9:16 story | Clean. |
+
 ## Model comparison verdict (round 1)
 
 1. **Nano Banana 2 (Google, via fal.ai)** — best all-rounder: only model that held Santino's exact likeness, rendered clean long-form typography, and placed the logo correctly (mostly). Use for face composites and text-heavy layouts. ~$0.08/img at 2K.

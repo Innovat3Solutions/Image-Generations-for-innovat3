@@ -1,0 +1,11 @@
+{
+  "concept": "4 - They Have a Team, v2b treatment (paper + gold band, cutout left, text stack right), no em dashes",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "v2b system: paper+grid texture, gold band left, attorney cutout with sticker outline + shadow, ghost TEAM type, headline 'THEY HAVE A TEAM. NOW YOU DO TOO.', chips 'Their adjusters? Handled.' / 'Their lawyers? Handled.' / 'You talk directly to Ruiz', pill CTA, dark logo + costs disclaimer footer. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_dark.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-06T23:10:00Z"
+}
