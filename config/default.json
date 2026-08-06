@@ -1,0 +1,95 @@
+{
+  "pipeline": {
+    "defaultLimit": 100,
+    "defaultDaysWindow": 180,
+    "enrichConcurrency": 5,
+    "requestTimeoutMs": 10000,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+  },
+  "scoring": {
+    "mode": "digital_services",
+    "weights": {
+      "hasContactName": 15,
+      "hasPhone": 15,
+      "emailVerified": 20,
+      "emailValidMx": 14,
+      "emailGuessed": 6,
+      "recencyMax": 20,
+      "activeStatus": 5,
+      "digital_services": {
+        "noWebsite": 15,
+        "socialOnly": 10,
+        "hasWebsite": 4
+      },
+      "reachability": {
+        "noWebsite": 0,
+        "socialOnly": 6,
+        "hasWebsite": 12
+      }
+    }
+  },
+  "sunbiz": {
+    "enabled": true,
+    "sftp": {
+      "host": "sftp.floridados.gov",
+      "user": "Public",
+      "password": "PubAccess1845!",
+      "dir": "/Public/doc/cor"
+    },
+    "filingTypesInclude": ["FLAL", "DOML", "DOMP", "FLP", "NONP"],
+    "excludeNameKeywords": ["HOLDINGS", "TRUST", "HOA", "HOMEOWNERS", "CONDOMINIUM ASSOCIATION"]
+  },
+  "dbpr": {
+    "enabled": true,
+    "baseUrl": "https://www2.myfloridalicense.com/sto/file_download/extracts/",
+    "boards": [
+      {
+        "key": "construction",
+        "label": "Construction Contractors",
+        "file": "CONSTRUCTIONLICENSE_1.csv",
+        "enabled": true
+      },
+      {
+        "key": "electrical",
+        "label": "Electrical Contractors",
+        "file": "lic08el.csv",
+        "enabled": true
+      },
+      {
+        "key": "cosmetology",
+        "label": "Cosmetology / Salons",
+        "file": "COSMETOLOGYLICENSE_1.csv",
+        "enabled": true
+      },
+      {
+        "key": "barbers",
+        "label": "Barbers / Barbershops",
+        "file": "lic03bb.csv",
+        "enabled": true
+      },
+      {
+        "key": "real_estate",
+        "label": "Real Estate Agents & Brokers",
+        "file": "REALESTATE2501LICENSE_1.csv",
+        "enabled": false
+      },
+      {
+        "key": "real_estate_corps",
+        "label": "Real Estate Companies",
+        "file": "RealEstateCorpLicense.csv",
+        "enabled": false
+      }
+    ]
+  },
+  "enrichment": {
+    "website": {
+      "tlds": ["com", "net", "biz"],
+      "maxCandidates": 12,
+      "minMatchScore": 3
+    },
+    "email": {
+      "patterns": ["info", "contact", "office", "hello", "{first}", "{first}.{last}", "{f}{last}"],
+      "smtpProbe": false
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "innovat3-prospect-engine",
+  "version": "1.0.0",
+  "description": "Prospect generation engine for the Innovat3 sales team — scrapes newly-formed Florida businesses (Sunbiz) and newly-licensed professionals (DBPR), enriches them with contacts, emails, phones, websites and social media, scores them, and serves a sales dashboard.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --no-warnings src/server.js",
+    "dev": "node --no-warnings --watch src/server.js",
+    "pipeline": "node --no-warnings src/pipeline/run.js",
+    "import": "node --no-warnings src/pipeline/import-file.js",
+    "sunbiz:inspect": "node --no-warnings src/sources/sunbiz-inspect.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "csv-parse": "^5.6.0",
+    "express": "^4.21.2",
+    "ssh2-sftp-client": "^11.0.0"
+  }
+}

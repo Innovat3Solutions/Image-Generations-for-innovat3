@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Innovat3 Prospect Engine</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">🎯</span>
+      <div>
+        <h1>Innovat3 Prospect Engine</h1>
+        <p class="subtitle">New Florida businesses &amp; licensees · Sunbiz + DBPR</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a class="btn ghost" href="/api/export.csv" download>Export CSV</a>
+      <button class="btn primary" id="btn-run">▶ Run pipeline</button>
+    </div>
+  </header>
+
+  <div id="run-banner" class="run-banner hidden"></div>
+
+  <section class="stats" id="stats"></section>
+
+  <section class="filters" id="filters">
+    <input type="search" id="f-q" placeholder="Search name, contact, city…" />
+    <select id="f-industry"><option value="">All industries</option></select>
+    <select id="f-source">
+      <option value="">All sources</option>
+      <option value="sunbiz">Sunbiz (new entities)</option>
+      <option value="dbpr">DBPR (new licenses)</option>
+    </select>
+    <select id="f-status"><option value="">All statuses</option></select>
+    <select id="f-minscore">
+      <option value="">Any score</option>
+      <option value="80">Score ≥ 80</option>
+      <option value="60">Score ≥ 60</option>
+      <option value="40">Score ≥ 40</option>
+    </select>
+    <label class="chk"><input type="checkbox" id="f-hasemail" /> Has email</label>
+    <label class="chk"><input type="checkbox" id="f-hasphone" /> Has phone</label>
+    <label class="chk"><input type="checkbox" id="f-nowebsite" /> No website</label>
+  </section>
+
+  <main class="table-wrap">
+    <table id="table">
+      <thead>
+        <tr>
+          <th data-sort="score" class="sortable sorted-desc">Score</th>
+          <th data-sort="name" class="sortable">Business</th>
+          <th>Industry</th>
+          <th data-sort="established" class="sortable">Established</th>
+          <th>Contact</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Web</th>
+          <th data-sort="city" class="sortable">City</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="table-footer">
+      <span id="count-label"></span>
+      <div class="pager">
+        <button class="btn ghost" id="prev">‹ Prev</button>
+        <span id="page-label"></span>
+        <button class="btn ghost" id="next">Next ›</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Detail drawer -->
+  <div class="drawer-overlay hidden" id="drawer-overlay"></div>
+  <aside class="drawer hidden" id="drawer"></aside>
+
+  <!-- Run modal -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal">
+      <h2>Run prospect pipeline</h2>
+      <p class="muted">Pulls new businesses &amp; licensees, finds contacts, verifies emails, discovers websites &amp; socials, then scores everything.</p>
+      <div class="form-row">
+        <label>Prospect limit
+          <input type="number" id="run-limit" value="100" min="1" max="1000" />
+        </label>
+        <label>Established within (days)
+          <input type="number" id="run-days" value="180" min="1" max="365" />
+        </label>
+      </div>
+      <div class="form-row">
+        <label class="chk"><input type="checkbox" id="run-src-sunbiz" checked /> Sunbiz — new entities</label>
+        <label class="chk"><input type="checkbox" id="run-src-dbpr" checked /> DBPR — new licenses</label>
+      </div>
+      <div id="run-industries" class="industry-grid"></div>
+      <div class="modal-actions">
+        <button class="btn ghost" id="run-cancel">Cancel</button>
+        <button class="btn primary" id="run-start">Start run</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
