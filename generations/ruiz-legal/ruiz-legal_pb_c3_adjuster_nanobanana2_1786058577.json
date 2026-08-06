@@ -1,0 +1,11 @@
+{
+  "concept": "PB-3: 'The adjuster is polite. Professional. And paid by THE OTHER SIDE.'",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Dark editorial: kickers ADJUSTERS/OFFERS/TACTICS, attorney cutout left, layered headline ending in gold 'THE OTHER SIDE.', body copy, CTA box, RL footer lockup + costs disclaimer. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-07T00:29:00Z"
+}

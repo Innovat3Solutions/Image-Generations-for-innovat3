@@ -1,0 +1,11 @@
+{
+  "concept": "PB-6: 'Every day you wait, EVIDENCE DISAPPEARS.'",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Dark editorial: kickers EVIDENCE/WITNESSES/TIME, faint crash-scene duotone, attorney cutout right, layered headline gold 'EVIDENCE DISAPPEARS.', body copy on fading evidence, CTA box, RL footer + costs disclaimer. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-07T00:37:00Z"
+}

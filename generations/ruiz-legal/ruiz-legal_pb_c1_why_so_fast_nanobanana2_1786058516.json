@@ -1,0 +1,11 @@
+{
+  "concept": "PB-1: 'If the first offer was fair, why did it arrive so fast?' interleaved type, personal-brand dark editorial",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Dark editorial: black + faint duotone face texture, kickers ACCIDENTS/CLAIMS/SETTLEMENTS, attorney cutout with headline layered behind and in front ('WAS FAIR,' / 'WHY DID IT ARRIVE SO FAST?'), gold accent squares, white CTA box, RL footer lockup + costs disclaimer. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-07T00:26:00Z"
+}

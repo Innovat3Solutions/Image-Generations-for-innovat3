@@ -1,0 +1,11 @@
+{
+  "concept": "PB-2: Florida 14-day PIP treatment window, ghost numeral 14, serif box, personal-brand dark editorial",
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "prompt": "Dark editorial: ghost 14 background, attorney cutout right, 'AFTER A CRASH IN FLORIDA YOU HAVE [14 DAYS] TO SEEK TREATMENT OR RISK LOSING PIP BENEFITS.', body copy, CTA box, RL footer lockup + costs disclaimer. No em dashes.",
+  "refs": ["refs/santino_ruiz_hero.png", "refs/ruiz_legal_logo_light.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "2K"},
+  "cost_usd": 0.08,
+  "project": "ruiz-legal",
+  "created": "2026-08-07T00:25:00Z"
+}

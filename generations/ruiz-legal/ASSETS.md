@@ -70,6 +70,25 @@ phone number, Miami FL, required disclaimers, no em dashes.
 | `alt_c9_evidence_board` | 9 72 Hours | Evidence-board flat-lay, polaroids + gold string, true-crime. |
 | `alt_c10_magazine_cover` | 10 Relentless | Fashion magazine cover, RELENTLESS masthead, cover lines, Advertisement tag. |
 
+## Round 5 — Personal-brand editorial set (`pb_` prefix) — CLIENT-PREFERRED DIRECTION
+
+Based on the client's second mood board (dark serious personal-brand posts): matte black and
+charcoal, huge white condensed type interleaved behind and in front of the subject cutout,
+faint duotone face texture layers, ghost numerals, small spaced-caps kicker rows, thin
+gold-outlined serif boxes, gold accent squares, quiet footer lockup with divider. Replaces the
+playful `alt_` set as the serious organic-content direction. No em dashes anywhere.
+
+| File (prefix) | Post | Hook |
+|---|---|---|
+| `pb_c1_why_so_fast` | 1 | If the first offer was fair, why did it arrive so fast? (re-run once for a text glitch; current file clean) |
+| `pb_c2_14_days` | 2 | Florida fact: 14 days to seek treatment or risk losing PIP benefits. |
+| `pb_c3_adjuster` | 3 | The adjuster is polite. Professional. And paid by the other side. |
+| `pb_c4_tan_rapido_es` | 4 (ES) | Si la oferta fuera justa, no llegaria tan rapido. |
+| `pb_c5_they_do` | 5 | You don't know what your case is worth. They do. |
+| `pb_c6_evidence_disappears` | 6 | Every day you wait, evidence disappears. |
+| `pb_c7_one_signature` | 7 | One signature can end your case. Make it the right one. |
+| `pb_c8_24_7` | 8 | Accidents do not wait for business hours. Neither do we. (ghost 24) |
+
 ## Model comparison verdict (round 1)
 
 1. **Nano Banana 2 (Google, via fal.ai)** — best all-rounder: only model that held Santino's exact likeness, rendered clean long-form typography, and placed the logo correctly (mostly). Use for face composites and text-heavy layouts. ~$0.08/img at 2K.
