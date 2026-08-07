@@ -120,9 +120,16 @@ checks, domain-guess website discovery). Add keys to level it up:
 
 | Key | Unlocks |
 |---|---|
-| `SERPER_API_KEY` | Google-quality website + social discovery (biggest single upgrade) |
-| `HUNTER_API_KEY` | Real email finding (domain search) + true deliverability verification |
+| `APOLLO_API_KEY` | **Direct decision-maker contact data** — Apollo matches the officer/licensee name + business against their B2B database and returns verified work email, phone, and LinkedIn. The biggest upgrade for "give me an email or phone for every prospect." |
+| `SERPER_API_KEY` | Google-quality website + social discovery |
+| `HUNTER_API_KEY` | Email finding via domain search + deliverability verification |
 | `ZEROBOUNCE_API_KEY` | Alternative email verifier |
+
+With Apollo enabled the contact waterfall becomes: Apollo verified email →
+email on their own website → Hunter → Apollo unverified → MX-checked pattern
+guess; phones: state record → Apollo (person, then company) → their website.
+Apollo is only queried when a prospect is still missing an email or phone,
+so credits aren't spent where the free stack already delivered.
 
 ### Industries
 

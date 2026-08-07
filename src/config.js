@@ -40,6 +40,7 @@ if (process.env.SUNBIZ_SFTP_USER) config.sunbiz.sftp.user = process.env.SUNBIZ_S
 if (process.env.SUNBIZ_SFTP_PASSWORD) config.sunbiz.sftp.password = process.env.SUNBIZ_SFTP_PASSWORD;
 
 export const providers = {
+  apollo: process.env.APOLLO_API_KEY || null,
   hunter: process.env.HUNTER_API_KEY || null,
   zerobounce: process.env.ZEROBOUNCE_API_KEY || null,
   serper: process.env.SERPER_API_KEY || null,
