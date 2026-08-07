@@ -90,7 +90,8 @@
   <div class="modal-overlay hidden" id="modal-overlay">
     <div class="modal">
       <h2>Run prospect pipeline</h2>
-      <p class="muted">Pulls new businesses &amp; licensees, finds contacts, verifies emails, discovers websites &amp; socials, then scores everything.</p>
+      <p class="muted">Keeps pulling &amp; enriching until it has your target number of <strong>contactable</strong> prospects (email or phone). Ones without contact info are parked, not shown to reps.</p>
+      <div id="provider-status" class="provider-status"><span class="muted">Checking data providers…</span></div>
       <div class="form-row">
         <label>Prospect limit
           <input type="number" id="run-limit" value="100" min="1" max="1000" />

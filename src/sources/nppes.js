@@ -11,10 +11,13 @@
  * We stream the zip → csv and keep Florida rows enumerated inside the
  * window. Perfect feed for selling into new clinics/practices.
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import { Readable } from 'node:stream';
+import { pipeline as streamPipeline } from 'node:stream/promises';
 import unzipper from 'unzipper';
 import { parse } from 'csv-parse';
-import { config } from '../config.js';
+import { config, DOWNLOADS_DIR } from '../config.js';
 import { fetchWithTimeout, toISODate, daysSince, titleCase, normalizePhone, zipMatches, log } from '../util.js';
 import { verticalFromNppesTaxonomy, verticalFromName } from '../verticals.js';
 
@@ -100,10 +103,17 @@ export async function fetchNppesProspects({ days = 180, skipIds = new Set(), lim
   for (const url of urls.slice(0, 4)) { // up to ~a month of weeklies
     if (out.length >= limit) break;
     try {
-      log(`nppes downloading ${url.split('/').pop()}`);
-      const res = await fetchWithTimeout(url, { timeout: 300000 });
-      if (!res.ok) throw new Error(`download ${res.status}`);
-      const zip = Readable.fromWeb(res.body).pipe(unzipper.Parse({ forceStream: true }));
+      // Cache each weekly zip on disk — fill-to-target runs iterate over
+      // the same files several times per run
+      const local = path.join(DOWNLOADS_DIR, `nppes_${url.split('/').pop()}`);
+      if (!fs.existsSync(local) || !fs.statSync(local).size) {
+        log(`nppes downloading ${url.split('/').pop()}`);
+        const res = await fetchWithTimeout(url, { timeout: 300000 });
+        if (!res.ok) throw new Error(`download ${res.status}`);
+        await streamPipeline(Readable.fromWeb(res.body), fs.createWriteStream(local + '.part'));
+        fs.renameSync(local + '.part', local);
+      }
+      const zip = fs.createReadStream(local).pipe(unzipper.Parse({ forceStream: true }));
       for await (const entry of zip) {
         const name = entry.path;
         // The data file: npidata_pfile_*.csv (skip the *_fileheader variant)

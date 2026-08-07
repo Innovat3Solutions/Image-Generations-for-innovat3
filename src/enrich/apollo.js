@@ -14,9 +14,40 @@
  * used here.
  */
 import { providers } from '../config.js';
-import { fetchWithTimeout, normalizePhone } from '../util.js';
+import { fetchWithTimeout, normalizePhone, log } from '../util.js';
 
 const BASE = 'https://api.apollo.io/api/v1';
+
+// Apollo failures must be LOUD — a bad key/plan silently produces the
+// same output as "person not found", which hides real problems.
+let errorLogCount = 0;
+export function logApolloError(err) {
+  if (errorLogCount < 5) {
+    log(`APOLLO ERROR: ${err.message} — check the key's endpoint permissions and that your plan includes API access`);
+    errorLogCount++;
+    if (errorLogCount === 5) log('APOLLO ERROR: (further Apollo errors suppressed this session)');
+  }
+}
+
+/** Live credential check for the provider-status panel. */
+export async function checkApollo() {
+  if (!providers.apollo) return { configured: false };
+  try {
+    const res = await fetchWithTimeout('https://api.apollo.io/api/v1/auth/health', {
+      headers: { 'X-Api-Key': providers.apollo }, timeout: 8000,
+    });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok && body.is_logged_in) return { configured: true, ok: true };
+    return {
+      configured: true, ok: false,
+      error: res.status === 401 ? 'Key rejected (401) — wrong or revoked key'
+        : res.status === 403 ? 'Forbidden (403) — plan has no API access or key lacks endpoint permissions'
+        : `auth check failed (${res.status})`,
+    };
+  } catch (err) {
+    return { configured: true, ok: false, error: String(err.message || err) };
+  }
+}
 
 async function apolloFetch(path, opts = {}) {
   const res = await fetchWithTimeout(`${BASE}${path}`, {
@@ -84,7 +115,9 @@ export async function apolloEnrich({ person, businessName, domain, city, state }
         out.linkedin = p.linkedin_url || null;
         out.title = p.title || null;
       }
-    } catch { /* fall through to org enrichment */ }
+    } catch (err) {
+      logApolloError(err);
+    }
   }
 
   // --- Organization enrichment (company phone when person match missed) ---
@@ -96,7 +129,9 @@ export async function apolloEnrich({ person, businessName, domain, city, state }
         out.phone = normalizePhone(org.primary_phone?.number || org.phone || org.sanitized_phone);
         if (!out.linkedin) out.linkedin = org.linkedin_url || null;
       }
-    } catch { /* no org data */ }
+    } catch (err) {
+      logApolloError(err);
+    }
   }
 
   return out;

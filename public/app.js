@@ -5,6 +5,7 @@ const state = { page: 1, sort: 'score', dir: 'desc', meta: null, pollTimer: null
 const STATUS_LABELS = {
   new: 'New', contacted: 'Contacted', interested: 'Interested',
   not_interested: 'Not interested', customer: 'Customer', disqualified: 'Disqualified',
+  no_contact: 'Parked (no contact info)',
 };
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -66,6 +67,7 @@ async function loadStats() {
     <div class="tile"><div class="value">${s.withPhone.toLocaleString()}</div><div class="label">Have phone</div></div>
     <div class="tile"><div class="value">${s.noWebsite.toLocaleString()}</div><div class="label">No website yet</div><div class="hint">prime for digital services</div></div>
     <div class="tile"><div class="value">${s.avgScore}</div><div class="label">Avg score</div></div>
+    <div class="tile"><div class="value">${(s.parked || 0).toLocaleString()}</div><div class="label">Parked — no contact</div><div class="hint">retried by re-enrich sweeps</div></div>
   `;
 }
 
@@ -305,18 +307,19 @@ async function pollRun(runId) {
       const run = await api(`/api/runs/${runId}`);
       const stats = JSON.parse(run.stats_json || '{}');
       if (run.status === 'running') {
+        const fill = stats.contactableTarget ? ` · ${stats.contactable || 0}/${stats.contactableTarget} contactable` : '';
         const stageText = {
-          ingest: 'Pulling new businesses & licensees…',
-          enrich: `Enriching prospects — websites, emails, phones… (${stats.enriched || 0}/${stats.enrichTotal ?? '?'})`,
+          ingest: `Pulling new businesses & licensees…${stats.round > 1 ? ` (round ${stats.round})` : ''}`,
+          enrich: `Enriching — websites, emails, phones… (${stats.enriched || 0}/${stats.enrichTotal ?? '?'})`,
           score: 'Scoring prospects…',
         }[run.stage] || 'Starting…';
-        showRunBanner(`Run #${runId}: ${stageText}`);
+        showRunBanner(`Run #${runId}: ${stageText}${fill}`);
       } else {
         clearInterval(state.pollTimer);
         if (run.status === 'done') {
           showRunBanner(stats.reenriched !== undefined
-            ? `✅ Run #${runId} complete — re-enriched ${stats.reenriched} prospects with the new data providers.`
-            : `✅ Run #${runId} complete — ${stats.ingested ?? 0} new prospects added.`, false);
+            ? `✅ Run #${runId} complete — re-enriched ${stats.reenriched} prospects${stats.revived ? `, revived ${stats.revived} parked ones with new contact info` : ''}.`
+            : `✅ Run #${runId} complete — ${stats.contactable ?? stats.ingested ?? 0} contactable prospects added${stats.parked ? ` (${stats.parked} parked without contact info)` : ''}.`, false);
           setTimeout(() => $('#run-banner').classList.add('hidden'), 8000);
         } else {
           showRunBanner(`❌ Run #${runId} failed: ${esc(run.error || 'unknown error').slice(0, 300)}`, false);
@@ -398,7 +401,21 @@ function bindEvents() {
   };
 
   // run modal
-  $('#btn-run').onclick = () => $('#modal-overlay').classList.remove('hidden');
+  $('#btn-run').onclick = () => {
+    $('#modal-overlay').classList.remove('hidden');
+    // Live-check the data provider keys so a dead key is visible BEFORE the run
+    $('#provider-status').innerHTML = '<span class="muted">Checking data providers…</span>';
+    api('/api/providers').then((ps) => {
+      $('#provider-status').innerHTML = Object.values(ps).map((p) => {
+        const cls = !p.configured ? 'off' : p.ok ? 'ok' : 'fail';
+        const mark = !p.configured ? '○' : p.ok ? '✓' : '✕';
+        const err = p.configured && !p.ok ? ` — ${esc(p.error || 'failing')}` : !p.configured ? ' — no key' : '';
+        return `<span class="prov ${cls}" title="${esc(p.error || '')}">${mark} ${esc(p.label)}${err}</span>`;
+      }).join('');
+    }).catch(() => {
+      $('#provider-status').innerHTML = '<span class="muted">Provider check unavailable</span>';
+    });
+  };
   $('#run-cancel').onclick = () => $('#modal-overlay').classList.add('hidden');
   $('#modal-overlay').addEventListener('click', (e) => {
     if (e.target === $('#modal-overlay')) $('#modal-overlay').classList.add('hidden');

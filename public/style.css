@@ -166,6 +166,15 @@ tbody tr:last-child td { border-bottom: none; }
 .lvl.MEDIUM { color: var(--ink-2); border-color: var(--warning); }
 .lvl.LOW { color: var(--muted); border-color: var(--grid); }
 
+.provider-status {
+  margin-top: 12px; padding: 10px 12px; border: 1px solid var(--grid);
+  border-radius: 10px; font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px 14px;
+}
+.provider-status .prov { display: inline-flex; align-items: center; gap: 5px; }
+.provider-status .prov.ok { color: var(--good-text); }
+.provider-status .prov.fail { color: var(--critical); }
+.provider-status .prov.off { color: var(--muted); }
+
 .call-reason {
   background: var(--wash); border: 1px solid var(--accent); border-radius: 10px;
   padding: 10px 14px; font-size: 13px; line-height: 1.5;

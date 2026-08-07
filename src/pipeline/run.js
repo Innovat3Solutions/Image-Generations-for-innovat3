@@ -6,7 +6,7 @@
  * Cron: 0 7 * * 1-5  cd /path/to/app && npm run pipeline -- --limit 100
  */
 import { config } from '../config.js';
-import { db, insertProspect, existingSourceIds, createRun, updateRun } from '../db.js';
+import { db, insertProspect, existingSourceIds, createRun, updateRun, updateProspect } from '../db.js';
 import { fetchDbprProspects } from '../sources/dbpr.js';
 import { fetchSunbizProspects } from '../sources/sunbiz.js';
 import { fetchNppesProspects } from '../sources/nppes.js';
@@ -24,68 +24,110 @@ export const SOURCE_REGISTRY = {
   osm: { label: 'OpenStreetMap — businesses by area (needs zips)', fetch: fetchOsmProspects, needsZips: true },
 };
 
+/**
+ * A run's promise is "N prospects your reps can actually contact" — not
+ * "N rows". With requireContact (the default), the run loops: ingest a
+ * batch → enrich → score → park anything with no email AND no phone
+ * (status 'no_contact', hidden from reps, revivable by later re-enrich
+ * sweeps) → pull more until the contactable target is met, the sources
+ * run dry, or the safety caps hit.
+ */
 export async function executeRun(params = {}) {
   const limit = params.limit ?? config.pipeline.defaultLimit;
   const days = params.days ?? config.pipeline.defaultDaysWindow;
   const industries = params.industries ?? null; // null = all enabled boards
   const zips = params.zips?.length ? params.zips : null;
+  const requireContact = params.requireContact ?? config.pipeline.requireContact ?? true;
   const sources = (params.sources ?? ['sunbiz', 'dbpr', 'nppes', 'sam'])
     .filter((s) => SOURCE_REGISTRY[s] && config[s]?.enabled !== false);
-  const runId = params.runId ?? createRun({ limit, days, industries, sources, zips });
+  const runId = params.runId ?? createRun({ limit, days, industries, sources, zips, requireContact });
+
+  const MAX_ROUNDS = requireContact ? 4 : 1;
+  const INSERT_CAP = limit * 4; // safety valve on ingest volume + enrichment credits
 
   try {
-    // ---- Stage 1: ingest ------------------------------------------------
-    updateRun(runId, { stage: 'ingest', stats: { limit, days, zips } });
-    const candidates = [];
+    let contactable = 0;
+    let parked = 0;
+    let totalInserted = 0;
+    let totalEnriched = 0;
 
-    // Split the budget between sources so one source can't crowd out the other
-    const perSource = sources.length > 1 ? Math.ceil(limit / sources.length) : limit;
+    for (let round = 1; round <= MAX_ROUNDS; round++) {
+      const need = requireContact ? limit - contactable : limit;
+      if (need <= 0) break;
 
-    for (const key of sources) {
-      const src = SOURCE_REGISTRY[key];
-      if (src.needsZips && !zips) continue;
-      const skip = existingSourceIds(key);
-      const fetched = await src.fetch({
-        days, skipIds: skip, limit: perSource, zips,
-        boards: industries, categories: params.categories,
-      });
-      candidates.push(...fetched);
-    }
+      // Overshoot by the observed miss rate so later rounds converge fast
+      const hitRate = totalInserted ? Math.max(0.15, contactable / totalInserted) : 0.6;
+      const fetchTarget = Math.min(
+        INSERT_CAP - totalInserted,
+        requireContact ? Math.ceil(need / hitRate) : need
+      );
+      if (fetchTarget <= 0) break;
 
-    // Newest first, respect overall limit
-    candidates.sort((a, b) => (b.established_date || '').localeCompare(a.established_date || ''));
-    const batch = candidates.slice(0, limit);
-
-    const insertedIds = [];
-    for (const p of batch) {
-      if (insertProspect(p)) {
-        const row = db.prepare('SELECT id FROM prospects WHERE source = ? AND source_id = ?')
-          .get(p.source, p.source_id);
-        insertedIds.push(row.id);
+      // ---- ingest -------------------------------------------------------
+      updateRun(runId, { stage: 'ingest', stats: { limit, days, zips, round, contactableTarget: requireContact ? limit : null } });
+      const candidates = [];
+      const perSource = sources.length > 1 ? Math.ceil(fetchTarget / sources.length) : fetchTarget;
+      for (const key of sources) {
+        const src = SOURCE_REGISTRY[key];
+        if (src.needsZips && !zips) continue;
+        const skip = existingSourceIds(key); // includes rows inserted in prior rounds
+        const fetched = await src.fetch({
+          days, skipIds: skip, limit: perSource, zips,
+          boards: industries, categories: params.categories,
+        });
+        candidates.push(...fetched);
       }
+      candidates.sort((a, b) => (b.established_date || '').localeCompare(a.established_date || ''));
+
+      const insertedIds = [];
+      for (const p of candidates.slice(0, fetchTarget)) {
+        if (insertProspect(p)) {
+          const row = db.prepare('SELECT id FROM prospects WHERE source = ? AND source_id = ?')
+            .get(p.source, p.source_id);
+          insertedIds.push(row.id);
+        }
+      }
+      if (!insertedIds.length) {
+        log(`run#${runId} round ${round}: sources exhausted`);
+        break;
+      }
+      totalInserted += insertedIds.length;
+      log(`run#${runId} round ${round}: ingested ${insertedIds.length} (total ${totalInserted})`);
+      updateRun(runId, { stage: 'enrich', stats: { ingested: totalInserted, enrichTotal: totalInserted } });
+
+      // ---- enrich -------------------------------------------------------
+      const rows = insertedIds.map((id) => db.prepare('SELECT * FROM prospects WHERE id = ?').get(id));
+      await mapConcurrent(rows, config.pipeline.enrichConcurrency, async (row) => {
+        await enrichProspect(row);
+        totalEnriched++;
+      }, (done) => {
+        if (done % 10 === 0) updateRun(runId, { stats: { enriched: totalEnriched, enrichTotal: totalInserted } });
+      });
+
+      // ---- score + contactability gate ---------------------------------
+      updateRun(runId, { stage: 'score', stats: { enriched: totalEnriched } });
+      for (const id of insertedIds) {
+        applyScore(id);
+        const row = db.prepare('SELECT email, email_status, phone FROM prospects WHERE id = ?').get(id);
+        const hasContact = (row.email && row.email_status !== 'invalid') || row.phone;
+        if (hasContact) {
+          contactable++;
+        } else if (requireContact) {
+          // Park it: invisible to reps, remembered for dedupe, retried by
+          // future re-enrich sweeps once its digital footprint appears.
+          updateProspect(id, { status: 'no_contact' });
+          parked++;
+        }
+      }
+      updateRun(runId, { stats: { contactable, parked } });
+      log(`run#${runId} round ${round}: ${contactable}/${requireContact ? limit : totalInserted} contactable, ${parked} parked`);
+
+      if (!requireContact) break;
     }
-    log(`run#${runId} ingested ${insertedIds.length} new prospects`);
-    updateRun(runId, { stats: { ingested: insertedIds.length } });
 
-    // ---- Stage 2: enrich ------------------------------------------------
-    updateRun(runId, { stage: 'enrich' });
-    const rows = insertedIds.map((id) => db.prepare('SELECT * FROM prospects WHERE id = ?').get(id));
-    let enriched = 0;
-    await mapConcurrent(rows, config.pipeline.enrichConcurrency, async (row) => {
-      await enrichProspect(row);
-      enriched++;
-    }, (done, total) => {
-      if (done % 10 === 0 || done === total) updateRun(runId, { stats: { enriched: done, enrichTotal: total } });
-    });
-    log(`run#${runId} enriched ${enriched}`);
-
-    // ---- Stage 3: score -------------------------------------------------
-    updateRun(runId, { stage: 'score' });
-    for (const id of insertedIds) applyScore(id);
-
-    updateRun(runId, { status: 'done', stats: { scored: insertedIds.length } });
-    log(`run#${runId} done`);
-    return { runId, ingested: insertedIds.length };
+    updateRun(runId, { status: 'done', stats: { ingested: totalInserted, contactable, parked } });
+    log(`run#${runId} done — ${contactable} contactable, ${parked} parked`);
+    return { runId, ingested: totalInserted, contactable, parked };
   } catch (err) {
     log(`run#${runId} FAILED`, err);
     updateRun(runId, { status: 'failed', error: String(err?.stack || err) });
@@ -108,7 +150,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     zips: args.zips ? args.zips.split(',') : undefined,
     categories: args.categories ? args.categories.split(',') : undefined,
   }).then((r) => {
-    console.log(`\nDone. Ingested ${r.ingested} prospects (run #${r.runId}).`);
+    console.log(`\nDone. ${r.contactable} contactable prospects added, ${r.parked} parked without contact info (run #${r.runId}).`);
     console.log('Start the dashboard with `npm start` and open http://localhost:3000');
   }).catch(() => process.exit(1));
 }

@@ -2,6 +2,7 @@
   "pipeline": {
     "defaultLimit": 100,
     "defaultDaysWindow": 180,
+    "requireContact": true,
     "enrichConcurrency": 5,
     "requestTimeoutMs": 10000,
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"

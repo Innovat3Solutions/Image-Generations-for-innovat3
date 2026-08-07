@@ -91,6 +91,23 @@ and a one-line call reason, e.g.:
 > infrastructure is weak — lead with missed-call capture and AI intake.
 > Ask for John Smith (owner).*
 
+## The contactability guarantee
+
+**Every prospect a rep sees has an email or a phone number.** Runs promise
+"N contactable prospects", not "N rows": the pipeline ingests a batch,
+enriches it, and anything that ends up with no contact channel is **parked**
+(`no_contact` status — hidden from the table, the Daily 50, stats, and
+exports of the working book) — then it pulls more until the target is met,
+sources run dry, or the 4× safety cap hits. Parked prospects are kept for
+dedupe and retried first by every **↻ Re-enrich missing** sweep; the moment
+one yields an email or phone it is revived onto the board automatically.
+(Disable per-run with the checkbox, or globally via
+`pipeline.requireContact: false`.)
+
+The **Run pipeline** modal live-checks every configured API key
+(`/api/providers`) before you launch — a dead Apollo key shows as
+"✕ Apollo — Forbidden (403)…" instead of silently producing zero emails.
+
 ## The Daily 50
 
 **🔥 Today's 50** in the dashboard (and `GET /api/daily`) hands each rep the

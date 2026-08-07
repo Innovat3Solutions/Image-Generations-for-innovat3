@@ -8,6 +8,7 @@ import { enrichProspect } from './enrich/index.js';
 import { applyScore, scoreAll } from './pipeline/score.js';
 import { createRun, updateRun } from './db.js';
 import { marketsForVertical, VERTICAL_NAICS } from './market.js';
+import { providerStatus } from './enrich/provider-status.js';
 import { VERTICALS } from './verticals.js';
 import { log, mapConcurrent } from './util.js';
 
@@ -39,7 +40,7 @@ if (AUTH_PASS) {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-const STATUSES = ['new', 'contacted', 'interested', 'not_interested', 'customer', 'disqualified'];
+const STATUSES = ['new', 'contacted', 'interested', 'not_interested', 'customer', 'disqualified', 'no_contact'];
 
 // ---------- prospects ----------
 app.get('/api/prospects', (req, res) => {
@@ -58,6 +59,9 @@ app.get('/api/prospects', (req, res) => {
   if (industry) { where.push('industry = ?'); params.push(industry); }
   if (source) { where.push('source = ?'); params.push(source); }
   if (status) { where.push('status = ?'); params.push(status); }
+  // Parked no-contact prospects stay out of the working views unless
+  // explicitly asked for via the status filter
+  else where.push("status != 'no_contact'");
   if (minScore) { where.push('score >= ?'); params.push(Number(minScore)); }
   if (hasEmail === '1') where.push("email IS NOT NULL AND email_status != 'invalid'");
   if (hasPhone === '1') where.push('phone IS NOT NULL');
@@ -109,11 +113,13 @@ app.post('/api/prospects/:id/enrich', async (req, res) => {
 app.post('/api/reenrich', async (req, res) => {
   if (activeRuns.size > 0) return res.status(409).json({ error: 'A run is already in progress' });
   const limit = Math.min(500, Number(req.body?.limit) || 200);
+  // Parked no-contact prospects are first in line — this sweep is exactly
+  // how they earn their way back onto the board.
   const rows = db.prepare(`
     SELECT * FROM prospects
     WHERE (email IS NULL OR phone IS NULL)
       AND status NOT IN ('not_interested', 'disqualified', 'customer')
-    ORDER BY score DESC, id DESC LIMIT ?
+    ORDER BY (status = 'no_contact') DESC, score DESC, id DESC LIMIT ?
   `).all(limit);
   if (!rows.length) return res.status(400).json({ error: 'Nothing to re-enrich — every workable prospect already has an email and phone' });
 
@@ -121,14 +127,19 @@ app.post('/api/reenrich', async (req, res) => {
   activeRuns.add(runId);
   updateRun(runId, { stage: 'enrich', stats: { enrichTotal: rows.length, enriched: 0 } });
   (async () => {
-    let done = 0;
+    let done = 0, revived = 0;
     await mapConcurrent(rows, config.pipeline.enrichConcurrency, async (row) => {
       await enrichProspect(row).catch(() => {});
       applyScore(row.id);
+      const fresh = db.prepare('SELECT email, email_status, phone, status FROM prospects WHERE id = ?').get(row.id);
+      if (fresh.status === 'no_contact' && ((fresh.email && fresh.email_status !== 'invalid') || fresh.phone)) {
+        updateProspect(row.id, { status: 'new' });
+        revived++;
+      }
       done++;
       if (done % 10 === 0 || done === rows.length) updateRun(runId, { stats: { enriched: done } });
     });
-    updateRun(runId, { status: 'done', stats: { ingested: 0, reenriched: done } });
+    updateRun(runId, { status: 'done', stats: { ingested: 0, reenriched: done, revived } });
   })()
     .catch((err) => updateRun(runId, { status: 'failed', error: String(err?.message || err) }))
     .finally(() => activeRuns.delete(runId));
@@ -168,15 +179,23 @@ app.get('/api/markets/:vertical', async (req, res) => {
 
 // ---------- stats ----------
 app.get('/api/stats', (req, res) => {
-  const total = db.prepare('SELECT COUNT(*) c FROM prospects').get().c;
-  const today = db.prepare("SELECT COUNT(*) c FROM prospects WHERE created_at >= date('now')").get().c;
-  const withEmail = db.prepare("SELECT COUNT(*) c FROM prospects WHERE email IS NOT NULL AND email_status IN ('verified','valid_mx')").get().c;
-  const withPhone = db.prepare('SELECT COUNT(*) c FROM prospects WHERE phone IS NOT NULL').get().c;
-  const noWebsite = db.prepare('SELECT COUNT(*) c FROM prospects WHERE website IS NULL').get().c;
-  const avgScore = db.prepare('SELECT ROUND(AVG(score)) a FROM prospects').get().a || 0;
+  // Working book = everything except parked no-contact rows
+  const W = "status != 'no_contact'";
+  const total = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W}`).get().c;
+  const today = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND created_at >= date('now')`).get().c;
+  const withEmail = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND email IS NOT NULL AND email_status != 'invalid'`).get().c;
+  const withPhone = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND phone IS NOT NULL`).get().c;
+  const noWebsite = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND website IS NULL`).get().c;
+  const avgScore = db.prepare(`SELECT ROUND(AVG(score)) a FROM prospects WHERE ${W}`).get().a || 0;
+  const parked = db.prepare("SELECT COUNT(*) c FROM prospects WHERE status = 'no_contact'").get().c;
   const byStatus = Object.fromEntries(db.prepare('SELECT status, COUNT(*) c FROM prospects GROUP BY status').all().map((r) => [r.status, r.c]));
-  const byIndustry = db.prepare('SELECT industry, COUNT(*) c FROM prospects GROUP BY industry ORDER BY c DESC').all();
-  res.json({ total, today, withEmail, withPhone, noWebsite, avgScore, byStatus, byIndustry });
+  const byIndustry = db.prepare(`SELECT industry, COUNT(*) c FROM prospects WHERE ${W} GROUP BY industry ORDER BY c DESC`).all();
+  res.json({ total, today, withEmail, withPhone, noWebsite, avgScore, parked, byStatus, byIndustry });
+});
+
+// ---------- provider diagnostics ----------
+app.get('/api/providers', async (req, res) => {
+  res.json(await providerStatus());
 });
 
 // ---------- runs ----------
@@ -199,13 +218,13 @@ if (untiered > 0) {
 const activeRuns = new Set();
 app.post('/api/runs', (req, res) => {
   if (activeRuns.size > 0) return res.status(409).json({ error: 'A run is already in progress' });
-  const { limit, days, industries, sources, zips, categories } = req.body || {};
+  const { limit, days, industries, sources, zips, categories, requireContact } = req.body || {};
   const cleanZips = Array.isArray(zips)
     ? zips.map((z) => String(z).trim()).filter((z) => /^\d{3,5}$/.test(z)).slice(0, 20)
     : undefined;
-  const runId = createRun({ limit, days, industries, sources, zips: cleanZips });
+  const runId = createRun({ limit, days, industries, sources, zips: cleanZips, requireContact });
   activeRuns.add(runId);
-  executeRun({ limit, days, industries, sources, zips: cleanZips, categories, runId })
+  executeRun({ limit, days, industries, sources, zips: cleanZips, categories, requireContact, runId })
     .catch(() => {})
     .finally(() => activeRuns.delete(runId));
   res.status(202).json({ runId });
