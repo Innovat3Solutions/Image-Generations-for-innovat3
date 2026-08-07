@@ -46,15 +46,64 @@ zips; everything else treats them as an optional refinement.
 5. **Phone** — from the state record when present, else `tel:` links / patterns on
    their website.
 
-## Scoring (0–100)
+## Target verticals
 
-Configurable weights in `config/default.json`. Default mode is
-**`digital_services`** — tuned for selling websites/branding/marketing, so a
-brand-new business with *no website yet* scores as an opportunity. Flip
-`scoring.mode` to `reachability` for classic lead scoring. Components:
-decision maker (+15), phone (+15), email quality (up to +20), recency of
-establishment (up to +20, linear decay over 180 days), active status (+5),
-web-presence signal (±). Every prospect stores its full score breakdown.
+Prospects are classified into INNOVAT3's priority verticals — the industries
+where a new client is valuable and operational inefficiency costs money:
+roofing, HVAC, plumbing, electrical (split automatically from DBPR
+construction license codes: CCC→roofing, CAC→HVAC, CFC→plumbing…), general
+contractors, law firms, med spas, dental, real estate, property management,
+accounting, insurance, auto repair, fitness, home services, healthcare,
+restaurants. Sunbiz filings (no industry field) are classified by business
+name; NPPES records by taxonomy code. The registry lives in
+`src/verticals.js` with per-vertical commercial-value and automation weights.
+
+## The INNOVAT3 Opportunity Score (0–100)
+
+Five buckets, tuned so a rep gets a *reason to call*, not a row:
+
+| Bucket | Pts | Reads |
+|---|---|---|
+| Business Quality | 20 | active, real company, officer structure, established date |
+| Digital Opportunity | 25 | no website = max; else what their site is missing (mobile, booking, chat, freshness) |
+| Automation Opportunity | 25 | vertical's lead/schedule-intensity + gaps on their own site (form with no follow-up, phone-centric with no intake) |
+| Commercial Value | 20 | per-vertical typical client value |
+| Contactability | 10 | email quality, phone, named decision maker |
+
+Tiers: **80+ 🔥 High Opportunity · 65–79 🟢 Strong Fit · 50–64 🟡 Worth
+Exploring** (below 50 stays out of the daily pool).
+
+### Website signal analysis
+
+When a website is found, the homepage is analyzed for what a modern
+lead-generating site should have: online booking (Calendly, Housecall Pro,
+ServiceTitan…), live/AI chat (Podium, Intercom, Tawk…), lead forms, mobile
+viewport, CRM pixels (HubSpot, GoHighLevel…), analytics, platform, and stale
+copyright years — producing a 0–100 site quality score.
+
+### Detected opportunities + "why you should call"
+
+Every prospect card carries pitch-ready findings (Website redesign — HIGH,
+Lead-response automation — HIGH, AI receptionist — HIGH, CRM — MEDIUM …)
+and a one-line call reason, e.g.:
+
+> *ABC Roofing just launched (Roofing); their site exists but conversion
+> infrastructure is weak — lead with missed-call capture and AI intake.
+> Ask for John Smith (owner).*
+
+## The Daily 50
+
+**🔥 Today's 50** in the dashboard (and `GET /api/daily`) hands each rep the
+freshest unworked prospects above the pool threshold, grouped
+🔥 High / 🟢 Strong / 🟡 Explore — "50 businesses worth calling, and why."
+
+## Market intelligence (Census CBP)
+
+`GET /api/markets/hvac` (or any vertical) ranks Florida counties by
+establishment density for that vertical's NAICS codes — answering *"where
+should we prospect HVAC?"* before a run, instead of picking cities at
+random. Needs a free instant `CENSUS_API_KEY`
+(https://api.census.gov/data/key_signup.html).
 
 ## Quick start
 

@@ -16,6 +16,7 @@ import unzipper from 'unzipper';
 import { parse } from 'csv-parse';
 import { config } from '../config.js';
 import { fetchWithTimeout, toISODate, daysSince, titleCase, normalizePhone, zipMatches, log } from '../util.js';
+import { verticalFromNppesTaxonomy, verticalFromName } from '../verticals.js';
 
 async function findWeeklyFileUrls() {
   const res = await fetchWithTimeout(config.nppes.filesPage, { timeout: 30000 });
@@ -66,11 +67,12 @@ function mapRow(r, board = null) {
   const phone = normalizePhone(get('Provider Business Practice Location Address Telephone Number'))
     || normalizePhone(get('Authorized Official Telephone Number'));
 
+  const taxonomy = get('Healthcare Provider Taxonomy Code_1');
   return {
     source: 'nppes',
     source_id: npi,
     business_name: businessName,
-    industry: 'healthcare',
+    industry: verticalFromName(businessName) || verticalFromNppesTaxonomy(taxonomy),
     license_type: `NPI ${entityType === '2' ? 'Organization' : 'Provider'} — ${get('Healthcare Provider Taxonomy Code_1') || 'unclassified'}`,
     entity_status: 'active',
     established_date: enumDate,

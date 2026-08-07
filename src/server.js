@@ -5,8 +5,10 @@ import { db, updateProspect } from './db.js';
 import { config } from './config.js';
 import { executeRun, SOURCE_REGISTRY } from './pipeline/run.js';
 import { enrichProspect } from './enrich/index.js';
-import { scoreProspect } from './pipeline/score.js';
+import { applyScore, scoreAll } from './pipeline/score.js';
 import { createRun } from './db.js';
+import { marketsForVertical, VERTICAL_NAICS } from './market.js';
+import { VERTICALS } from './verticals.js';
 import { log } from './util.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -92,12 +94,42 @@ app.post('/api/prospects/:id/enrich', async (req, res) => {
   const row = db.prepare('SELECT * FROM prospects WHERE id = ?').get(Number(req.params.id));
   if (!row) return res.status(404).json({ error: 'not found' });
   try {
-    const enriched = await enrichProspect(row);
-    const { score, breakdown } = scoreProspect(enriched);
-    updateProspect(row.id, { score, score_breakdown_json: JSON.stringify(breakdown) });
+    await enrichProspect(row);
+    applyScore(row.id);
     res.json(db.prepare('SELECT * FROM prospects WHERE id = ?').get(row.id));
   } catch (err) {
     res.status(500).json({ error: String(err.message || err) });
+  }
+});
+
+// ---------- The Daily 50 ----------
+// Today's tiered call sheet: the freshest unworked prospects above the
+// pool threshold, grouped 🔥 high / 🟢 strong / 🟡 explore.
+app.get('/api/daily', (req, res) => {
+  const size = Math.min(200, Number(req.query.size) || 50);
+  const rows = db.prepare(`
+    SELECT * FROM prospects
+    WHERE status = 'new' AND score >= 50
+    ORDER BY (created_at >= date('now')) DESC, score DESC, id DESC
+    LIMIT ?
+  `).all(size);
+  const groups = { high: [], strong: [], explore: [] };
+  for (const r of rows) (groups[r.tier] || groups.explore).push(r);
+  res.json({
+    date: new Date().toISOString().slice(0, 10),
+    counts: { high: groups.high.length, strong: groups.strong.length, explore: groups.explore.length },
+    rows,
+  });
+});
+
+// ---------- Market intelligence (Census CBP) ----------
+// "Where should we prospect HVAC?" → FL counties ranked by establishment
+// density for the vertical's NAICS codes.
+app.get('/api/markets/:vertical', async (req, res) => {
+  try {
+    res.json(await marketsForVertical(req.params.vertical));
+  } catch (err) {
+    res.status(502).json({ error: String(err.message || err) });
   }
 });
 
@@ -122,6 +154,14 @@ db.prepare(`
     error = 'Interrupted — the server restarted mid-run (host redeploy or out-of-memory kill).'
   WHERE status = 'running'
 `).run();
+
+// One-time migration: prospects scored before the Opportunity Score existed
+// have no tier — recompute them under the new model (offline, fast).
+const untiered = db.prepare('SELECT COUNT(*) c FROM prospects WHERE tier IS NULL').get().c;
+if (untiered > 0) {
+  log(`rescoring ${untiered} prospects under the Opportunity Score model…`);
+  scoreAll();
+}
 
 const activeRuns = new Set();
 app.post('/api/runs', (req, res) => {
@@ -152,12 +192,16 @@ app.get('/api/runs/:id', (req, res) => {
 app.get('/api/meta', (req, res) => {
   res.json({
     industries: [
-      { key: 'new_business', label: 'New Businesses (Sunbiz)' },
-      ...config.dbpr.boards.map((b) => ({ key: b.key, label: b.label, enabled: b.enabled })),
-      { key: 'healthcare', label: 'Healthcare Providers (NPPES)' },
+      ...Object.entries(VERTICALS).map(([key, v]) => ({ key, label: v.label, priority: v.priority })),
+      { key: 'new_business', label: 'New Businesses (unclassified)' },
       { key: 'gov_contractors', label: 'Federal Contractors (SAM.gov)' },
-      { key: 'area_poi', label: 'Area Businesses (OpenStreetMap)' },
+      { key: 'area_poi', label: 'Area Businesses (unclassified)' },
+      ...config.dbpr.boards
+        .filter((b) => !VERTICALS[b.key]) // boards whose key is already a vertical are covered above
+        .map((b) => ({ key: b.key, label: b.label })),
     ],
+    boards: config.dbpr.boards.map((b) => ({ key: b.key, label: b.label, enabled: b.enabled })),
+    marketVerticals: Object.keys(VERTICAL_NAICS),
     sources: Object.entries(SOURCE_REGISTRY).map(([key, s]) => ({
       key,
       label: s.label,

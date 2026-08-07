@@ -27,6 +27,7 @@ import { pipeline as streamPipeline } from 'node:stream/promises';
 import { parse } from 'csv-parse';
 import { config, DOWNLOADS_DIR } from '../config.js';
 import { fetchWithTimeout, toISODate, daysSince, parsePersonName, titleCase, normalizePhone, zipMatches, log } from '../util.js';
+import { verticalFromDbprCode } from '../verticals.js';
 
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000; // extracts refresh at most daily
 
@@ -76,7 +77,9 @@ function parseRow(row, board) {
     source_id: altLicense || `${licCode}${licNumber}`,
     business_name: businessName,
     dba_name: dbaName || null,
-    industry: board.key,
+    // License codes split boards into sales verticals: CCC=roofing,
+    // CAC=HVAC, CFC=plumbing, CGC/CBC/CRC=general contractors, EC=electrical
+    industry: verticalFromDbprCode(licCode) || board.key,
     license_type: `${licCode} — ${board.label}`,
     entity_status: primaryStatus === 'C' && secondaryStatus === 'A' ? 'active' : 'inactive',
     established_date: original || effective,

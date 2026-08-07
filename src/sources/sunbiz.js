@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { config, DOWNLOADS_DIR } from '../config.js';
 import { toISODate, daysSince, titleCase, zipMatches, log } from '../util.js';
+import { verticalFromName } from '../verticals.js';
 import { FIELDS, OFFICER_BLOCKS, FILING_TYPE_LABELS, field } from './sunbiz-layout.js';
 
 // Decision-maker title priority (Sunbiz title codes, best first)
@@ -110,7 +111,8 @@ export function parseSunbizLine(line) {
     source: 'sunbiz',
     source_id: corpNumber,
     business_name: titleCase(corpName),
-    industry: 'new_business',
+    // Sunbiz filings carry no industry — classify by name keywords
+    industry: verticalFromName(corpName) || 'new_business',
     license_type: FILING_TYPE_LABELS[filingType] || filingType || 'Corporate Filing',
     entity_status: field(line, FIELDS.status) === 'A' ? 'active' : 'inactive',
     established_date: fileDate,

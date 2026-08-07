@@ -12,6 +12,15 @@
  */
 import { config } from '../config.js';
 import { fetchWithTimeout, titleCase, normalizePhone, log } from '../util.js';
+import { verticalFromName } from '../verticals.js';
+
+const OSM_TAG_VERTICALS = {
+  restaurant: 'restaurants', cafe: 'restaurants', fast_food: 'restaurants', bar: 'restaurants',
+  car_repair: 'auto_repair', car: 'auto_repair', tyres: 'auto_repair',
+  fitness_centre: 'fitness', sports_centre: 'fitness',
+  dentist: 'dental', clinic: 'healthcare', doctors: 'healthcare', veterinary: 'healthcare',
+  beauty: 'med_spas', hairdresser: 'home_services', massage: 'med_spas',
+};
 
 function buildQuery(zips, categoryKeys) {
   const cats = categoryKeys
@@ -36,12 +45,13 @@ function mapElement(el, categoryLabelByFilterHit) {
   if (t['contact:facebook']) socials.facebook = t['contact:facebook'];
   if (t['contact:instagram']) socials.instagram = t['contact:instagram'];
 
+  const primaryTag = t.amenity || t.shop || t.craft || t.office || t.leisure || 'POI';
   return {
     source: 'osm',
     source_id: `${el.type}/${el.id}`,
     business_name: titleCase(t.name),
-    industry: 'area_poi',
-    license_type: t.amenity || t.shop || t.craft || t.office || t.leisure || 'POI',
+    industry: verticalFromName(t.name) || OSM_TAG_VERTICALS[primaryTag] || 'area_poi',
+    license_type: primaryTag,
     entity_status: 'active',
     established_date: null,
     address: [t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' ') || null,

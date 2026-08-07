@@ -36,10 +36,10 @@ async function loadMeta() {
       `<label class="chk"><input type="checkbox" class="run-src" value="${esc(s.key)}" ${checked} ${disabled ? 'disabled' : ''}/> ${esc(s.label)}${note}</label>`);
   }
   const grid = $('#run-industries');
-  grid.innerHTML = '<span class="muted" style="grid-column:1/-1">DBPR industries:</span>';
-  for (const ind of state.meta.industries.filter((i) => i.enabled !== undefined)) {
+  grid.innerHTML = '<span class="muted" style="grid-column:1/-1">DBPR license boards:</span>';
+  for (const b of state.meta.boards) {
     grid.insertAdjacentHTML('beforeend',
-      `<label class="chk"><input type="checkbox" class="run-ind" value="${esc(ind.key)}" ${ind.enabled ? 'checked' : ''}/> ${esc(ind.label)}</label>`);
+      `<label class="chk"><input type="checkbox" class="run-ind" value="${esc(b.key)}" ${b.enabled ? 'checked' : ''}/> ${esc(b.label)}</label>`);
   }
   const catGrid = $('#run-osmcats');
   catGrid.innerHTML = '<span class="muted" style="grid-column:1/-1">OpenStreetMap categories:</span>';
@@ -109,6 +109,8 @@ function webCell(r) {
 }
 
 async function loadTable() {
+  if (state.dailyMode) return loadDaily();
+  $('#daily-bar').classList.add('hidden');
   const data = await api('/api/prospects?' + filterParams());
   const tbody = $('#tbody');
   if (!data.rows.length) {
@@ -120,7 +122,7 @@ async function loadTable() {
   } else {
     tbody.innerHTML = data.rows.map((r) => `
       <tr data-id="${r.id}">
-        <td><span class="score-badge ${r.score >= 70 ? 'hot' : ''}">${r.score}</span></td>
+        <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
         <td><div class="biz-name">${esc(r.business_name)}</div><div class="biz-sub">${esc(r.license_type || '')}</div></td>
         <td>${esc(industryLabel(r.industry))}</td>
         <td>${esc(r.established_date || '—')}</td>
@@ -141,17 +143,64 @@ async function loadTable() {
   $('#next').disabled = data.page >= pages;
 }
 
+/* ---------- The Daily 50 ---------- */
+function rowHtml(r) {
+  return `
+    <tr data-id="${r.id}">
+      <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
+      <td><div class="biz-name">${esc(r.business_name)}</div><div class="biz-sub">${esc(r.license_type || '')}</div></td>
+      <td>${esc(industryLabel(r.industry))}</td>
+      <td>${esc(r.established_date || '—')}</td>
+      <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
+      <td>${emailCell(r)}</td>
+      <td>${esc(r.phone || '—')}</td>
+      <td>${webCell(r)}</td>
+      <td>${esc(r.city || '—')}</td>
+      <td><select class="status-select" data-id="${r.id}">
+        ${Object.entries(STATUS_LABELS).map(([k, v]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('')}
+      </select></td>
+    </tr>`;
+}
+
+async function loadDaily() {
+  const data = await api('/api/daily?size=50');
+  const bar = $('#daily-bar');
+  bar.classList.remove('hidden');
+  bar.innerHTML = `
+    <strong>TODAY'S ${data.rows.length}</strong>
+    <span class="tier-count">🔥 ${data.counts.high} High Opportunity</span>
+    <span class="tier-count">🟢 ${data.counts.strong} Strong Fit</span>
+    <span class="tier-count">🟡 ${data.counts.explore} Worth Exploring</span>
+    <span class="muted">${data.date} · fresh prospects, best first — every score badge tooltip says why to call</span>
+  `;
+  $('#tbody').innerHTML = data.rows.length
+    ? data.rows.map(rowHtml).join('')
+    : `<tr><td colspan="10"><div class="empty-state"><div class="big">🔥</div><p><strong>No qualified prospects yet today.</strong></p><p>Run the pipeline to fill today's sheet.</p></div></td></tr>`;
+  $('#count-label').textContent = `${data.rows.length} on today's sheet`;
+  $('#page-label').textContent = '';
+  $('#prev').disabled = true;
+  $('#next').disabled = true;
+}
+
 /* ---------- drawer ---------- */
 async function openDrawer(id) {
   const r = await api(`/api/prospects/${id}`);
   const socials = r.socials_json ? JSON.parse(r.socials_json) : {};
   const officers = r.officers_json ? JSON.parse(r.officers_json) : null;
   const breakdown = r.score_breakdown_json ? JSON.parse(r.score_breakdown_json) : {};
+  const opportunities = r.opportunities_json ? JSON.parse(r.opportunities_json) : [];
+  const signals = r.site_signals_json ? JSON.parse(r.site_signals_json) : null;
   const drawer = $('#drawer');
   drawer.innerHTML = `
     <button class="close-x" id="drawer-close">✕</button>
     <h2>${esc(r.business_name)}</h2>
-    <p class="muted">${esc(r.license_type || '')} · ${esc(industryLabel(r.industry))} · <span class="score-badge ${r.score >= 70 ? 'hot' : ''}">${r.score}</span></p>
+    <p class="muted">${esc(r.license_type || '')} · ${esc(industryLabel(r.industry))} · <span class="score-badge tier-${esc(r.tier || 'below')}">${r.score}</span></p>
+
+    ${r.call_reason ? `<section><h3>Why you should call</h3><div class="call-reason">${esc(r.call_reason)}</div></section>` : ''}
+
+    ${opportunities.length ? `<section><h3>Detected opportunities</h3>${opportunities.map((o) => `
+      <div class="opp"><div class="opp-head"><span>${esc(o.label)}</span><span class="lvl ${esc(o.level)}">${esc(o.level)}</span></div>
+      <div class="why">${esc(o.why)}</div></div>`).join('')}</section>` : ''}
 
     <section>
       <h3>Contact</h3>
@@ -160,6 +209,7 @@ async function openDrawer(id) {
         <dt>Email</dt><dd>${r.email ? `${esc(r.email)} <span class="chip ${esc(r.email_status || '')}">${esc(r.email_status || '')}</span> <button class="copy-btn" data-copy="${esc(r.email)}">copy</button>` : '—'}</dd>
         <dt>Phone</dt><dd>${r.phone ? `${esc(r.phone)} <button class="copy-btn" data-copy="${esc(r.phone)}">copy</button>` : '—'}</dd>
         <dt>Website</dt><dd>${r.website ? `<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website)}</a> <span class="muted">(${esc(r.website_confidence || '')})</span>` : 'none found'}</dd>
+        ${signals ? `<dt>Site quality</dt><dd>${signals.quality}/100 <span class="muted">· ${signals.platform}${signals.mobileViewport ? '' : ' · not mobile-ready'}${signals.hasBooking ? ' · booking ✓' : ' · no booking'}${signals.hasChat ? ' · chat ✓' : ' · no chat'}${signals.hasCrm ? ' · CRM ✓' : ''}</span></dd>` : ''}
         <dt>Socials</dt><dd>${Object.keys(socials).length ? Object.entries(socials).map(([k, v]) => `<a href="${esc(v)}" target="_blank" rel="noopener">${k}</a>`).join(' · ') : 'none found'}</dd>
       </dl>
     </section>
@@ -169,7 +219,7 @@ async function openDrawer(id) {
       <dl class="kv">
         <dt>Established</dt><dd>${esc(r.established_date || '—')}</dd>
         <dt>Address</dt><dd>${esc([r.address, r.city, r.state, r.zip].filter(Boolean).join(', ') || '—')}</dd>
-        <dt>Source</dt><dd>${r.source === 'sunbiz' ? 'Sunbiz filing' : 'DBPR license'} · ${esc(r.source_id)}</dd>
+        <dt>Source</dt><dd>${esc({ sunbiz: 'Sunbiz filing', dbpr: 'DBPR license', nppes: 'NPI registry', sam: 'SAM.gov registration', osm: 'OpenStreetMap' }[r.source] || r.source)} · ${esc(r.source_id)}</dd>
         <dt>Record status</dt><dd>${esc(r.entity_status || '—')}</dd>
       </dl>
     </section>
@@ -320,6 +370,14 @@ function bindEvents() {
   });
 
   $('#drawer-overlay').onclick = closeDrawer;
+
+  // Daily 50 toggle
+  $('#btn-daily').onclick = () => {
+    state.dailyMode = !state.dailyMode;
+    $('#btn-daily').classList.toggle('primary', state.dailyMode);
+    $('#filters').style.display = state.dailyMode ? 'none' : '';
+    loadTable();
+  };
 
   // run modal
   $('#btn-run').onclick = () => $('#modal-overlay').classList.remove('hidden');

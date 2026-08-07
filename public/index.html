@@ -17,6 +17,7 @@
       </div>
     </div>
     <div class="topbar-actions">
+      <button class="btn ghost" id="btn-daily">🔥 Today's 50</button>
       <a class="btn ghost" href="/api/export.csv" download>Export CSV</a>
       <button class="btn primary" id="btn-run">▶ Run pipeline</button>
     </div>
@@ -49,6 +50,8 @@
     <label class="chk"><input type="checkbox" id="f-hasphone" /> Has phone</label>
     <label class="chk"><input type="checkbox" id="f-nowebsite" /> No website</label>
   </section>
+
+  <div id="daily-bar" class="daily-bar hidden"></div>
 
   <main class="table-wrap">
     <table id="table">

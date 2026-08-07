@@ -126,7 +126,7 @@ async function serperSearch(query) {
  * Returns { website, website_confidence, socials, emails, phones }.
  */
 export async function discoverWebsite(prospect) {
-  const result = { website: null, website_confidence: null, socials: {}, emails: [], phones: [] };
+  const result = { website: null, website_confidence: null, socials: {}, emails: [], phones: [], html: null };
   const minScore = config.enrichment.website.minMatchScore;
   const candidates = [];
 
@@ -177,6 +177,7 @@ export async function discoverWebsite(prospect) {
   if (best) {
     result.website = best.url.replace(/\/$/, '');
     result.website_confidence = best.score >= 4 ? 'high' : 'medium';
+    result.html = best.page.html;
     Object.assign(result.socials, extractSocials(best.page.html));
     const info = extractContactInfo(best.page.html);
     result.emails = info.emails;

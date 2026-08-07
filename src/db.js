@@ -67,6 +67,18 @@ db.exec(`
   );
 `);
 
+// Additive migrations for databases created by earlier versions
+for (const [col, type] of [
+  ['site_signals_json', 'TEXT'],   // booking/chat/forms/mobile analysis
+  ['opportunities_json', 'TEXT'],  // detected pitch opportunities
+  ['call_reason', 'TEXT'],         // "why you should call" summary
+  ['tier', 'TEXT'],                // high | strong | explore | below
+]) {
+  try {
+    db.exec(`ALTER TABLE prospects ADD COLUMN ${col} ${type}`);
+  } catch { /* column already exists */ }
+}
+
 export function insertProspect(p) {
   const stmt = db.prepare(`
     INSERT INTO prospects (
@@ -95,7 +107,8 @@ export function updateProspect(id, fields) {
     'contact_name', 'contact_title', 'contact_source', 'phone', 'phone_source',
     'email', 'email_status', 'email_source', 'website', 'website_confidence',
     'socials_json', 'score', 'score_breakdown_json', 'status', 'assigned_to',
-    'notes', 'enriched_at',
+    'notes', 'enriched_at', 'site_signals_json', 'opportunities_json',
+    'call_reason', 'tier',
   ];
   const keys = Object.keys(fields).filter((k) => allowed.includes(k));
   if (!keys.length) return;

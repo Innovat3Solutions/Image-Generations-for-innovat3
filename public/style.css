@@ -144,6 +144,32 @@ tbody tr:last-child td { border-bottom: none; }
   border: 1px solid var(--accent);
 }
 .score-badge.hot { background: var(--accent); color: var(--accent-ink); }
+/* tier colors: 🔥 high / 🟢 strong / 🟡 explore */
+.score-badge.tier-high { background: var(--critical); border-color: var(--critical); color: #fff; }
+.score-badge.tier-strong { background: var(--good); border-color: var(--good); color: #fff; }
+.score-badge.tier-explore { background: transparent; border-color: var(--warning); color: var(--ink-2); }
+.score-badge.tier-below { background: transparent; border-color: var(--grid); color: var(--muted); }
+
+.daily-bar {
+  margin: 4px 24px 10px; padding: 12px 18px;
+  background: var(--surface); border: 1px solid var(--grid); border-radius: 12px;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap; font-size: 13px;
+}
+.daily-bar strong { font-size: 15px; }
+.daily-bar .tier-count { display: inline-flex; align-items: center; gap: 6px; }
+
+.opp { border: 1px solid var(--grid); border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; }
+.opp .opp-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+.opp .why { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.lvl { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; border: 1px solid; }
+.lvl.HIGH { color: var(--critical); border-color: var(--critical); }
+.lvl.MEDIUM { color: var(--ink-2); border-color: var(--warning); }
+.lvl.LOW { color: var(--muted); border-color: var(--grid); }
+
+.call-reason {
+  background: var(--wash); border: 1px solid var(--accent); border-radius: 10px;
+  padding: 10px 14px; font-size: 13px; line-height: 1.5;
+}
 
 .chip {
   display: inline-flex; align-items: center; gap: 4px;

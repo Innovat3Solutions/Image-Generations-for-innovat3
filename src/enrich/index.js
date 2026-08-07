@@ -9,6 +9,7 @@
 import { discoverWebsite } from './website.js';
 import { findEmail } from './email.js';
 import { apolloEnrich } from './apollo.js';
+import { analyzeSite } from './site-analysis.js';
 import { providers } from '../config.js';
 import { parsePersonName } from '../util.js';
 import { updateProspect } from '../db.js';
@@ -24,6 +25,8 @@ export async function enrichProspect(row) {
   if (web.website) {
     updates.website = web.website;
     updates.website_confidence = web.website_confidence;
+    const signals = analyzeSite(web.html);
+    if (signals) updates.site_signals_json = JSON.stringify(signals);
   }
   const socials = { ...web.socials };
 

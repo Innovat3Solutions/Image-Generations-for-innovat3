@@ -13,8 +13,7 @@ import { fetchNppesProspects } from '../sources/nppes.js';
 import { fetchSamProspects } from '../sources/sam.js';
 import { fetchOsmProspects } from '../sources/osm.js';
 import { enrichProspect } from '../enrich/index.js';
-import { scoreProspect } from './score.js';
-import { updateProspect } from '../db.js';
+import { applyScore } from './score.js';
 import { mapConcurrent, log } from '../util.js';
 
 export const SOURCE_REGISTRY = {
@@ -82,11 +81,7 @@ export async function executeRun(params = {}) {
 
     // ---- Stage 3: score -------------------------------------------------
     updateRun(runId, { stage: 'score' });
-    for (const id of insertedIds) {
-      const row = db.prepare('SELECT * FROM prospects WHERE id = ?').get(id);
-      const { score, breakdown } = scoreProspect(row);
-      updateProspect(id, { score, score_breakdown_json: JSON.stringify(breakdown) });
-    }
+    for (const id of insertedIds) applyScore(id);
 
     updateRun(runId, { status: 'done', stats: { scored: insertedIds.length } });
     log(`run#${runId} done`);
