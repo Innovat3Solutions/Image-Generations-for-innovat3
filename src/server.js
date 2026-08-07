@@ -107,6 +107,14 @@ app.get('/api/stats', (req, res) => {
 });
 
 // ---------- runs ----------
+// A crash/restart (e.g. the host killing the process) orphans in-flight
+// runs — mark them failed at boot so the dashboard shows what happened.
+db.prepare(`
+  UPDATE runs SET status = 'failed', finished_at = datetime('now'),
+    error = 'Interrupted — the server restarted mid-run (host redeploy or out-of-memory kill).'
+  WHERE status = 'running'
+`).run();
+
 const activeRuns = new Set();
 app.post('/api/runs', (req, res) => {
   if (activeRuns.size > 0) return res.status(409).json({ error: 'A run is already in progress' });

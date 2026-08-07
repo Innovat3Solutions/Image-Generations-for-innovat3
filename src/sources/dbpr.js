@@ -22,12 +22,16 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { parse } from 'csv-parse/sync';
+import { Readable } from 'node:stream';
+import { pipeline as streamPipeline } from 'node:stream/promises';
+import { parse } from 'csv-parse';
 import { config, DOWNLOADS_DIR } from '../config.js';
 import { fetchWithTimeout, toISODate, daysSince, parsePersonName, titleCase, log } from '../util.js';
 
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000; // extracts refresh at most daily
 
+// Everything here streams: the extracts are 50-75 MB and hosted instances
+// (e.g. Render Starter, 512 MB RAM) OOM if a whole file is buffered.
 async function downloadExtract(board) {
   const url = config.dbpr.baseUrl + board.file;
   const cachePath = path.join(DOWNLOADS_DIR, `dbpr_${board.key}.csv`);
@@ -39,9 +43,10 @@ async function downloadExtract(board) {
   log(`dbpr:${board.key} downloading ${url}`);
   const res = await fetchWithTimeout(url, { timeout: 300000 });
   if (!res.ok) throw new Error(`DBPR download failed (${res.status}) for ${url}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  fs.writeFileSync(cachePath, buf);
-  log(`dbpr:${board.key} downloaded ${(buf.length / 1e6).toFixed(1)} MB`);
+  const tmpPath = cachePath + '.part';
+  await streamPipeline(Readable.fromWeb(res.body), fs.createWriteStream(tmpPath));
+  fs.renameSync(tmpPath, cachePath);
+  log(`dbpr:${board.key} downloaded ${(fs.statSync(cachePath).size / 1e6).toFixed(1)} MB`);
   return cachePath;
 }
 
@@ -110,12 +115,16 @@ export async function fetchDbprProspects({ days = 180, boards = null, skipIds = 
       log(`dbpr:${board.key} SKIPPED — ${err.message}`);
       continue;
     }
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const rows = parse(raw, { relax_column_count: true, relax_quotes: true, skip_empty_lines: true });
+    // Stream-parse: rows are filtered as they arrive, never held in bulk
     let kept = 0;
-    for (const row of rows) {
+    let total = 0;
+    const parser = fs.createReadStream(filePath).pipe(
+      parse({ relax_column_count: true, relax_quotes: true, skip_empty_lines: true })
+    );
+    for await (const row of parser) {
+      total++;
       if (row.length < 18) continue;
-      const p = parseRow(row, board);
+      const p = parseRow(row.map(String), board);
       if (!p || !p.business_name || !p.established_date) continue;
       if (p.entity_status !== 'active') continue;
       if (skipIds.has(p.source_id)) continue;
@@ -126,9 +135,12 @@ export async function fetchDbprProspects({ days = 180, boards = null, skipIds = 
       if (p.established_confidence !== 'original_license_date') continue;
       out.push(p);
       kept++;
-      if (out.length >= boardCap) break;
+      if (out.length >= boardCap) {
+        parser.destroy();
+        break;
+      }
     }
-    log(`dbpr:${board.key} parsed ${rows.length} rows → ${kept} new licensees (last ${days}d)`);
+    log(`dbpr:${board.key} parsed ${total} rows → ${kept} new licensees (last ${days}d)`);
   }
   return out;
 }
