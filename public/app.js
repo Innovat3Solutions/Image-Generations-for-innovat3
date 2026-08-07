@@ -314,7 +314,9 @@ async function pollRun(runId) {
       } else {
         clearInterval(state.pollTimer);
         if (run.status === 'done') {
-          showRunBanner(`✅ Run #${runId} complete — ${stats.ingested ?? 0} new prospects added.`, false);
+          showRunBanner(stats.reenriched !== undefined
+            ? `✅ Run #${runId} complete — re-enriched ${stats.reenriched} prospects with the new data providers.`
+            : `✅ Run #${runId} complete — ${stats.ingested ?? 0} new prospects added.`, false);
           setTimeout(() => $('#run-banner').classList.add('hidden'), 8000);
         } else {
           showRunBanner(`❌ Run #${runId} failed: ${esc(run.error || 'unknown error').slice(0, 300)}`, false);
@@ -370,6 +372,22 @@ function bindEvents() {
   });
 
   $('#drawer-overlay').onclick = closeDrawer;
+
+  // Bulk re-enrich
+  $('#btn-reenrich').onclick = async () => {
+    if (!confirm('Run a second enrichment pass over every prospect still missing an email or phone? Uses your configured data providers (Apollo/Serper credits).')) return;
+    try {
+      const { runId, count } = await api('/api/reenrich', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      showRunBanner(`Run #${runId}: re-enriching ${count} prospects…`);
+      pollRun(runId);
+    } catch (e) {
+      alert(e.message);
+    }
+  };
 
   // Daily 50 toggle
   $('#btn-daily').onclick = () => {

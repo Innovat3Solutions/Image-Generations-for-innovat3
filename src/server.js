@@ -6,10 +6,10 @@ import { config } from './config.js';
 import { executeRun, SOURCE_REGISTRY } from './pipeline/run.js';
 import { enrichProspect } from './enrich/index.js';
 import { applyScore, scoreAll } from './pipeline/score.js';
-import { createRun } from './db.js';
+import { createRun, updateRun } from './db.js';
 import { marketsForVertical, VERTICAL_NAICS } from './market.js';
 import { VERTICALS } from './verticals.js';
-import { log } from './util.js';
+import { log, mapConcurrent } from './util.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -100,6 +100,39 @@ app.post('/api/prospects/:id/enrich', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: String(err.message || err) });
   }
+});
+
+// ---------- Bulk re-enrich ----------
+// Second pass over prospects still missing an email or phone — the move
+// after adding enrichment API keys (Apollo/Serper), so the existing book
+// gets the benefit without waiting for new ingests.
+app.post('/api/reenrich', async (req, res) => {
+  if (activeRuns.size > 0) return res.status(409).json({ error: 'A run is already in progress' });
+  const limit = Math.min(500, Number(req.body?.limit) || 200);
+  const rows = db.prepare(`
+    SELECT * FROM prospects
+    WHERE (email IS NULL OR phone IS NULL)
+      AND status NOT IN ('not_interested', 'disqualified', 'customer')
+    ORDER BY score DESC, id DESC LIMIT ?
+  `).all(limit);
+  if (!rows.length) return res.status(400).json({ error: 'Nothing to re-enrich — every workable prospect already has an email and phone' });
+
+  const runId = createRun({ mode: 'reenrich', count: rows.length });
+  activeRuns.add(runId);
+  updateRun(runId, { stage: 'enrich', stats: { enrichTotal: rows.length, enriched: 0 } });
+  (async () => {
+    let done = 0;
+    await mapConcurrent(rows, config.pipeline.enrichConcurrency, async (row) => {
+      await enrichProspect(row).catch(() => {});
+      applyScore(row.id);
+      done++;
+      if (done % 10 === 0 || done === rows.length) updateRun(runId, { stats: { enriched: done } });
+    });
+    updateRun(runId, { status: 'done', stats: { ingested: 0, reenriched: done } });
+  })()
+    .catch((err) => updateRun(runId, { status: 'failed', error: String(err?.message || err) }))
+    .finally(() => activeRuns.delete(runId));
+  res.status(202).json({ runId, count: rows.length });
 });
 
 // ---------- The Daily 50 ----------
