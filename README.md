@@ -9,12 +9,25 @@ prospect, and serves it all in a dashboard your reps work from daily.
 
 ## Data sources
 
-| Source | What it gives us | How |
-|---|---|---|
-| **Sunbiz** (FL Division of Corporations) | Every new LLC / corporation filed, with **filing date, officers, registered agent** — your decision makers | Daily data files over the state's public SFTP (`sftp.floridados.gov`, published credentials) |
-| **DBPR** (FL Dept. of Business & Professional Regulation) | Newly **licensed** contractors, electricians, cosmetologists, barbers, realtors — with **original licensure date**, name and address | Free licensee extract CSVs from myfloridalicense.com, refreshed daily |
+| Source | What it gives us | How | Key needed |
+|---|---|---|---|
+| **Sunbiz** (FL Division of Corporations) | Every new LLC / corporation filed — all industries — with **filing date, officers, registered agent** | Daily files over the state's public SFTP | no |
+| **DBPR** (FL professional licensing) | Newly **licensed** businesses across 9 boards: construction, electrical, cosmetology, barbers, **restaurants (new license approvals, with phone numbers)**, real estate agents + companies, veterinarians, home inspectors | Free extract CSVs, refreshed daily | no |
+| **NPPES** (national provider registry) | New **healthcare providers & clinics** with practice address, **phone**, and — for organizations — the **authorized official's name and title** | CMS weekly new-enumeration files | no |
+| **SAM.gov** | Newly registered **federal contractors** with a named Government Business **POC (often with email)** | Entity Management API | free key (`SAM_API_KEY`) |
+| **OpenStreetMap** | **Territory prospecting** — existing businesses by category within chosen zip codes, with self-published phones/websites | Overpass API | no |
 
 "New" means established/licensed within the window you choose (default **180 days**).
+Adding another DBPR board is one config entry — grab the extract URL from that
+board's "Public Records" page (they share one layout).
+
+### Zip-code targeting
+
+Everywhere, optionally: pass zips (full `33130` or prefixes like `334` for a
+whole area) in the **Run pipeline** modal to ingest only those areas, filter
+the prospect table by zip in the dashboard, or use
+`npm run pipeline -- --zips 33101,334`. OpenStreetMap territory pulls require
+zips; everything else treats them as an optional refinement.
 
 ## What enrichment does per prospect
 

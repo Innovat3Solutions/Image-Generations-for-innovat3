@@ -73,8 +73,9 @@ export function insertProspect(p) {
       source, source_id, business_name, dba_name, industry, license_type,
       entity_status, established_date, address, city, state, zip, county,
       contact_name, contact_title, contact_source, officers_json,
-      phone, phone_source
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      phone, phone_source, email, email_status, email_source,
+      website, website_confidence, socials_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(source, source_id) DO NOTHING
   `);
   const r = stmt.run(
@@ -82,7 +83,9 @@ export function insertProspect(p) {
     p.license_type ?? null, p.entity_status ?? null, p.established_date ?? null,
     p.address ?? null, p.city ?? null, p.state ?? null, p.zip ?? null, p.county ?? null,
     p.contact_name ?? null, p.contact_title ?? null, p.contact_source ?? null,
-    p.officers_json ?? null, p.phone ?? null, p.phone_source ?? null
+    p.officers_json ?? null, p.phone ?? null, p.phone_source ?? null,
+    p.email ?? null, p.email_status ?? null, p.email_source ?? null,
+    p.website ?? null, p.website_confidence ?? null, p.socials_json ?? null
   );
   return r.changes > 0;
 }

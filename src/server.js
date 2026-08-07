@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { db, updateProspect } from './db.js';
 import { config } from './config.js';
-import { executeRun } from './pipeline/run.js';
+import { executeRun, SOURCE_REGISTRY } from './pipeline/run.js';
 import { enrichProspect } from './enrich/index.js';
 import { scoreProspect } from './pipeline/score.js';
 import { createRun } from './db.js';
@@ -41,10 +41,18 @@ const STATUSES = ['new', 'contacted', 'interested', 'not_interested', 'customer'
 
 // ---------- prospects ----------
 app.get('/api/prospects', (req, res) => {
-  const { q, industry, source, status, minScore, hasEmail, hasPhone, noWebsite, sort = 'score', dir = 'desc', page = '1', pageSize = '50' } = req.query;
+  const { q, industry, source, status, minScore, hasEmail, hasPhone, noWebsite, zip, sort = 'score', dir = 'desc', page = '1', pageSize = '50' } = req.query;
   const where = [];
   const params = [];
   if (q) { where.push('(business_name LIKE ? OR dba_name LIKE ? OR contact_name LIKE ? OR city LIKE ?)'); const like = `%${q}%`; params.push(like, like, like, like); }
+  if (zip) {
+    // comma-separated zips or prefixes: "33101, 334" matches either
+    const zips = String(zip).split(',').map((z) => z.trim()).filter(Boolean).slice(0, 20);
+    if (zips.length) {
+      where.push(`(${zips.map(() => 'zip LIKE ?').join(' OR ')})`);
+      params.push(...zips.map((z) => `${z}%`));
+    }
+  }
   if (industry) { where.push('industry = ?'); params.push(industry); }
   if (source) { where.push('source = ?'); params.push(source); }
   if (status) { where.push('status = ?'); params.push(status); }
@@ -118,10 +126,13 @@ db.prepare(`
 const activeRuns = new Set();
 app.post('/api/runs', (req, res) => {
   if (activeRuns.size > 0) return res.status(409).json({ error: 'A run is already in progress' });
-  const { limit, days, industries, sources } = req.body || {};
-  const runId = createRun({ limit, days, industries, sources });
+  const { limit, days, industries, sources, zips, categories } = req.body || {};
+  const cleanZips = Array.isArray(zips)
+    ? zips.map((z) => String(z).trim()).filter((z) => /^\d{3,5}$/.test(z)).slice(0, 20)
+    : undefined;
+  const runId = createRun({ limit, days, industries, sources, zips: cleanZips });
   activeRuns.add(runId);
-  executeRun({ limit, days, industries, sources, runId })
+  executeRun({ limit, days, industries, sources, zips: cleanZips, categories, runId })
     .catch(() => {})
     .finally(() => activeRuns.delete(runId));
   res.status(202).json({ runId });
@@ -143,7 +154,18 @@ app.get('/api/meta', (req, res) => {
     industries: [
       { key: 'new_business', label: 'New Businesses (Sunbiz)' },
       ...config.dbpr.boards.map((b) => ({ key: b.key, label: b.label, enabled: b.enabled })),
+      { key: 'healthcare', label: 'Healthcare Providers (NPPES)' },
+      { key: 'gov_contractors', label: 'Federal Contractors (SAM.gov)' },
+      { key: 'area_poi', label: 'Area Businesses (OpenStreetMap)' },
     ],
+    sources: Object.entries(SOURCE_REGISTRY).map(([key, s]) => ({
+      key,
+      label: s.label,
+      needsZips: !!s.needsZips,
+      available: s.needsKey ? !!process.env[s.needsKey] : true,
+      needsKey: s.needsKey || null,
+    })),
+    osmCategories: Object.entries(config.osm.categories).map(([key, c]) => ({ key, label: c.label })),
     statuses: STATUSES,
     scoringMode: config.scoring.mode,
     defaults: { limit: config.pipeline.defaultLimit, days: config.pipeline.defaultDaysWindow },

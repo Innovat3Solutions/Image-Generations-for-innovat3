@@ -9,33 +9,48 @@ import { config } from '../config.js';
 import { db, insertProspect, existingSourceIds, createRun, updateRun } from '../db.js';
 import { fetchDbprProspects } from '../sources/dbpr.js';
 import { fetchSunbizProspects } from '../sources/sunbiz.js';
+import { fetchNppesProspects } from '../sources/nppes.js';
+import { fetchSamProspects } from '../sources/sam.js';
+import { fetchOsmProspects } from '../sources/osm.js';
 import { enrichProspect } from '../enrich/index.js';
 import { scoreProspect } from './score.js';
 import { updateProspect } from '../db.js';
 import { mapConcurrent, log } from '../util.js';
 
+export const SOURCE_REGISTRY = {
+  sunbiz: { label: 'Sunbiz — new FL entities (all industries)', fetch: fetchSunbizProspects },
+  dbpr: { label: 'DBPR — new FL licenses', fetch: fetchDbprProspects },
+  nppes: { label: 'NPPES — new healthcare providers', fetch: fetchNppesProspects },
+  sam: { label: 'SAM.gov — new federal contractors', fetch: fetchSamProspects, needsKey: 'SAM_API_KEY' },
+  osm: { label: 'OpenStreetMap — businesses by area (needs zips)', fetch: fetchOsmProspects, needsZips: true },
+};
+
 export async function executeRun(params = {}) {
   const limit = params.limit ?? config.pipeline.defaultLimit;
   const days = params.days ?? config.pipeline.defaultDaysWindow;
-  const industries = params.industries ?? null; // null = all enabled
-  const sources = params.sources ?? ['sunbiz', 'dbpr'];
-  const runId = params.runId ?? createRun({ limit, days, industries, sources });
+  const industries = params.industries ?? null; // null = all enabled boards
+  const zips = params.zips?.length ? params.zips : null;
+  const sources = (params.sources ?? ['sunbiz', 'dbpr', 'nppes', 'sam'])
+    .filter((s) => SOURCE_REGISTRY[s] && config[s]?.enabled !== false);
+  const runId = params.runId ?? createRun({ limit, days, industries, sources, zips });
 
   try {
     // ---- Stage 1: ingest ------------------------------------------------
-    updateRun(runId, { stage: 'ingest', stats: { limit, days } });
+    updateRun(runId, { stage: 'ingest', stats: { limit, days, zips } });
     const candidates = [];
 
     // Split the budget between sources so one source can't crowd out the other
     const perSource = sources.length > 1 ? Math.ceil(limit / sources.length) : limit;
 
-    if (sources.includes('dbpr') && config.dbpr.enabled) {
-      const skip = existingSourceIds('dbpr');
-      candidates.push(...await fetchDbprProspects({ days, boards: industries, skipIds: skip, limit: perSource }));
-    }
-    if (sources.includes('sunbiz') && config.sunbiz.enabled) {
-      const skip = existingSourceIds('sunbiz');
-      candidates.push(...await fetchSunbizProspects({ days, skipIds: skip, limit: perSource }));
+    for (const key of sources) {
+      const src = SOURCE_REGISTRY[key];
+      if (src.needsZips && !zips) continue;
+      const skip = existingSourceIds(key);
+      const fetched = await src.fetch({
+        days, skipIds: skip, limit: perSource, zips,
+        boards: industries, categories: params.categories,
+      });
+      candidates.push(...fetched);
     }
 
     // Newest first, respect overall limit
@@ -95,6 +110,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     days: args.days ? Number(args.days) : undefined,
     industries: args.industries ? args.industries.split(',') : undefined,
     sources: args.sources ? args.sources.split(',') : undefined,
+    zips: args.zips ? args.zips.split(',') : undefined,
+    categories: args.categories ? args.categories.split(',') : undefined,
   }).then((r) => {
     console.log(`\nDone. Ingested ${r.ingested} prospects (run #${r.runId}).`);
     console.log('Start the dashboard with `npm start` and open http://localhost:3000');

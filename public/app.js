@@ -26,12 +26,32 @@ async function loadMeta() {
   for (const [k, label] of Object.entries(STATUS_LABELS)) {
     stSel.insertAdjacentHTML('beforeend', `<option value="${k}">${label}</option>`);
   }
+  const srcGrid = $('#run-sources');
+  srcGrid.innerHTML = '<span class="muted" style="grid-column:1/-1">Data sources:</span>';
+  for (const s of state.meta.sources) {
+    const disabled = !s.available;
+    const note = disabled ? ` <span class="muted">(needs ${s.needsKey})</span>` : s.needsZips ? ' <span class="muted">(needs zips)</span>' : '';
+    const checked = s.available && !s.needsZips ? 'checked' : '';
+    srcGrid.insertAdjacentHTML('beforeend',
+      `<label class="chk"><input type="checkbox" class="run-src" value="${esc(s.key)}" ${checked} ${disabled ? 'disabled' : ''}/> ${esc(s.label)}${note}</label>`);
+  }
   const grid = $('#run-industries');
   grid.innerHTML = '<span class="muted" style="grid-column:1/-1">DBPR industries:</span>';
-  for (const ind of state.meta.industries.filter((i) => i.key !== 'new_business')) {
+  for (const ind of state.meta.industries.filter((i) => i.enabled !== undefined)) {
     grid.insertAdjacentHTML('beforeend',
       `<label class="chk"><input type="checkbox" class="run-ind" value="${esc(ind.key)}" ${ind.enabled ? 'checked' : ''}/> ${esc(ind.label)}</label>`);
   }
+  const catGrid = $('#run-osmcats');
+  catGrid.innerHTML = '<span class="muted" style="grid-column:1/-1">OpenStreetMap categories:</span>';
+  for (const c of state.meta.osmCategories) {
+    catGrid.insertAdjacentHTML('beforeend',
+      `<label class="chk"><input type="checkbox" class="run-cat" value="${esc(c.key)}" checked /> ${esc(c.label)}</label>`);
+  }
+  // OSM categories only matter when the OSM source is on
+  srcGrid.addEventListener('change', () => {
+    const osmOn = document.querySelector('.run-src[value="osm"]')?.checked;
+    catGrid.classList.toggle('hidden', !osmOn);
+  });
   $('#run-limit').value = state.meta.defaults.limit;
   $('#run-days').value = state.meta.defaults.days;
 }
@@ -57,6 +77,7 @@ function filterParams() {
   if ($('#f-source').value) p.set('source', $('#f-source').value);
   if ($('#f-status').value) p.set('status', $('#f-status').value);
   if ($('#f-minscore').value) p.set('minScore', $('#f-minscore').value);
+  if ($('#f-zip').value.trim()) p.set('zip', $('#f-zip').value.trim());
   if ($('#f-hasemail').checked) p.set('hasEmail', '1');
   if ($('#f-hasphone').checked) p.set('hasPhone', '1');
   if ($('#f-nowebsite').checked) p.set('noWebsite', '1');
@@ -264,6 +285,7 @@ function debounce(fn, ms) {
 function bindEvents() {
   const refresh = () => { state.page = 1; loadTable(); };
   $('#f-q').addEventListener('input', debounce(refresh, 300));
+  $('#f-zip').addEventListener('input', debounce(refresh, 300));
   for (const id of ['f-industry', 'f-source', 'f-status', 'f-minscore', 'f-hasemail', 'f-hasphone', 'f-nowebsite']) {
     $('#' + id).addEventListener('change', refresh);
   }
@@ -306,10 +328,10 @@ function bindEvents() {
     if (e.target === $('#modal-overlay')) $('#modal-overlay').classList.add('hidden');
   });
   $('#run-start').onclick = async () => {
-    const sources = [];
-    if ($('#run-src-sunbiz').checked) sources.push('sunbiz');
-    if ($('#run-src-dbpr').checked) sources.push('dbpr');
+    const sources = [...document.querySelectorAll('.run-src:checked')].map((c) => c.value);
     const industries = [...document.querySelectorAll('.run-ind:checked')].map((c) => c.value);
+    const categories = [...document.querySelectorAll('.run-cat:checked')].map((c) => c.value);
+    const zips = $('#run-zips').value.split(',').map((z) => z.trim()).filter(Boolean);
     try {
       const { runId } = await api('/api/runs', {
         method: 'POST',
@@ -319,6 +341,8 @@ function bindEvents() {
           days: Number($('#run-days').value) || 180,
           sources,
           industries: industries.length ? industries : undefined,
+          zips: zips.length ? zips : undefined,
+          categories: categories.length ? categories : undefined,
         }),
       });
       $('#modal-overlay').classList.add('hidden');

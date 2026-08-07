@@ -100,7 +100,7 @@ body {
   display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
   padding: 12px 24px;
 }
-.filters input[type="search"], .filters select, .modal input, .modal select, .drawer input, .drawer select, .drawer textarea {
+.filters input[type="search"], .filters input[type="text"], .filters select, .modal input, .modal select, .drawer input, .drawer select, .drawer textarea {
   background: var(--surface); color: var(--ink);
   border: 1px solid var(--grid); border-radius: 8px;
   padding: 8px 10px; font-size: 13px; font-family: inherit;

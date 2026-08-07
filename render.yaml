@@ -24,8 +24,12 @@ services:
         value: "7"         # auto-run the pipeline at 7am ET every day
       - key: DAILY_RUN_LIMIT
         value: "100"
-      # Optional enrichment upgrades — add values in the Render dashboard:
-      # - key: SERPER_API_KEY
+      # Optional upgrades — add values in the Render dashboard:
+      # - key: APOLLO_API_KEY   (decision-maker emails/phones)
       #   sync: false
-      # - key: HUNTER_API_KEY
+      # - key: SAM_API_KEY      (federal contractor source, free key)
+      #   sync: false
+      # - key: SERPER_API_KEY   (better website discovery)
+      #   sync: false
+      # - key: HUNTER_API_KEY   (email finding/verification)
       #   sync: false

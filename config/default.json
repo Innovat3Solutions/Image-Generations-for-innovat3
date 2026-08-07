@@ -68,18 +68,60 @@
         "enabled": true
       },
       {
+        "key": "restaurants",
+        "label": "Restaurants (new approvals)",
+        "file": "newfood.csv",
+        "type": "newfood",
+        "enabled": true
+      },
+      {
         "key": "real_estate",
         "label": "Real Estate Agents & Brokers",
         "file": "REALESTATE2501LICENSE_1.csv",
-        "enabled": false
+        "enabled": true
       },
       {
         "key": "real_estate_corps",
         "label": "Real Estate Companies",
         "file": "RealEstateCorpLicense.csv",
-        "enabled": false
+        "enabled": true
+      },
+      {
+        "key": "veterinary",
+        "label": "Veterinarians",
+        "file": "lic26vt.csv",
+        "enabled": true
+      },
+      {
+        "key": "home_inspectors",
+        "label": "Home Inspectors",
+        "file": "lic04home.csv",
+        "enabled": true
       }
     ]
+  },
+  "nppes": {
+    "enabled": true,
+    "filesPage": "https://download.cms.gov/nppes/NPI_Files.html",
+    "state": "FL"
+  },
+  "sam": {
+    "enabled": true,
+    "state": "FL"
+  },
+  "osm": {
+    "enabled": true,
+    "overpassUrl": "https://overpass-api.de/api/interpreter",
+    "categories": {
+      "restaurants": { "label": "Restaurants & Cafes", "filters": ["amenity~\"^(restaurant|cafe|fast_food|bar)$\""] },
+      "beauty": { "label": "Beauty / Salons / Barbers", "filters": ["shop~\"^(beauty|hairdresser|massage|tattoo)$\""] },
+      "trades": { "label": "Trades & Crafts", "filters": ["craft"] },
+      "retail": { "label": "Retail Shops", "filters": ["shop"] },
+      "offices": { "label": "Offices & Services", "filters": ["office"] },
+      "fitness": { "label": "Gyms & Fitness", "filters": ["leisure~\"^(fitness_centre|sports_centre)$\""] },
+      "auto": { "label": "Auto Repair & Dealers", "filters": ["shop~\"^(car_repair|car|tyres)$\""] },
+      "medical": { "label": "Clinics & Medical", "filters": ["amenity~\"^(clinic|dentist|doctors|pharmacy|veterinary)$\""] }
+    }
   },
   "enrichment": {
     "website": {

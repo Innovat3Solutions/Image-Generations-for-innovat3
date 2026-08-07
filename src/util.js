@@ -48,6 +48,7 @@ export function titleCase(s) {
   return (s || '').toLowerCase()
     .replace(/(^|[\s\-'])([a-z])/g, (m, p, c) => p + c.toUpperCase())
     .replace(/\b(Llc|Inc|Corp|Pllc|Llp|Lp|Pa|Ltd|Dba|Usa|Ii|Iii|Iv)\b/g, (m) => m.toUpperCase())
+    .replace(/'S\b/g, "'s") // possessives: Tommy'S -> Tommy's
     .trim();
 }
 
@@ -71,6 +72,17 @@ export function toISODate(raw) {
 export function daysSince(isoDate) {
   if (!isoDate) return Infinity;
   return Math.floor((Date.now() - new Date(isoDate + 'T00:00:00Z').getTime()) / 86400000);
+}
+
+/**
+ * Zip refinement: zips is a list like ["33101", "334"] — full zips or
+ * prefixes (e.g. "334" = all of Palm Beach area). Null/empty = no filter.
+ */
+export function zipMatches(zip, zips) {
+  if (!zips || !zips.length) return true;
+  if (!zip) return false;
+  const z5 = String(zip).trim().slice(0, 5);
+  return zips.some((w) => z5.startsWith(String(w).trim()));
 }
 
 export function normalizePhone(raw) {

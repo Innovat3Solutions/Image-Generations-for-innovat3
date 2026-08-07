@@ -33,7 +33,11 @@
       <option value="">All sources</option>
       <option value="sunbiz">Sunbiz (new entities)</option>
       <option value="dbpr">DBPR (new licenses)</option>
+      <option value="nppes">NPPES (healthcare)</option>
+      <option value="sam">SAM.gov (contractors)</option>
+      <option value="osm">OpenStreetMap (area)</option>
     </select>
+    <input type="text" id="f-zip" placeholder="Zips: 33101, 334…" size="16" title="Comma-separated zip codes or prefixes" />
     <select id="f-status"><option value="">All statuses</option></select>
     <select id="f-minscore">
       <option value="">Any score</option>
@@ -92,10 +96,13 @@
         </label>
       </div>
       <div class="form-row">
-        <label class="chk"><input type="checkbox" id="run-src-sunbiz" checked /> Sunbiz — new entities</label>
-        <label class="chk"><input type="checkbox" id="run-src-dbpr" checked /> DBPR — new licenses</label>
+        <label style="flex:1">Target zip codes <span class="muted">(optional — full zips or prefixes, comma-separated)</span>
+          <input type="text" id="run-zips" placeholder="e.g. 33101, 33130, 334" />
+        </label>
       </div>
+      <div id="run-sources" class="industry-grid"></div>
       <div id="run-industries" class="industry-grid"></div>
+      <div id="run-osmcats" class="industry-grid hidden"></div>
       <div class="modal-actions">
         <button class="btn ghost" id="run-cancel">Cancel</button>
         <button class="btn primary" id="run-start">Start run</button>

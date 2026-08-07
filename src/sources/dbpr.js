@@ -26,7 +26,7 @@ import { Readable } from 'node:stream';
 import { pipeline as streamPipeline } from 'node:stream/promises';
 import { parse } from 'csv-parse';
 import { config, DOWNLOADS_DIR } from '../config.js';
-import { fetchWithTimeout, toISODate, daysSince, parsePersonName, titleCase, log } from '../util.js';
+import { fetchWithTimeout, toISODate, daysSince, parsePersonName, titleCase, normalizePhone, zipMatches, log } from '../util.js';
 
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000; // extracts refresh at most daily
 
@@ -94,11 +94,50 @@ function parseRow(row, board) {
 }
 
 /**
+ * The Hotels & Restaurants division publishes a different, headered file of
+ * license applications APPROVED this fiscal year — i.e. brand-new
+ * restaurants — and it includes phone numbers.
+ */
+function parseNewfoodRow(row, board) {
+  const get = (k) => (row[k] || row[k + ' '] || '').trim(); // headers have stray spaces
+  const approval = toISODate(get('Application Approval Date'));
+  const licNumber = get('License Number') || get('Application Number');
+  if (!licNumber || !approval) return null;
+  const appType = get('Application Type');
+  // Focus on genuinely new establishments, not owner changes of old ones
+  if (/change of owner/i.test(appType) && !/initial/i.test(appType)) return null;
+  const businessName = get('Business Name') || get('Mailing Name');
+  if (!businessName) return null;
+  const person = parsePersonName(get('Licensee Name'));
+  return {
+    source: 'dbpr',
+    source_id: `HR${licNumber}`,
+    business_name: titleCase(businessName),
+    industry: board.key,
+    license_type: `${get('License Type Code') || 'Food Service'} — ${board.label}`,
+    entity_status: 'active',
+    established_date: approval,
+    established_confidence: 'original_license_date',
+    address: get('Location Street Address') || get('Mailing Street Address') || null,
+    city: titleCase(get('Location City') || get('Mailing City')) || null,
+    state: get('Location State Code') || 'FL',
+    zip: get('Location Zip Code') || get('Mailing Zip Code') || null,
+    county: get('Location County') || null,
+    contact_name: person ? person.full : null,
+    contact_title: person ? 'Owner / Licensee' : null,
+    contact_source: person ? 'dbpr_licensee' : null,
+    phone: normalizePhone(get('Primary Phone Number')) || normalizePhone(get('Secondary Phone Number')),
+    phone_source: 'dbpr',
+    _person: person,
+  };
+}
+
+/**
  * Fetch new licensees across enabled boards.
- * @param {object} opts { days, boards: [keys], skipIds: Set, limit }
+ * @param {object} opts { days, boards: [keys], skipIds: Set, limit, zips }
  * @returns {Array} prospect rows (not yet inserted)
  */
-export async function fetchDbprProspects({ days = 180, boards = null, skipIds = new Set(), limit = Infinity } = {}) {
+export async function fetchDbprProspects({ days = 180, boards = null, skipIds = new Set(), limit = Infinity, zips = null } = {}) {
   const enabled = config.dbpr.boards.filter(
     (b) => (boards ? boards.includes(b.key) : b.enabled)
   );
@@ -116,15 +155,21 @@ export async function fetchDbprProspects({ days = 180, boards = null, skipIds = 
       continue;
     }
     // Stream-parse: rows are filtered as they arrive, never held in bulk
+    const isNewfood = board.type === 'newfood';
     let kept = 0;
     let total = 0;
     const parser = fs.createReadStream(filePath).pipe(
-      parse({ relax_column_count: true, relax_quotes: true, skip_empty_lines: true })
+      parse({ relax_column_count: true, relax_quotes: true, skip_empty_lines: true, columns: isNewfood })
     );
     for await (const row of parser) {
       total++;
-      if (row.length < 18) continue;
-      const p = parseRow(row.map(String), board);
+      let p;
+      if (isNewfood) {
+        p = parseNewfoodRow(row, board);
+      } else {
+        if (row.length < 18) continue;
+        p = parseRow(row.map(String), board);
+      }
       if (!p || !p.business_name || !p.established_date) continue;
       if (p.entity_status !== 'active') continue;
       if (skipIds.has(p.source_id)) continue;
@@ -133,6 +178,7 @@ export async function fetchDbprProspects({ days = 180, boards = null, skipIds = 
       // require the true original licensure date unless it is missing
       // for the whole board file (some boards omit it).
       if (p.established_confidence !== 'original_license_date') continue;
+      if (!zipMatches(p.zip, zips)) continue;
       out.push(p);
       kept++;
       if (out.length >= boardCap) {

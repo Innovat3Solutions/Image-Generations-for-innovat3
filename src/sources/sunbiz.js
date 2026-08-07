@@ -15,7 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { config, DOWNLOADS_DIR } from '../config.js';
-import { toISODate, daysSince, titleCase, log } from '../util.js';
+import { toISODate, daysSince, titleCase, zipMatches, log } from '../util.js';
 import { FIELDS, OFFICER_BLOCKS, FILING_TYPE_LABELS, field } from './sunbiz-layout.js';
 
 // Decision-maker title priority (Sunbiz title codes, best first)
@@ -175,7 +175,7 @@ async function downloadDailyFiles(days, maxFiles = 30) {
  * Fetch new Sunbiz filings. Uses SFTP daily files; also picks up any
  * manually-imported files already sitting in data/downloads/.
  */
-export async function fetchSunbizProspects({ days = 180, skipIds = new Set(), limit = Infinity } = {}) {
+export async function fetchSunbizProspects({ days = 180, skipIds = new Set(), limit = Infinity, zips = null } = {}) {
   let files = [];
   try {
     files = await downloadDailyFiles(days);
@@ -204,6 +204,7 @@ export async function fetchSunbizProspects({ days = 180, skipIds = new Set(), li
       if (!p.established_date || daysSince(p.established_date) > days) continue;
       if (p.entity_status !== 'active') continue;
       if (excluded(p)) continue;
+      if (!zipMatches(p.zip, zips)) continue;
       out.push(p);
     }
   }
