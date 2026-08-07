@@ -10,7 +10,7 @@ services:
     runtime: docker
     plan: starter          # always-on; free plan sleeps + has no disk
     autoDeploy: true
-    healthCheckPath: /api/meta
+    healthCheckPath: /healthz
     disk:
       name: prospect-data
       mountPath: /app/data

@@ -12,6 +12,10 @@ import { log } from './util.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
+// Health check — must stay ABOVE the auth wall or the host's checker gets
+// 401s, marks the instance unhealthy, and serves 502s.
+app.get('/healthz', (req, res) => res.json({ ok: true }));
+
 // Password-protect everything when DASHBOARD_PASSWORD is set (required for
 // any public deployment). Reps sign in once; browsers cache the credentials.
 const AUTH_USER = process.env.DASHBOARD_USER || 'innovat3';
