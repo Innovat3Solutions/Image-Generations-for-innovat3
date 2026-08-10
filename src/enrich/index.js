@@ -10,7 +10,7 @@ import { discoverWebsite } from './website.js';
 import { findEmail } from './email.js';
 import { apolloEnrich } from './apollo.js';
 import { analyzeSite } from './site-analysis.js';
-import { providers } from '../config.js';
+import { config, providers } from '../config.js';
 import { parsePersonName } from '../util.js';
 import { updateProspect } from '../db.js';
 
@@ -71,8 +71,13 @@ export async function enrichProspect(row) {
     const found = await findEmail({ ...row, website }, web.emails, person);
     if (found) candidates.push(found);
   }
-  candidates.sort((a, b) => (EMAIL_RANK[b.email_status] || 0) - (EMAIL_RANK[a.email_status] || 0));
-  if (candidates.length) Object.assign(updates, candidates[0]);
+  // Strict mode (default): a guessed email — from any provider — is not a
+  // contact. Only verified/found addresses are stored.
+  const usable = config.enrichment.email.allowGuessed
+    ? candidates
+    : candidates.filter((c) => c.email_status !== 'guessed');
+  usable.sort((a, b) => (EMAIL_RANK[b.email_status] || 0) - (EMAIL_RANK[a.email_status] || 0));
+  if (usable.length) Object.assign(updates, usable[0]);
 
   updateProspect(row.id, updates);
   return { ...row, ...updates };

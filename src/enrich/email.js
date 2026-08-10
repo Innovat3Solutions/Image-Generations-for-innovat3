@@ -116,17 +116,21 @@ export async function findEmail(prospect, scraped = [], person = null) {
     } catch { /* fall through */ }
   }
 
-  // 3. Pattern guessing against a mail-enabled domain
+  // 3. Pattern candidates — ONLY usable when a provider VERIFIES one.
+  // A provider-verified pattern hit is a real, deliverable address ("found");
+  // an unverified pattern is a guess and is only allowed when
+  // enrichment.email.allowGuessed is explicitly enabled.
   if (!(await domainHasMx(domain))) return null;
   const guesses = patternEmails(domain, person);
   if (!guesses.length) return null;
-  const guess = guesses[0];
-  // A provider can actually validate a guess; MX-only stays 'guessed'
   if (providers.hunter || providers.zerobounce) {
     for (const g of guesses.slice(0, 4)) {
       const status = await verifyEmail(g);
       if (status === 'verified') return { email: g, email_status: 'verified', email_source: 'pattern' };
     }
   }
-  return { email: guess, email_status: 'guessed', email_source: 'pattern' };
+  if (config.enrichment.email.allowGuessed) {
+    return { email: guesses[0], email_status: 'guessed', email_source: 'pattern' };
+  }
+  return null;
 }

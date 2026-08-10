@@ -68,9 +68,10 @@ export function scoreProspect(p) {
   // ---- Commercial Value (20) ----
   parts.commercial_value = Math.min(20, vw.value ?? 8);
 
-  // ---- Contactability (10) ----
+  // ---- Contactability (10) ---- (guessed emails count for nothing)
   let con = 0;
-  if (p.email && p.email_status !== 'invalid') con += p.email_status === 'verified' ? 5 : 4;
+  if (p.email && p.email_status === 'verified') con += 5;
+  else if (p.email && p.email_status === 'valid_mx') con += 4;
   if (p.phone) con += 3;
   if (p.contact_name) con += 2;
   parts.contactability = Math.min(10, con);

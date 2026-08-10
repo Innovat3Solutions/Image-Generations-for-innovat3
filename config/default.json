@@ -131,6 +131,7 @@
       "minMatchScore": 3
     },
     "email": {
+      "allowGuessed": false,
       "patterns": ["info", "contact", "office", "hello", "{first}", "{first}.{last}", "{f}{last}"],
       "smtpProbe": false
     }

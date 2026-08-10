@@ -109,7 +109,8 @@ export async function executeRun(params = {}) {
       for (const id of insertedIds) {
         applyScore(id);
         const row = db.prepare('SELECT email, email_status, phone FROM prospects WHERE id = ?').get(id);
-        const hasContact = (row.email && row.email_status !== 'invalid') || row.phone;
+        // An email only counts when verified or found — never guessed
+        const hasContact = (row.email && ['verified', 'valid_mx'].includes(row.email_status)) || row.phone;
         if (hasContact) {
           contactable++;
         } else if (requireContact) {

@@ -132,7 +132,7 @@ app.post('/api/reenrich', async (req, res) => {
       await enrichProspect(row).catch(() => {});
       applyScore(row.id);
       const fresh = db.prepare('SELECT email, email_status, phone, status FROM prospects WHERE id = ?').get(row.id);
-      if (fresh.status === 'no_contact' && ((fresh.email && fresh.email_status !== 'invalid') || fresh.phone)) {
+      if (fresh.status === 'no_contact' && ((fresh.email && ['verified', 'valid_mx'].includes(fresh.email_status)) || fresh.phone)) {
         updateProspect(row.id, { status: 'new' });
         revived++;
       }
@@ -183,7 +183,7 @@ app.get('/api/stats', (req, res) => {
   const W = "status != 'no_contact'";
   const total = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W}`).get().c;
   const today = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND created_at >= date('now')`).get().c;
-  const withEmail = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND email IS NOT NULL AND email_status != 'invalid'`).get().c;
+  const withEmail = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND email IS NOT NULL AND email_status IN ('verified','valid_mx')`).get().c;
   const withPhone = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND phone IS NOT NULL`).get().c;
   const noWebsite = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND website IS NULL`).get().c;
   const avgScore = db.prepare(`SELECT ROUND(AVG(score)) a FROM prospects WHERE ${W}`).get().a || 0;
@@ -213,6 +213,21 @@ const untiered = db.prepare('SELECT COUNT(*) c FROM prospects WHERE tier IS NULL
 if (untiered > 0) {
   log(`rescoring ${untiered} prospects under the Opportunity Score model…`);
   scoreAll();
+}
+
+// Strict-email migration: purge guessed emails from earlier runs — they
+// were never real contacts. Prospects left with no contact channel get
+// parked; re-enrich sweeps will retry them against the providers.
+if (!config.enrichment.email.allowGuessed) {
+  const guessed = db.prepare("SELECT COUNT(*) c FROM prospects WHERE email_status = 'guessed'").get().c;
+  if (guessed > 0) {
+    db.prepare("UPDATE prospects SET email = NULL, email_status = NULL, email_source = NULL WHERE email_status = 'guessed'").run();
+    const demoted = db.prepare(
+      "UPDATE prospects SET status = 'no_contact' WHERE status = 'new' AND phone IS NULL AND email IS NULL"
+    ).run().changes;
+    log(`strict-email migration: cleared ${guessed} guessed emails, parked ${demoted} prospects now missing contact info`);
+    scoreAll();
+  }
 }
 
 const activeRuns = new Set();
