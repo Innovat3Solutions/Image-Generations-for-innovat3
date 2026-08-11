@@ -75,20 +75,31 @@ function crossLink(place) {
   return true;
 }
 
-function mapPlace(place, verticalKey, zip) {
+/** "500 Main St, Sarasota, FL 34236" → { street, city, zip } */
+function parseAddress(address) {
+  if (!address) return { street: null, city: null, zip: null };
+  const zip = (address.match(/\bFL\s+(\d{5})/) || [])[1] || null;
+  const parts = address.split(',').map((s) => s.trim());
+  // last part is "FL 34236" — city is the part before it
+  const city = parts.length >= 2 ? parts[parts.length - 2] : null;
+  return { street: parts[0] || null, city: /\d/.test(city || '') ? null : city, zip };
+}
+
+function mapPlace(place, verticalKey, searchZip) {
   const phone = normalizePhone(place.phoneNumber);
+  const addr = parseAddress(place.address);
   return {
     source: 'google',
-    source_id: String(place.cid || place.placeId || `${place.title}|${zip}`),
+    source_id: String(place.cid || place.placeId || `${place.title}|${searchZip}`),
     business_name: place.title,
     industry: verticalFromName(place.title) || verticalKey || 'area_poi',
     license_type: place.category || 'Google Business listing',
     entity_status: 'active',
     established_date: null,
-    address: place.address || null,
-    city: null,
+    address: addr.street,
+    city: addr.city,
     state: 'FL',
-    zip,
+    zip: addr.zip || searchZip,
     phone,
     phone_source: phone ? 'google' : null,
     website: place.website || null,
@@ -96,6 +107,45 @@ function mapPlace(place, verticalKey, zip) {
     google_rating: place.rating ?? null,
     google_reviews: place.ratingCount ?? null,
   };
+}
+
+/**
+ * The other direction of the Google-first flow: a registry candidate
+ * (Sunbiz filing, DBPR license, …) that matches an existing LISTING
+ * prospect is absorbed into it rather than inserted as a duplicate.
+ * The listing keeps the brand identity; the registry contributes what
+ * only it knows — legal entity, filing/licensure date, decision-maker,
+ * officers — plus any contact info the listing lacked.
+ */
+export function absorbIntoListing(candidate) {
+  const domain = candidate.website ? domainOf(candidate.website) : null;
+  let row = null;
+  if (candidate.phone) {
+    row = db.prepare("SELECT * FROM prospects WHERE source = 'google' AND phone = ?").get(candidate.phone);
+  }
+  if (!row && domain) {
+    row = db.prepare("SELECT * FROM prospects WHERE source = 'google' AND website LIKE ?").get(`%${domain}%`);
+  }
+  if (!row) return false;
+
+  const fields = {};
+  if (!row.legal_name) fields.legal_name = candidate.business_name;
+  if (!row.established_date && candidate.established_date) fields.established_date = candidate.established_date;
+  if (!row.contact_name && candidate.contact_name) {
+    fields.contact_name = candidate.contact_name;
+    fields.contact_title = candidate.contact_title ?? null;
+    fields.contact_source = candidate.contact_source ?? null;
+  }
+  if (!row.officers_json && candidate.officers_json) fields.officers_json = candidate.officers_json;
+  if (!row.phone && candidate.phone) { fields.phone = candidate.phone; fields.phone_source = candidate.phone_source; }
+  if (!row.email && candidate.email) {
+    fields.email = candidate.email;
+    fields.email_status = candidate.email_status ?? null;
+    fields.email_source = candidate.email_source ?? null;
+  }
+  if (!row.county && candidate.county) fields.county = candidate.county;
+  if (Object.keys(fields).length) updateProspect(row.id, fields);
+  return true;
 }
 
 export async function fetchGoogleProspects({ skipIds = new Set(), limit = Infinity, zips = null, boards = null } = {}) {

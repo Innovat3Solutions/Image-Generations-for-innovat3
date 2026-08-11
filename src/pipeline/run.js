@@ -12,7 +12,7 @@ import { fetchSunbizProspects } from '../sources/sunbiz.js';
 import { fetchNppesProspects } from '../sources/nppes.js';
 import { fetchSamProspects } from '../sources/sam.js';
 import { fetchOsmProspects } from '../sources/osm.js';
-import { fetchGoogleProspects } from '../sources/google.js';
+import { fetchGoogleProspects, absorbIntoListing } from '../sources/google.js';
 import { enrichProspect } from '../enrich/index.js';
 import { applyScore } from './score.js';
 import { mapConcurrent, log } from '../util.js';
@@ -40,8 +40,17 @@ export async function executeRun(params = {}) {
   const industries = params.industries ?? null; // null = all enabled boards
   const zips = params.zips?.length ? params.zips : null;
   const requireContact = params.requireContact ?? config.pipeline.requireContact ?? true;
-  const sources = (params.sources ?? ['sunbiz', 'dbpr', 'nppes', 'sam'])
-    .filter((s) => SOURCE_REGISTRY[s] && config[s]?.enabled !== false);
+  // Default source set: Google-first when we can (zips + key present) — the
+  // listing is the storefront truth; registries follow as the lookup layer.
+  const defaultSources = [
+    ...(zips && process.env.SERPER_API_KEY ? ['google'] : []),
+    'sunbiz', 'dbpr', 'nppes', 'sam',
+  ];
+  const sources = (params.sources ?? defaultSources)
+    .filter((s) => SOURCE_REGISTRY[s] && config[s]?.enabled !== false)
+    // google always ingests first so registry candidates can be absorbed
+    // into listings instead of landing as duplicate legal-entity rows
+    .sort((a, b) => (b === 'google') - (a === 'google'));
   const runId = params.runId ?? createRun({ limit, days, industries, sources, zips, requireContact });
 
   const MAX_ROUNDS = requireContact ? 4 : 1;
@@ -82,13 +91,18 @@ export async function executeRun(params = {}) {
       candidates.sort((a, b) => (b.established_date || '').localeCompare(a.established_date || ''));
 
       const insertedIds = [];
+      let absorbed = 0;
       for (const p of candidates.slice(0, fetchTarget)) {
+        // A registry record for a business we already carry as a Google
+        // listing enriches that listing instead of becoming a second row
+        if (p.source !== 'google' && absorbIntoListing(p)) { absorbed++; continue; }
         if (insertProspect(p)) {
           const row = db.prepare('SELECT id FROM prospects WHERE source = ? AND source_id = ?')
             .get(p.source, p.source_id);
           insertedIds.push(row.id);
         }
       }
+      if (absorbed) log(`run#${runId} round ${round}: ${absorbed} registry records absorbed into existing listings`);
       if (!insertedIds.length) {
         log(`run#${runId} round ${round}: sources exhausted`);
         break;

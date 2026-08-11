@@ -235,7 +235,7 @@ export function handoffSummary(p, repName) {
   const gapReply = inbound.filter((t) => t.stage_after === 'qualified' || t.stage_after === 'opportunity').map((t) => t.text).slice(-1)[0];
 
   return `=== INNOVAT3 SALES HANDOFF ===
-Business: ${p.business_name}
+Business: ${p.dba_name || p.business_name}${(p.legal_name || p.dba_name) ? ` (legal entity: ${p.legal_name || p.business_name})` : ''}
 Contact: ${p.contact_name || 'unknown'}${p.contact_title ? ` (${p.contact_title})` : ''}
 Phone: ${p.phone || '—'} · Email: ${p.email || '—'}
 Location: ${[p.city, p.state, p.zip].filter(Boolean).join(', ')}

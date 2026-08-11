@@ -53,6 +53,12 @@ async function loadMeta() {
     const osmOn = document.querySelector('.run-src[value="osm"]')?.checked;
     catGrid.classList.toggle('hidden', !osmOn);
   });
+  // Google listings are the seed source — needs zips, so check it the
+  // moment the rep provides them
+  $('#run-zips')?.addEventListener('input', () => {
+    const google = document.querySelector('.run-src[value="google"]');
+    if (google && !google.disabled) google.checked = $('#run-zips').value.trim().length > 0;
+  });
   $('#run-limit').value = state.meta.defaults.limit;
   $('#run-days').value = state.meta.defaults.days;
 }
@@ -125,7 +131,7 @@ async function loadTable() {
     tbody.innerHTML = data.rows.map((r) => `
       <tr data-id="${r.id}">
         <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
-        <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.license_type || ''))}</div></td>
+        <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.legal_name || r.license_type || ''))}</div></td>
         <td>${esc(industryLabel(r.industry))}</td>
         <td>${esc(r.established_date || '—')}</td>
         <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
@@ -150,7 +156,7 @@ function rowHtml(r) {
   return `
     <tr data-id="${r.id}">
       <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
-      <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.license_type || ''))}</div></td>
+      <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.legal_name || r.license_type || ''))}</div></td>
       <td>${esc(industryLabel(r.industry))}</td>
       <td>${esc(r.established_date || '—')}</td>
       <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
@@ -195,7 +201,7 @@ async function openDrawer(id) {
   const drawer = $('#drawer');
   drawer.innerHTML = `
     <button class="close-x" id="drawer-close">✕</button>
-    <h2>${esc(r.dba_name || r.business_name)}</h2>${r.dba_name ? `<p class="muted" style="margin-top:-4px">legal entity: ${esc(r.business_name)}</p>` : ''}
+    <h2>${esc(r.dba_name || r.business_name)}</h2>${r.dba_name || r.legal_name ? `<p class="muted" style="margin-top:-4px">legal entity: ${esc(r.dba_name ? r.business_name : r.legal_name)}</p>` : ''}
     <p class="muted">${esc(r.license_type || '')} · ${esc(industryLabel(r.industry))} · <span class="score-badge tier-${esc(r.tier || 'below')}">${r.score}</span></p>
 
     ${r.call_reason ? `<section><h3>Why you should call</h3><div class="call-reason">${esc(r.call_reason)}</div></section>` : ''}

@@ -10,6 +10,7 @@ import { discoverWebsite } from './website.js';
 import { findEmail } from './email.js';
 import { apolloEnrich } from './apollo.js';
 import { analyzeSite } from './site-analysis.js';
+import { registryCrossRef } from './registry.js';
 import { config, providers } from '../config.js';
 import { parsePersonName } from '../util.js';
 import { updateProspect } from '../db.js';
@@ -18,6 +19,14 @@ const EMAIL_RANK = { verified: 3, valid_mx: 2, guessed: 1 };
 
 export async function enrichProspect(row) {
   const updates = { enriched_at: new Date().toISOString() };
+
+  // Google-first prospects: find the legal entity behind the listing first —
+  // it supplies the filing date, and its decision-maker powers the Apollo
+  // lookup below.
+  if (row.source === 'google' && !row.legal_name) {
+    Object.assign(updates, await registryCrossRef(row));
+    row = { ...row, ...updates };
+  }
 
   const person = row.contact_name ? parsePersonName(row.contact_name) : null;
   const web = await discoverWebsite(row);

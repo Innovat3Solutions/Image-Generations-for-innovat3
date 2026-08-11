@@ -1,11 +1,42 @@
 # Innovat3 Prospect Engine
 
-A prospect-generation platform for the Innovat3 sales team. It finds **brand-new
-Florida businesses** the moment they appear in state records, figures out **who
-to call and how to reach them**, checks their **digital presence**, scores every
-prospect, and serves it all in a dashboard your reps work from daily.
+A prospect-generation platform for the Innovat3 sales team. It finds Florida
+businesses **as their customers see them** — the Google Business listing —
+figures out **who to call and how to reach them**, cross-references the state
+registries for the **legal entity, filing date, and decision-maker** behind
+each storefront, checks their **digital presence**, scores every prospect,
+and serves it all in a dashboard your reps work from daily.
 
-![Pipeline] Sunbiz + DBPR → dedupe → find contact → find website & socials → find/verify email → find phone → score → dashboard
+## The Google-first flow
+
+```
+Google Business listings (the storefront: brand, phone, website, reviews — one listing per location)
+        │
+        ▼
+registry cross-reference (Sunbiz / DBPR / NPPES / SAM: legal entity, filing date, officers, decision-maker)
+        │
+        ▼
+contact enrichment (their website → Apollo → Hunter: verified email, direct phone, socials)
+        │
+        ▼
+score → nurture → human handoff
+```
+
+The **listing is the seed** — it's the real business identity: the brand
+customers search for, not the legal shell. That also solves franchises and
+holding companies ("TOP NOTCH CARE, LLC" operating five locations): each
+listing is its own prospect with its own phone, reviews, and conversation,
+while they share the cross-referenced legal entity. Registries then act as
+the **lookup layer**: a Sunbiz/DBPR record matching a listing (by phone,
+website domain, or name + area) is absorbed into it — never a duplicate row
+— contributing the filing date (recency scoring), officers, and the person
+to ask for. Healthcare listings are additionally checked against the free
+**NPPES API live**.
+
+Registry sources still work standalone for "brand-new businesses this week"
+prospecting (many are too new to have listings yet) — and when a later
+Google run finds the listing for one of them, the two are linked
+automatically.
 
 ## Data sources
 

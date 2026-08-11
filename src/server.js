@@ -227,7 +227,8 @@ app.post('/api/reenrich', async (req, res) => {
   // how they earn their way back onto the board.
   const rows = db.prepare(`
     SELECT * FROM prospects
-    WHERE (email IS NULL OR phone IS NULL)
+    WHERE (email IS NULL OR phone IS NULL
+           OR (source = 'google' AND legal_name IS NULL))
       AND status NOT IN ('not_interested', 'disqualified', 'customer')
     ORDER BY (status = 'no_contact') DESC, score DESC, id DESC LIMIT ?
   `).all(limit);

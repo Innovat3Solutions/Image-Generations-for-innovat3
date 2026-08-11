@@ -130,6 +130,22 @@ export async function discoverWebsite(prospect) {
   const minScore = config.enrichment.website.minMatchScore;
   const candidates = [];
 
+  // Already know the site (Google listing / OSM tag — self-declared by the
+  // business)? Fetch it directly for signals/socials/contacts; no discovery.
+  if (prospect.website) {
+    const page = await fetchHomepage(prospect.website);
+    if (page) {
+      result.website = page.finalUrl.replace(/\/$/, '');
+      result.website_confidence = prospect.website_confidence || 'high';
+      result.html = page.html;
+      Object.assign(result.socials, extractSocials(page.html));
+      const info = extractContactInfo(page.html);
+      result.emails = info.emails;
+      result.phones = info.phones;
+      return result;
+    }
+  }
+
   // Provider-backed search first (highest quality)
   if (providers.serper) {
     try {

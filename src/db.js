@@ -121,6 +121,7 @@ for (const [col, type] of [
   ['tier', 'TEXT'],                // high | strong | explore | below
   ['google_rating', 'REAL'],       // Google Business listing rating (google source / cross-link)
   ['google_reviews', 'INTEGER'],   // Google review count — unlocks the review-based opener
+  ['legal_name', 'TEXT'],          // registered entity behind a Google-first prospect (cross-referenced)
 ]) {
   try {
     db.exec(`ALTER TABLE prospects ADD COLUMN ${col} ${type}`);
@@ -180,6 +181,7 @@ export function updateProspect(id, fields) {
     'socials_json', 'score', 'score_breakdown_json', 'status', 'assigned_to',
     'notes', 'enriched_at', 'site_signals_json', 'opportunities_json',
     'call_reason', 'tier', 'dba_name', 'google_rating', 'google_reviews',
+    'legal_name', 'established_date', 'officers_json', 'license_type', 'county',
   ];
   const keys = Object.keys(fields).filter((k) => allowed.includes(k));
   if (!keys.length) return;
