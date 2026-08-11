@@ -10,6 +10,50 @@ const STATUS_LABELS = {
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+/* ---------- time & link helpers ---------- */
+// SQLite datetimes are UTC "YYYY-MM-DD HH:MM:SS"
+const parseDb = (s) => (s ? new Date(s.includes('T') ? s : s.replace(' ', 'T') + 'Z') : null);
+function ago(dbTime) {
+  const d = parseDb(dbTime);
+  if (!d) return '';
+  const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (mins < 1) return 'now';
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.floor(mins / 60);
+  if (h < 24) return `${h}h ago`;
+  const days = Math.floor(h / 24);
+  if (days < 14) return `${days}d ago`;
+  return `${Math.floor(days / 7)}w ago`;
+}
+function ageWords(iso) {
+  if (!iso) return null;
+  const days = Math.floor((Date.now() - new Date(iso + 'T00:00:00Z').getTime()) / 86400000);
+  if (!Number.isFinite(days) || days < 0) return iso;
+  if (days < 14) return `${days}d old`;
+  if (days < 90) return `${Math.round(days / 7)} wk old`;
+  if (days < 730) return `${Math.round(days / 30)} mo old`;
+  return `${Math.floor(days / 365)}+ yr old`;
+}
+const isDue = (r) => r.next_touch_at && parseDb(r.next_touch_at) <= new Date();
+const sqlDate = (d) => d.toISOString().slice(0, 19).replace('T', ' ');
+const digits = (phone) => '+1' + String(phone || '').replace(/\D/g, '').replace(/^1/, '');
+const telHref = (phone) => `tel:${digits(phone)}`;
+const smsHref = (phone, body) => `sms:${digits(phone)}?&body=${encodeURIComponent(body || '')}`;
+function mailtoHref(email, msg) {
+  const m = String(msg || '').match(/^Subject:\s*(.+)\n\n([\s\S]*)$/i);
+  return `mailto:${email}?subject=${encodeURIComponent(m ? m[1] : '')}&body=${encodeURIComponent(m ? m[2] : msg || '')}`;
+}
+function mapsUrl(r) {
+  if (r.source === 'google' && /^\d+$/.test(r.source_id)) return `https://maps.google.com/?cid=${r.source_id}`;
+  return `https://www.google.com/maps/search/${encodeURIComponent([r.dba_name || r.business_name, r.city, 'FL'].filter(Boolean).join(' '))}`;
+}
+
+const STAGE_SHORT = {
+  loaded: null, outreach_sent: 'Opener sent', engaged: 'Engaged', permission: 'Permission',
+  opportunity: 'Opportunity', qualified: 'Qualified', handoff_requested: 'Handoff asked',
+  call_scheduled: 'Call set', sales_conversation: 'With sales', suppressed: '⛔ Suppressed',
+};
+
 async function api(path, opts) {
   const res = await fetch(path, opts);
   if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
@@ -72,7 +116,9 @@ async function loadStats() {
     <div class="tile"><div class="value">${s.withEmail.toLocaleString()}</div><div class="label">Reachable by email</div><div class="hint">verified or valid MX</div></div>
     <div class="tile"><div class="value">${s.withPhone.toLocaleString()}</div><div class="label">Have phone</div></div>
     <div class="tile"><div class="value">${s.noWebsite.toLocaleString()}</div><div class="label">No website yet</div><div class="hint">prime for digital services</div></div>
-    <div class="tile"><div class="value">${s.avgScore}</div><div class="label">Avg score</div></div>
+    <div class="tile"><div class="value">${(s.touchesToday || 0).toLocaleString()}</div><div class="label">Touches sent today</div><div class="hint">team activity</div></div>
+    <div class="tile"><div class="value">${(s.inHandoff || 0).toLocaleString()}</div><div class="label">In handoff</div><div class="hint">qualified → call</div></div>
+    <div class="tile"><div class="value">${(s.callsToday || 0).toLocaleString()}</div><div class="label">Calls today</div><div class="hint">scheduled sales calls</div></div>
     <div class="tile"><div class="value">${(s.parked || 0).toLocaleString()}</div><div class="label">Parked — no contact</div><div class="hint">retried by re-enrich sweeps</div></div>
   `;
 }
@@ -89,8 +135,13 @@ function filterParams() {
   if ($('#f-hasemail').checked) p.set('hasEmail', '1');
   if ($('#f-hasphone').checked) p.set('hasPhone', '1');
   if ($('#f-nowebsite').checked) p.set('noWebsite', '1');
-  p.set('sort', state.sort);
-  p.set('dir', state.dir);
+  // Work-queue modes narrow the list to "what needs me right now"
+  if (state.queueMode === 'your_move') { p.set('lastDir', 'in'); p.set('sort', 'last_touch'); p.set('dir', 'asc'); }
+  else if (state.queueMode === 'due') { p.set('due', '1'); p.set('sort', 'last_touch'); p.set('dir', 'asc'); }
+  else if (state.queueMode === 'handoffs') { p.set('stages', 'qualified,handoff_requested,call_scheduled'); p.set('sort', 'last_touch'); p.set('dir', 'asc'); }
+  else if (state.queueMode === 'fresh') { p.set('status', 'new'); p.set('minScore', '50'); }
+  if (state.queueMode && repName()) p.set('assigned', repName());
+  if (!p.has('sort')) { p.set('sort', state.sort); p.set('dir', state.dir); }
   p.set('page', state.page);
   return p;
 }
@@ -116,33 +167,60 @@ function webCell(r) {
   return icons.length ? `<span class="weblinks">${icons.join('')}</span>` : '<span class="muted">none</span>';
 }
 
+/* One row template everywhere — conversation-aware. */
+function threadCell(r) {
+  if (r.nurture_stage === 'suppressed') return '<span class="stage-mini suppressed">⛔ suppressed</span>';
+  if (!r.last_touch_at) return '<span class="muted">not started</span>';
+  const stage = STAGE_SHORT[r.nurture_stage] || '';
+  const move = r.last_touch_dir === 'in'
+    ? '<span class="move yours">🟢 your move</span>'
+    : '<span class="move theirs">waiting on them</span>';
+  const due = isDue(r) ? '<span class="due-badge">⏰ due</span>' : '';
+  return `<div class="stage-mini">${esc(stage)}</div><div class="thread-sub">${ago(r.last_touch_at)} · ${move}${due}</div>`;
+}
+
+function rowHtml(r) {
+  const age = ageWords(r.established_date);
+  const brandNew = r.established_date
+    && (Date.now() - new Date(r.established_date + 'T00:00:00Z').getTime()) / 86400000 <= 90;
+  return `
+    <tr data-id="${r.id}">
+      <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
+      <td>
+        <div class="biz-name">${esc(r.dba_name || r.business_name)}${r.google_rating ? ` <a class="rev-chip" href="${esc(mapsUrl(r))}" target="_blank" rel="noopener" title="Open their Google reviews — skim 2-3 before the kudos opener">★ ${r.google_rating} (${r.google_reviews})</a>` : ''}</div>
+        <div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.legal_name || r.license_type || ''))}</div>
+        ${r.call_reason ? `<div class="call-line" title="${esc(r.call_reason)}">${esc(r.call_reason)}</div>` : ''}
+      </td>
+      <td>${esc(industryLabel(r.industry))}</td>
+      <td title="${esc(r.established_date || '')}">${age ? `${brandNew ? '🆕 ' : ''}${esc(age)}` : '—'}</td>
+      <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
+      <td>${emailCell(r)}</td>
+      <td>${r.phone ? `<a href="${telHref(r.phone)}" class="tel-link" title="Call">${esc(r.phone)}</a>` : '—'}</td>
+      <td>${webCell(r)}</td>
+      <td>${esc(r.city || '—')}</td>
+      <td>${threadCell(r)}</td>
+      <td><select class="status-select" data-id="${r.id}">
+        ${Object.entries(STATUS_LABELS).map(([k, v]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('')}
+      </select></td>
+    </tr>`;
+}
+
 async function loadTable() {
   if (state.dailyMode) return loadDaily();
   $('#daily-bar').classList.add('hidden');
   const data = await api('/api/prospects?' + filterParams());
   const tbody = $('#tbody');
   if (!data.rows.length) {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state">
-      <div class="big">🎯</div>
-      <p><strong>No prospects yet.</strong></p>
-      <p>Hit <em>Run pipeline</em> to pull today's new Florida businesses and licensees.</p>
+    const msg = state.queueMode
+      ? { your_move: 'No replies waiting on you. 🎉', due: 'No follow-ups due — the pipeline is worked.', handoffs: 'No handoffs pending.', fresh: 'No untouched prospects — run the pipeline.' }[state.queueMode]
+      : 'Hit <em>Run pipeline</em> to pull today\'s new Florida businesses and licensees.';
+    tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state">
+      <div class="big">${state.queueMode ? '✅' : '🎯'}</div>
+      <p><strong>${state.queueMode ? msg : 'No prospects yet.'}</strong></p>
+      ${state.queueMode ? '' : `<p>${msg}</p>`}
     </div></td></tr>`;
   } else {
-    tbody.innerHTML = data.rows.map((r) => `
-      <tr data-id="${r.id}">
-        <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
-        <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.legal_name || r.license_type || ''))}</div></td>
-        <td>${esc(industryLabel(r.industry))}</td>
-        <td>${esc(r.established_date || '—')}</td>
-        <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
-        <td>${emailCell(r)}</td>
-        <td>${esc(r.phone || '—')}</td>
-        <td>${webCell(r)}</td>
-        <td>${esc(r.city || '—')}</td>
-        <td><select class="status-select" data-id="${r.id}">
-          ${Object.entries(STATUS_LABELS).map(([k, v]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('')}
-        </select></td>
-      </tr>`).join('');
+    tbody.innerHTML = data.rows.map(rowHtml).join('');
   }
   const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
   $('#count-label').textContent = `${data.total.toLocaleString()} prospects`;
@@ -151,27 +229,35 @@ async function loadTable() {
   $('#next').disabled = data.page >= pages;
 }
 
-/* ---------- The Daily 50 ---------- */
-function rowHtml(r) {
-  return `
-    <tr data-id="${r.id}">
-      <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
-      <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.legal_name || r.license_type || ''))}</div></td>
-      <td>${esc(industryLabel(r.industry))}</td>
-      <td>${esc(r.established_date || '—')}</td>
-      <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
-      <td>${emailCell(r)}</td>
-      <td>${esc(r.phone || '—')}</td>
-      <td>${webCell(r)}</td>
-      <td>${esc(r.city || '—')}</td>
-      <td><select class="status-select" data-id="${r.id}">
-        ${Object.entries(STATUS_LABELS).map(([k, v]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('')}
-      </select></td>
-    </tr>`;
+/* ---------- work queue chips ---------- */
+async function loadQueue() {
+  const q = await api('/api/queue?rep=' + encodeURIComponent(repName()));
+  const chips = [
+    ['your_move', '🟢 They replied — your move', q.your_move],
+    ['due', '⏰ Follow-ups due', q.due],
+    ['handoffs', '🤝 Handoffs', q.handoffs],
+    ['fresh', '🆕 Untouched leads', q.fresh],
+  ];
+  $('#queue-chips').innerHTML = chips.map(([key, label, n]) =>
+    `<button class="queue-chip${state.queueMode === key ? ' active' : ''}${n > 0 ? '' : ' zero'}" data-queue="${key}">${label} <b>${n}</b></button>`
+  ).join('') + '<span class="queue-hint">— your work queue: green first, then due, then fresh</span>';
+  document.querySelectorAll('.queue-chip').forEach((b) => {
+    b.onclick = () => {
+      state.queueMode = state.queueMode === b.dataset.queue ? null : b.dataset.queue;
+      state.dailyMode = false;
+      $('#btn-daily').classList.remove('primary');
+      state.page = 1;
+      loadQueue();
+      loadTable();
+    };
+  });
 }
 
+/* ---------- The Daily 50 ---------- */
+const TIER_HEADS = { high: '🔥 High Opportunity', strong: '🟢 Strong Fit', explore: '🟡 Worth Exploring' };
+
 async function loadDaily() {
-  const data = await api('/api/daily?size=50');
+  const data = await api('/api/daily?size=50&rep=' + encodeURIComponent(repName()));
   const bar = $('#daily-bar');
   bar.classList.remove('hidden');
   bar.innerHTML = `
@@ -179,11 +265,16 @@ async function loadDaily() {
     <span class="tier-count">🔥 ${data.counts.high} High Opportunity</span>
     <span class="tier-count">🟢 ${data.counts.strong} Strong Fit</span>
     <span class="tier-count">🟡 ${data.counts.explore} Worth Exploring</span>
-    <span class="muted">${data.date} · fresh prospects, best first — every score badge tooltip says why to call</span>
+    <span class="muted">${data.date} · fresh unclaimed prospects, best first</span>
   `;
+  const groups = { high: [], strong: [], explore: [] };
+  for (const r of data.rows) (groups[r.tier] || groups.explore).push(r);
   $('#tbody').innerHTML = data.rows.length
-    ? data.rows.map(rowHtml).join('')
-    : `<tr><td colspan="10"><div class="empty-state"><div class="big">🔥</div><p><strong>No qualified prospects yet today.</strong></p><p>Run the pipeline to fill today's sheet.</p></div></td></tr>`;
+    ? ['high', 'strong', 'explore'].filter((t) => groups[t].length).map((t) =>
+        `<tr class="tier-subheader"><td colspan="11">${TIER_HEADS[t]} (${groups[t].length})</td></tr>` +
+        groups[t].map(rowHtml).join('')
+      ).join('')
+    : `<tr><td colspan="11"><div class="empty-state"><div class="big">🔥</div><p><strong>No qualified prospects yet today.</strong></p><p>Run the pipeline to fill today's sheet.</p></div></td></tr>`;
   $('#count-label').textContent = `${data.rows.length} on today's sheet`;
   $('#page-label').textContent = '';
   $('#prev').disabled = true;
@@ -231,8 +322,8 @@ async function openDrawer(id) {
       <h3>Contact</h3>
       <dl class="kv">
         <dt>Decision maker</dt><dd>${esc(r.contact_name || '—')} ${r.contact_title ? `<span class="muted">(${esc(r.contact_title)})</span>` : ''}</dd>
-        <dt>Email</dt><dd>${r.email ? `${esc(r.email)} <span class="chip ${esc(r.email_status || '')}">${esc(r.email_status || '')}</span> <button class="copy-btn" data-copy="${esc(r.email)}">copy</button>` : '—'}</dd>
-        <dt>Phone</dt><dd>${r.phone ? `${esc(r.phone)} <button class="copy-btn" data-copy="${esc(r.phone)}">copy</button>` : '—'}</dd>
+        <dt>Email</dt><dd>${r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a> <span class="chip ${esc(r.email_status || '')}">${esc(r.email_status || '')}</span> <button class="copy-btn" data-copy="${esc(r.email)}">copy</button>` : '—'}</dd>
+        <dt>Phone</dt><dd>${r.phone ? `<a href="${telHref(r.phone)}">${esc(r.phone)}</a> <button class="copy-btn" data-copy="${esc(r.phone)}">copy</button>` : '—'}</dd>
         <dt>Website</dt><dd>${r.website ? `<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website)}</a> <span class="muted">(${esc(r.website_confidence || '')})</span>` : 'none found'}</dd>
         ${signals ? `<dt>Site quality</dt><dd>${signals.quality}/100 <span class="muted">· ${signals.platform}${signals.mobileViewport ? '' : ' · not mobile-ready'}${signals.hasBooking ? ' · booking ✓' : ' · no booking'}${signals.hasChat ? ' · chat ✓' : ' · no chat'}${signals.hasCrm ? ' · CRM ✓' : ''}</span></dd>` : ''}
         <dt>Socials</dt><dd>${Object.keys(socials).length ? Object.entries(socials).map(([k, v]) => `<a href="${esc(v)}" target="_blank" rel="noopener">${k}</a>`).join(' · ') : 'none found'}</dd>
@@ -242,11 +333,11 @@ async function openDrawer(id) {
     <section>
       <h3>Business</h3>
       <dl class="kv">
-        <dt>Established</dt><dd>${esc(r.established_date || '—')}</dd>
-        <dt>Address</dt><dd>${esc([r.address, r.city, r.state, r.zip].filter(Boolean).join(', ') || '—')}</dd>
+        <dt>Established</dt><dd>${r.established_date ? `${esc(r.established_date)} <span class="muted">(${esc(ageWords(r.established_date))})</span>` : '—'}</dd>
+        <dt>Address</dt><dd>${[r.address, r.city, r.state, r.zip].filter(Boolean).length ? `<a href="${esc(mapsUrl(r))}" target="_blank" rel="noopener">${esc([r.address, r.city, r.state, r.zip].filter(Boolean).join(', '))}</a> 📍` : '—'}</dd>
         <dt>Source</dt><dd>${esc({ sunbiz: 'Sunbiz filing', dbpr: 'DBPR license', nppes: 'NPI registry', sam: 'SAM.gov registration', osm: 'OpenStreetMap', google: 'Google Business listing' }[r.source] || r.source)} · ${esc(r.source_id)}</dd>
         <dt>Record status</dt><dd>${esc(r.entity_status || '—')}</dd>
-        ${r.google_reviews ? `<dt>Google reviews</dt><dd>${r.google_rating}★ · ${r.google_reviews} reviews</dd>` : ''}
+        ${r.google_reviews ? `<dt>Google reviews</dt><dd><a href="${esc(mapsUrl(r))}" target="_blank" rel="noopener">${r.google_rating}★ · ${r.google_reviews} reviews</a> <span class="muted">— skim 2-3 before the kudos opener</span></dd>` : ''}
       </dl>
     </section>
 
@@ -296,7 +387,9 @@ async function openDrawer(id) {
     closeDrawer();
     loadTable();
   };
-  // nurture flow panel
+  // nurture flow panel — remember the contact so message buttons can
+  // deep-link into the rep's own Messages/Mail apps
+  drawerContact = { phone: r.phone, email: r.email };
   renderNurture(id).catch((e) => { $('#n-panel').innerHTML = `<span class="muted">${esc(e.message)}</span>`; });
 
   $('#d-reenrich').onclick = async () => {
@@ -322,10 +415,16 @@ function closeDrawer() {
 
 /* ---------- nurture flow (Playbook: automation warms, humans monetize) ---------- */
 const repName = () => localStorage.getItem('rep_name') || '';
+let drawerContact = {}; // phone/email of the prospect currently in the drawer
 
 async function renderNurture(id) {
   const state = await api(`/api/prospects/${id}/nurture?rep=${encodeURIComponent(repName())}`);
   paintNurture(id, state, null);
+}
+
+function fmtWhen(dbTime) {
+  const d = parseDb(dbTime);
+  return d ? d.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : null;
 }
 
 function paintNurture(id, state, lastReply) {
@@ -338,11 +437,14 @@ function paintNurture(id, state, lastReply) {
   const stages = state.stages.filter((s) => s.key !== 'suppressed');
   const idx = stages.findIndex((s) => s.key === state.stage);
   const handoffReady = ['qualified', 'handoff_requested', 'call_scheduled', 'sales_conversation'].includes(state.stage);
+  const schedulable = ['handoff_requested', 'call_scheduled', 'sales_conversation'].includes(state.stage);
+  const msgIsEmail = (m) => /^Subject:/i.test(m || '');
 
   el.innerHTML = `
+    ${repName() ? '' : `<div class="n-warn">⚠ Type your name in the top bar first — it signs every message (right now they'd say "{{your name}}") and claims prospects you touch.</div>`}
     <div class="stage-bar">${suppressed
-      ? '<span class="stage-pill suppressed">⛔ Suppressed — no further outreach on this channel</span>'
-      : stages.map((s, i) => `<span class="stage-pill${i < idx ? ' done' : ''}${i === idx ? ' current' : ''}" title="${esc(s.label)}">${i < idx ? '✓ ' : ''}${esc(s.label)}</span>`).join('')}
+      ? `<span class="stage-pill suppressed">⛔ Suppressed — no further outreach on this channel</span><button class="linkish" id="n-unsuppress">un-suppress (classified wrong?)</button>`
+      : stages.map((s, i) => `<span class="stage-pill${i < idx ? ' done' : ''}${i === idx ? ' current' : ''} clickable" data-stage="${esc(s.key)}" title="Click to move here — fixes a mis-click or a wrongly-read reply">${i < idx ? '✓ ' : ''}${esc(s.label)}</span>`).join('')}
     </div>
     ${lastReply ? `<div class="n-cls">Reply read as <span class="cls-chip ${esc(lastReply.classification)}">${esc(lastReply.classification.replaceAll('_', ' '))}</span></div>` : ''}
     ${sug.note ? `<div class="n-note">${esc(sug.note)}${sug.branch && !suppressed ? ` <span class="muted">· Opportunity track: ${esc(state.branches[sug.branch] || sug.branch)}</span>` : ''}</div>` : ''}
@@ -351,8 +453,29 @@ function paintNurture(id, state, lastReply) {
       <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center">
         <button class="btn primary" id="n-copy">📋 Copy</button>
         ${suppressed ? '' : '<button class="btn" id="n-sent">✓ I sent this</button>'}
+        ${!suppressed && drawerContact.phone ? `<a class="btn ghost" id="n-open-sms" href="#">📱 Open in Messages</a>` : ''}
+        ${!suppressed && drawerContact.email ? `<a class="btn ghost" id="n-open-mail" href="#">✉️ Open in Mail</a>` : ''}
         ${state.stage === 'loaded' && sug.alt ? '<button class="btn ghost" id="n-alt">✉️ Email version</button><button class="btn ghost" id="n-ai">✨ AI-personalize</button>' : ''}
         <span id="n-msg-note" class="muted" style="font-size:11px"></span>
+      </div>` : ''}
+    ${!suppressed && drawerContact.phone ? `
+      <div class="call-log-row">📞 Called them? <button class="btn ghost sm" data-call="no_answer">No answer</button>
+        <button class="btn ghost sm" data-call="voicemail">Left voicemail</button>
+        <button class="btn ghost sm" data-call="spoke">🗣 We spoke</button></div>` : ''}
+    ${!suppressed ? `
+      <div class="n-followup">⏰ Next follow-up: <b>${fmtWhen(state.next_touch_at) || 'not set'}</b>
+        <button class="btn ghost sm" data-snooze="1">+1d</button>
+        <button class="btn ghost sm" data-snooze="2">+2d</button>
+        <button class="btn ghost sm" data-snooze="7">+1w</button>
+        <button class="btn ghost sm" data-snooze="30">+1mo</button>
+        ${state.next_touch_at ? '<button class="btn ghost sm" data-snooze="clear">clear</button>' : ''}
+        <span class="muted" style="font-size:11px">— resurfaces in the ⏰ Due queue</span>
+      </div>` : ''}
+    ${schedulable ? `
+      <div class="n-followup">📅 Sales call: <b>${fmtWhen(state.scheduled_call_at) || 'not scheduled'}</b>
+        <button class="btn ghost sm" data-sched="today-pm">Today 3pm</button>
+        <button class="btn ghost sm" data-sched="tmrw-am">Tmrw 10am</button>
+        <button class="btn ghost sm" data-sched="tmrw-pm">Tmrw 3pm</button>
       </div>` : ''}
     ${!suppressed ? `
       <label style="display:block;margin-top:12px;font-size:12px;color:var(--ink-2)">They replied? Paste it here — it gets read, classified, and the next move teed up
@@ -366,8 +489,79 @@ function paintNurture(id, state, lastReply) {
         <button class="btn primary" id="n-handoff-copy" style="margin-top:6px">📋 Copy package</button>
       </div>` : ''}
     ${state.touches.length ? `<details style="margin-top:10px"><summary class="muted" style="cursor:pointer;font-size:12px">Conversation log (${state.touches.length})</summary>
-      <div class="touch-log">${state.touches.map((t) => `<div class="touch ${esc(t.direction)}"><span class="who">${t.direction === 'out' ? 'US →' : '← THEM'}</span> ${esc(t.text)}${t.classification ? ` <span class="cls-chip sm ${esc(t.classification)}">${esc(t.classification.replaceAll('_', ' '))}</span>` : ''}</div>`).join('')}</div></details>` : ''}
+      <div class="touch-log">${state.touches.map((t) => `<div class="touch ${esc(t.direction)}"><span class="who">${t.direction === 'out' ? 'US →' : '← THEM'}</span> ${esc(t.text)}${t.classification ? ` <span class="cls-chip sm ${esc(t.classification)}">${esc(t.classification.replaceAll('_', ' '))}</span>` : ''}<span class="touch-when">${t.channel === 'call' ? '📞 ' : ''}${ago(t.created_at)}${t.rep ? ` · ${esc(t.rep)}` : ''}</span></div>`).join('')}</div></details>` : ''}
   `;
+
+  // one-tap send: opens the rep's own Messages/Mail app with the text loaded
+  const smsA = $('#n-open-sms');
+  if (smsA) smsA.onclick = null, smsA.href = smsHref(drawerContact.phone, $('#n-msg')?.value || '');
+  const mailA = $('#n-open-mail');
+  if (mailA) mailA.href = mailtoHref(drawerContact.email, $('#n-msg')?.value || '');
+  $('#n-msg')?.addEventListener('input', () => {
+    if (smsA) smsA.href = smsHref(drawerContact.phone, $('#n-msg').value);
+    if (mailA) mailA.href = mailtoHref(drawerContact.email, $('#n-msg').value);
+  });
+
+  // clickable stage pills — undo for mis-clicks and misread replies
+  el.querySelectorAll('.stage-pill.clickable').forEach((pill) => {
+    pill.onclick = async () => {
+      if (pill.dataset.stage === state.stage) return;
+      if (!confirm(`Move this prospect to "${pill.title ? pill.textContent.replace('✓ ', '') : pill.dataset.stage}"?`)) return;
+      const next = await api(`/api/prospects/${id}/nurture/stage`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage: pill.dataset.stage, rep_name: repName() }),
+      });
+      paintNurture(id, next, null);
+    };
+  });
+  const unsup = $('#n-unsuppress');
+  if (unsup) unsup.onclick = async () => {
+    const next = await api(`/api/prospects/${id}/nurture/stage`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stage: 'engaged', rep_name: repName() }),
+    });
+    paintNurture(id, next, null);
+  };
+
+  // call disposition logging — two seconds, no typing
+  el.querySelectorAll('[data-call]').forEach((b) => {
+    b.onclick = async () => {
+      const kind = b.dataset.call;
+      const text = { no_answer: 'Call — no answer', voicemail: 'Call — left voicemail', spoke: 'Call — connected' }[kind];
+      const next = await api(`/api/prospects/${id}/nurture/sent`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, channel: 'call', rep_name: repName(), stage_to: state.stage, snooze_days: kind === 'spoke' ? 1 : 2 }),
+      });
+      paintNurture(id, next, null);
+      if (kind === 'spoke') { $('#n-reply')?.focus(); $('#n-reply')?.setAttribute('placeholder', 'What did they say? Log it here so the flow can route it.'); }
+    };
+  });
+
+  // follow-up snooze + call scheduling
+  el.querySelectorAll('[data-snooze]').forEach((b) => {
+    b.onclick = async () => {
+      const v = b.dataset.snooze;
+      await api(`/api/prospects/${id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ next_touch_at: v === 'clear' ? null : sqlDate(new Date(Date.now() + Number(v) * 86400000)) }),
+      });
+      renderNurture(id);
+      loadQueue();
+    };
+  });
+  el.querySelectorAll('[data-sched]').forEach((b) => {
+    b.onclick = async () => {
+      const d = new Date();
+      if (b.dataset.sched.startsWith('tmrw')) d.setDate(d.getDate() + 1);
+      d.setHours(b.dataset.sched.endsWith('am') ? 10 : 15, 0, 0, 0);
+      await api(`/api/prospects/${id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scheduled_call_at: sqlDate(d) }),
+      });
+      renderNurture(id);
+      loadStats();
+    };
+  });
 
   const copyBtn = (btnEl, getText) => {
     if (!btnEl) return;
@@ -393,6 +587,7 @@ function paintNurture(id, state, lastReply) {
         }),
       });
       paintNurture(id, next, null);
+      loadQueue();
     } catch (e) { alert(e.message); sent.disabled = false; }
   };
 
@@ -435,6 +630,7 @@ function paintNurture(id, state, lastReply) {
         body: JSON.stringify({ text, rep_name: repName() }),
       });
       paintNurture(id, out.state, { classification: out.classification, action: out.action });
+      loadQueue();
     } catch (e) { alert(e.message); logBtn.disabled = false; }
   };
 
@@ -610,9 +806,19 @@ function bindEvents() {
 
 /* ---------- boot ---------- */
 (async function init() {
+  // Rep identity: signs messages, claims prospects, scopes the queues
+  const repInput = $('#rep-name');
+  repInput.value = repName();
+  repInput.addEventListener('change', () => {
+    localStorage.setItem('rep_name', repInput.value.trim());
+    loadQueue();
+    if (state.dailyMode) loadTable();
+  });
+
   await loadMeta();
   bindEvents();
   loadStats();
+  loadQueue();
   loadTable();
   // resume banner if a run is already in flight
   const runs = await api('/api/runs');

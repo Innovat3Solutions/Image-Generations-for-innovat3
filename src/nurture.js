@@ -60,6 +60,17 @@ export function classifyReply(text, stage) {
   return 'UNCLEAR';
 }
 
+/** "try me next week" → how many days to snooze the follow-up. */
+export function snoozeDaysFromText(text) {
+  const t = (text || '').toLowerCase();
+  if (/next month|in a month|a few weeks/.test(t)) return 30;
+  if (/next week/.test(t)) return 7;
+  if (/later this week|end of (the )?week|this week/.test(t)) return 3;
+  if (/tomorrow/.test(t)) return 1;
+  if (/couple (of )?days|few days/.test(t)) return 2;
+  return 3;
+}
+
 // ---- Merge data (playbook §06: only real data, never fabricate) ---------
 
 function mergeData(p, repName) {
@@ -146,6 +157,18 @@ export const BRANCHES = {
   },
 };
 
+// Light re-engagement when a message has sat unanswered for days — never
+// guilt-trippy, never a pitch, matched to what we last sent.
+export const BUMPS = {
+  outreach_sent: `Hey {{first_name}}, {{rep_name}} again — I know things get busy, just didn't want my note to get buried. No agenda here; hope business is treating you well!`,
+  engaged: `Hey {{first_name}}, just floating this back up — happy to share those couple of things I noticed at {{business_name}} whenever you have a sec. If now's not the time, no worries at all.`,
+  permission: `Hey {{first_name}}, just floating this back up — happy to share those couple of things I noticed at {{business_name}} whenever you have a sec. If now's not the time, no worries at all.`,
+  opportunity: `Hey {{first_name}}, no pressure on my last question — I know that stuff isn't always top of mind. Just curious how you guys handle it today.`,
+  qualified: `Hey {{first_name}}, just checking back — still happy to have someone walk you through what we noticed at {{business_name}}. Would a quick call this week work?`,
+  handoff_requested: `Hey {{first_name}}, just checking back — still happy to have someone walk you through what we noticed at {{business_name}}. Would a quick call this week work?`,
+};
+const BUMP_AFTER_DAYS = 3;
+
 const HANDOFF = `Got it. That's actually exactly why I brought it up. I think there may be a really simple way we could help without making this into some huge project. Rather than me trying to explain everything over text, let me have someone from our team reach out and walk you through what we noticed and what we'd recommend for {{business_name}}. Would a quick call be okay?`;
 const HANDOFF_YES = `Perfect. Is later today or tomorrow better?`;
 const HANDOFF_TIME = `Great - is morning or afternoon usually easier for you?`;
@@ -168,11 +191,28 @@ export function pickBranch(p) {
  * The engine: given the prospect's stage and (optionally) a just-classified
  * inbound reply, return what the rep should do/send next.
  */
-export function nextAction(p, repName, classification = null) {
+export function nextAction(p, repName, classification = null, touches = null) {
   const m = mergeData(p, repName);
   const stage = p.nurture_stage || 'loaded';
   const branchKey = pickBranch(p);
   const branch = BRANCHES[branchKey];
+
+  // Silence handling: our last message has sat unanswered for days → a light
+  // bump for the SAME stage, not the next-step message (which assumes a
+  // reply that never came).
+  if (!classification && touches?.length && BUMPS[stage]) {
+    const last = touches[touches.length - 1];
+    const ageDays = (Date.now() - new Date(last.created_at.replace(' ', 'T') + 'Z').getTime()) / 86400000;
+    if (last.direction === 'out' && ageDays >= BUMP_AFTER_DAYS) {
+      return {
+        stage_to: stage,
+        message: fill(BUMPS[stage], m),
+        note: `No reply in ${Math.floor(ageDays)} days — send a light bump, not the next step. One bump, then let it breathe; two silences in a row means park it for a few weeks.`,
+        branch: branchKey,
+        is_bump: true,
+      };
+    }
+  }
 
   // High-intent bypass (playbook §05): pricing/interest → straight to handoff
   if (classification === 'INTERESTED') {
@@ -245,7 +285,7 @@ Channels used: ${channels} · Nurtured by: ${repName || '—'}
 OPPORTUNITY IDENTIFIED: ${branch.label}
 Gap disclosed by prospect: ${gapReply ? `"${gapReply}"` : 'see conversation below'}
 Pricing questions asked: ${pricingAsked ? 'YES — they asked about cost' : 'no'}
-Permission to call: YES · Preferred timing: ${inbound.slice(-1)[0]?.text ? `see last reply: "${inbound.slice(-1)[0].text}"` : '—'}
+Permission to call: YES · ${p.scheduled_call_at ? `CALL SCHEDULED: ${p.scheduled_call_at} ET` : `Preferred timing: ${inbound.slice(-1)[0]?.text ? `see last reply: "${inbound.slice(-1)[0].text}"` : '—'}`}
 
 LIKELY STARTING POINT (guidance, not a quote — diagnose first):
 ${offer.entry.name} $${offer.entry.monthly}/mo — ${offer.why}
@@ -265,7 +305,10 @@ export function nurtureState(p, repName) {
     stages: STAGES,
     branch: pickBranch(p),
     branches: Object.fromEntries(Object.entries(BRANCHES).map(([k, b]) => [k, b.label])),
-    suggestion: nextAction(p, repName),
+    suggestion: nextAction(p, repName, null, touches),
     touches,
+    next_touch_at: p.next_touch_at || null,
+    scheduled_call_at: p.scheduled_call_at || null,
+    assigned_to: p.assigned_to || null,
   };
 }

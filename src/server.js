@@ -12,7 +12,7 @@ import { providerStatus } from './enrich/provider-status.js';
 import { registerTrainingRoutes } from './training/index.js';
 import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, UPGRADE_TRIGGERS, RULES, recommendOffer } from './offers.js';
 import { generateOutreach } from './outreach.js';
-import { nurtureState, nextAction, classifyReply, handoffSummary, STAGES } from './nurture.js';
+import { nurtureState, nextAction, classifyReply, handoffSummary, snoozeDaysFromText, STAGES } from './nurture.js';
 import { VERTICALS } from './verticals.js';
 import { log, mapConcurrent } from './util.js';
 
@@ -47,8 +47,14 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 const STATUSES = ['new', 'contacted', 'interested', 'not_interested', 'customer', 'disqualified', 'no_contact'];
 
 // ---------- prospects ----------
+// Latest-touch subselects: the list is conversation-aware — every row knows
+// when it was last touched and whose move it is.
+const LAST_TOUCH_COLS = `
+  (SELECT MAX(created_at) FROM prospect_touches t WHERE t.prospect_id = prospects.id) AS last_touch_at,
+  (SELECT direction FROM prospect_touches t WHERE t.prospect_id = prospects.id ORDER BY t.id DESC LIMIT 1) AS last_touch_dir`;
+
 app.get('/api/prospects', (req, res) => {
-  const { q, industry, source, status, minScore, hasEmail, hasPhone, noWebsite, zip, sort = 'score', dir = 'desc', page = '1', pageSize = '50' } = req.query;
+  const { q, industry, source, status, minScore, hasEmail, hasPhone, noWebsite, zip, stage, stages, assigned, lastDir, due, sort = 'score', dir = 'desc', page = '1', pageSize = '50' } = req.query;
   const where = [];
   const params = [];
   if (q) { where.push('(business_name LIKE ? OR dba_name LIKE ? OR contact_name LIKE ? OR city LIKE ?)'); const like = `%${q}%`; params.push(like, like, like, like); }
@@ -70,16 +76,49 @@ app.get('/api/prospects', (req, res) => {
   if (hasEmail === '1') where.push("email IS NOT NULL AND email_status != 'invalid'");
   if (hasPhone === '1') where.push('phone IS NOT NULL');
   if (noWebsite === '1') where.push('website IS NULL');
+  if (stage) { where.push('nurture_stage = ?'); params.push(stage); }
+  if (stages) {
+    const list = String(stages).split(',').map((s) => s.trim()).filter(Boolean).slice(0, 10);
+    if (list.length) { where.push(`nurture_stage IN (${list.map(() => '?').join(',')})`); params.push(...list); }
+  }
+  if (assigned) { where.push('(assigned_to = ? OR assigned_to IS NULL)'); params.push(assigned); }
+  if (lastDir === 'in' || lastDir === 'out') {
+    where.push(`(SELECT direction FROM prospect_touches t WHERE t.prospect_id = prospects.id ORDER BY t.id DESC LIMIT 1) = ?`);
+    params.push(lastDir);
+    where.push("nurture_stage != 'suppressed'");
+  }
+  if (due === '1') {
+    where.push("next_touch_at IS NOT NULL AND next_touch_at <= datetime('now') AND nurture_stage != 'suppressed'");
+  }
   const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
-  const sortCol = { score: 'score', established: 'established_date', name: 'business_name', created: 'created_at', city: 'city' }[sort] || 'score';
+  const sortCol = { score: 'score', established: 'established_date', name: 'business_name', created: 'created_at', city: 'city', last_touch: 'last_touch_at' }[sort] || 'score';
   const dirSql = dir === 'asc' ? 'ASC' : 'DESC';
   const limit = Math.min(200, Number(pageSize) || 50);
   const offset = (Math.max(1, Number(page)) - 1) * limit;
   const total = db.prepare(`SELECT COUNT(*) c FROM prospects ${whereSql}`).get(...params).c;
   const rows = db.prepare(
-    `SELECT * FROM prospects ${whereSql} ORDER BY ${sortCol} ${dirSql} NULLS LAST, id DESC LIMIT ? OFFSET ?`
+    `SELECT prospects.*, ${LAST_TOUCH_COLS} FROM prospects ${whereSql} ORDER BY ${sortCol} ${dirSql} NULLS LAST, id DESC LIMIT ? OFFSET ?`
   ).all(...params, limit, offset);
   res.json({ total, page: Number(page), pageSize: limit, rows });
+});
+
+// ---------- the rep's work queue ----------
+// Answers "what do I do right now": replies waiting on us, follow-ups due,
+// handoffs to complete, untouched fresh leads. Counts feed the queue chips.
+app.get('/api/queue', (req, res) => {
+  const rep = String(req.query.rep || '');
+  const mine = rep ? ' AND (assigned_to IS NULL OR assigned_to = ?)' : '';
+  const args = rep ? [rep] : [];
+  const WORKABLE = "status NOT IN ('not_interested','disqualified','customer','no_contact') AND nurture_stage != 'suppressed'";
+  const lastDirIs = (d) =>
+    `(SELECT direction FROM prospect_touches t WHERE t.prospect_id = prospects.id ORDER BY t.id DESC LIMIT 1) = '${d}'`;
+  const count = (sql) => db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${sql}${mine}`).get(...args).c;
+  res.json({
+    your_move: count(`${WORKABLE} AND ${lastDirIs('in')}`),
+    due: count(`${WORKABLE} AND next_touch_at IS NOT NULL AND next_touch_at <= datetime('now')`),
+    handoffs: count(`${WORKABLE} AND nurture_stage IN ('qualified','handoff_requested','call_scheduled')`),
+    fresh: count(`status = 'new' AND score >= 50`),
+  });
 });
 
 app.get('/api/prospects/:id', (req, res) => {
@@ -118,11 +157,16 @@ app.get('/api/prospects/:id/nurture', (req, res) => {
 });
 
 const logTouch = db.prepare(`
-  INSERT INTO prospect_touches (prospect_id, direction, channel, text, classification, stage_after)
-  VALUES (?, ?, ?, ?, ?, ?)
+  INSERT INTO prospect_touches (prospect_id, direction, channel, text, classification, stage_after, rep)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
 `);
 const setStage = (id, stage) =>
   db.prepare("UPDATE prospects SET nurture_stage = ?, updated_at = datetime('now') WHERE id = ?").run(stage, id);
+const setNextTouch = (id, days) =>
+  db.prepare(`UPDATE prospects SET next_touch_at = ${days == null ? 'NULL' : "datetime('now', ?)"} WHERE id = ?`)
+    .run(...(days == null ? [id] : [`+${days} days`, id]));
+// Once they've qualified, the sales status should say so
+const PROMOTED_STAGES = ['qualified', 'handoff_requested', 'call_scheduled', 'sales_conversation'];
 
 // Rep confirms the suggested message went out → log it and advance the stage.
 app.post('/api/prospects/:id/nurture/sent', (req, res) => {
@@ -137,14 +181,23 @@ app.post('/api/prospects/:id/nurture/sent', (req, res) => {
   const text = String(req.body?.text || action.message || '').trim();
   if (!text) return res.status(400).json({ error: 'Nothing to send at this stage.' });
   // The client may pass the stage the send corresponds to (e.g. a BUSY
-  // acknowledgment holds the current stage instead of advancing).
+  // acknowledgment or a call disposition holds the current stage).
   const requested = String(req.body?.stage_to || '');
   const stageTo = STAGES.some((s) => s.key === requested)
     ? requested
     : (action.stage_to || row.nurture_stage || 'loaded');
-  logTouch.run(row.id, 'out', channel, text, null, stageTo);
+  logTouch.run(row.id, 'out', channel, text, null, stageTo, rep || null);
   setStage(row.id, stageTo);
-  if (row.status === 'new') updateProspect(row.id, { status: 'contacted' });
+  // Every outbound arms the follow-up clock: if they don't reply, this
+  // conversation resurfaces in the ⏰ Due queue instead of dying quietly.
+  const snooze = Number(req.body?.snooze_days);
+  if (stageTo === 'suppressed' || stageTo === 'sales_conversation') setNextTouch(row.id, null);
+  else setNextTouch(row.id, Number.isFinite(snooze) && snooze > 0 ? Math.min(snooze, 90) : 2);
+  const statusUpdates = {};
+  if (row.status === 'new') statusUpdates.status = 'contacted';
+  if (PROMOTED_STAGES.includes(stageTo) && ['new', 'contacted'].includes(row.status)) statusUpdates.status = 'interested';
+  if (!row.assigned_to && rep) statusUpdates.assigned_to = rep; // first touch claims the prospect
+  if (Object.keys(statusUpdates).length) updateProspect(row.id, statusUpdates);
   res.json(nurtureState(getProspect(req), rep));
 });
 
@@ -166,13 +219,30 @@ app.post('/api/prospects/:id/nurture/reply', (req, res) => {
   else if (cls === 'INTERESTED') stageTo = 'qualified';                                 // high-intent bypass
   else if (stage === 'outreach_sent' && !['BUSY', 'WRONG_PERSON'].includes(cls)) stageTo = 'engaged';
   else if (stage === 'opportunity' && cls === 'POSITIVE') stageTo = 'qualified';        // gap acknowledged
-  logTouch.run(row.id, 'in', channel, text, cls, stageTo);
+  logTouch.run(row.id, 'in', channel, text, cls, stageTo, rep || null);
   if (stageTo !== stage) setStage(row.id, stageTo);
   if (cls === 'OPT_OUT' || cls === 'NOT_INTERESTED') updateProspect(row.id, { status: 'not_interested' });
-  else if (cls === 'INTERESTED' && !['customer'].includes(row.status)) updateProspect(row.id, { status: 'interested' });
+  else if ((cls === 'INTERESTED' || PROMOTED_STAGES.includes(stageTo)) && !['customer'].includes(row.status)) {
+    updateProspect(row.id, { status: 'interested' });
+  }
+  if (!row.assigned_to && rep) updateProspect(row.id, { assigned_to: rep });
+
+  // Follow-up clock: BUSY snoozes by what they actually said ("next week" →
+  // 7 days); opt-outs clear it; any other reply is due NOW — it's our move.
+  let snoozedDays = null;
+  if (cls === 'BUSY') {
+    snoozedDays = snoozeDaysFromText(text);
+    setNextTouch(row.id, snoozedDays);
+  } else if (stageTo === 'suppressed') setNextTouch(row.id, null);
+  else setNextTouch(row.id, 0);
 
   const fresh = getProspect(req);
-  res.json({ classification: cls, action: nextAction(fresh, rep, cls), state: nurtureState(fresh, rep) });
+  const action = nextAction(fresh, rep, cls);
+  if (cls === 'BUSY' && snoozedDays) {
+    const dueDate = db.prepare("SELECT date(next_touch_at) d FROM prospects WHERE id = ?").get(row.id).d;
+    action.note = `They're busy — follow-up scheduled for ${dueDate} (they said "${text.slice(0, 60)}"). It'll surface in your ⏰ Due queue; send the acknowledgment below now.`;
+  }
+  res.json({ classification: cls, action, state: nurtureState(fresh, rep) });
 });
 
 // Manual override — undo a mis-click or restart a lapsed thread.
@@ -198,9 +268,9 @@ app.patch('/api/prospects/:id', (req, res) => {
   const id = Number(req.params.id);
   const row = db.prepare('SELECT id FROM prospects WHERE id = ?').get(id);
   if (!row) return res.status(404).json({ error: 'not found' });
-  const { status, notes, assigned_to, contact_name, contact_title, email, phone, website } = req.body;
+  const { status, notes, assigned_to, contact_name, contact_title, email, phone, website, next_touch_at, scheduled_call_at } = req.body;
   if (status && !STATUSES.includes(status)) return res.status(400).json({ error: 'bad status' });
-  updateProspect(id, { status, notes, assigned_to, contact_name, contact_title, email, phone, website });
+  updateProspect(id, { status, notes, assigned_to, contact_name, contact_title, email, phone, website, next_touch_at, scheduled_call_at });
   res.json(db.prepare('SELECT * FROM prospects WHERE id = ?').get(id));
 });
 
@@ -262,12 +332,15 @@ app.post('/api/reenrich', async (req, res) => {
 // pool threshold, grouped 🔥 high / 🟢 strong / 🟡 explore.
 app.get('/api/daily', (req, res) => {
   const size = Math.min(200, Number(req.query.size) || 50);
+  const rep = String(req.query.rep || '');
+  // Unclaimed or mine — two reps shouldn't cold-open the same roofer
+  const mine = rep ? 'AND (assigned_to IS NULL OR assigned_to = ?)' : '';
   const rows = db.prepare(`
-    SELECT * FROM prospects
-    WHERE status = 'new' AND score >= 50
+    SELECT prospects.*, ${LAST_TOUCH_COLS} FROM prospects
+    WHERE status = 'new' AND score >= 50 ${mine}
     ORDER BY (created_at >= date('now')) DESC, score DESC, id DESC
     LIMIT ?
-  `).all(size);
+  `).all(...(rep ? [rep, size] : [size]));
   const groups = { high: [], strong: [], explore: [] };
   for (const r of rows) (groups[r.tier] || groups.explore).push(r);
   res.json({
@@ -299,9 +372,12 @@ app.get('/api/stats', (req, res) => {
   const noWebsite = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND website IS NULL`).get().c;
   const avgScore = db.prepare(`SELECT ROUND(AVG(score)) a FROM prospects WHERE ${W}`).get().a || 0;
   const parked = db.prepare("SELECT COUNT(*) c FROM prospects WHERE status = 'no_contact'").get().c;
+  const inHandoff = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND nurture_stage IN ('qualified','handoff_requested','call_scheduled')`).get().c;
+  const callsToday = db.prepare("SELECT COUNT(*) c FROM prospects WHERE date(scheduled_call_at) = date('now')").get().c;
+  const touchesToday = db.prepare("SELECT COUNT(*) c FROM prospect_touches WHERE direction = 'out' AND created_at >= date('now')").get().c;
   const byStatus = Object.fromEntries(db.prepare('SELECT status, COUNT(*) c FROM prospects GROUP BY status').all().map((r) => [r.status, r.c]));
   const byIndustry = db.prepare(`SELECT industry, COUNT(*) c FROM prospects WHERE ${W} GROUP BY industry ORDER BY c DESC`).all();
-  res.json({ total, today, withEmail, withPhone, noWebsite, avgScore, parked, byStatus, byIndustry });
+  res.json({ total, today, withEmail, withPhone, noWebsite, avgScore, parked, inHandoff, callsToday, touchesToday, byStatus, byIndustry });
 });
 
 // ---------- provider diagnostics ----------

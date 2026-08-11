@@ -122,6 +122,8 @@ for (const [col, type] of [
   ['google_rating', 'REAL'],       // Google Business listing rating (google source / cross-link)
   ['google_reviews', 'INTEGER'],   // Google review count — unlocks the review-based opener
   ['legal_name', 'TEXT'],          // registered entity behind a Google-first prospect (cross-referenced)
+  ['next_touch_at', 'TEXT'],       // when this conversation is due for a follow-up (UTC datetime)
+  ['scheduled_call_at', 'TEXT'],   // the actual sales-call appointment agreed in nurture
 ]) {
   try {
     db.exec(`ALTER TABLE prospects ADD COLUMN ${col} ${type}`);
@@ -149,6 +151,9 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_touches_prospect ON prospect_touches(prospect_id);
 `);
+try {
+  db.exec('ALTER TABLE prospect_touches ADD COLUMN rep TEXT');
+} catch { /* column already exists */ }
 
 export function insertProspect(p) {
   const stmt = db.prepare(`
@@ -182,12 +187,15 @@ export function updateProspect(id, fields) {
     'notes', 'enriched_at', 'site_signals_json', 'opportunities_json',
     'call_reason', 'tier', 'dba_name', 'google_rating', 'google_reviews',
     'legal_name', 'established_date', 'officers_json', 'license_type', 'county',
+    'next_touch_at', 'scheduled_call_at',
   ];
-  const keys = Object.keys(fields).filter((k) => allowed.includes(k));
+  // undefined = leave alone; null = explicitly clear. Without this, a PATCH
+  // carrying only {status} would silently null every other patchable field.
+  const keys = Object.keys(fields).filter((k) => allowed.includes(k) && fields[k] !== undefined);
   if (!keys.length) return;
   const sets = keys.map((k) => `${k} = ?`).join(', ');
   db.prepare(`UPDATE prospects SET ${sets}, updated_at = datetime('now') WHERE id = ?`)
-    .run(...keys.map((k) => fields[k] ?? null), id);
+    .run(...keys.map((k) => fields[k]), id);
 }
 
 export function existingSourceIds(source) {

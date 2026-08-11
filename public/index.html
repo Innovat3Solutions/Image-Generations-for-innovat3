@@ -17,6 +17,7 @@
       </div>
     </div>
     <div class="topbar-actions">
+      <input id="rep-name" class="rep-input" placeholder="Your name" title="Signs your outreach messages and claims prospects you touch" />
       <a class="btn ghost" href="/offers.html">📖 Offers</a>
       <a class="btn ghost" href="/practice.html">🎧 Practice</a>
       <button class="btn ghost" id="btn-daily">🔥 Today's 50</button>
@@ -29,6 +30,9 @@
   <div id="run-banner" class="run-banner hidden"></div>
 
   <section class="stats" id="stats"></section>
+
+  <!-- The rep's work queue: what do I do right now? -->
+  <section class="queue-chips" id="queue-chips"></section>
 
   <section class="filters" id="filters">
     <input type="search" id="f-q" placeholder="Search name, contact, city…" />
@@ -69,6 +73,7 @@
           <th>Phone</th>
           <th>Web</th>
           <th data-sort="city" class="sortable">City</th>
+          <th data-sort="last_touch" class="sortable">Thread</th>
           <th>Status</th>
         </tr>
       </thead>

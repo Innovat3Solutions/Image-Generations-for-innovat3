@@ -202,6 +202,40 @@ monetize it.
   contact, opportunity, the gap in the prospect's own words, pricing
   questions asked, likely starting offer, and the full conversation.
 
+### The rep command center
+
+The dashboard is built around one question: **what do I do right now?**
+
+- **Work queue chips** — 🟢 They replied (your move) · ⏰ Follow-ups due ·
+  🤝 Handoffs · 🆕 Untouched leads. One click filters the board to exactly
+  that work, oldest first.
+- **The follow-up engine** — every outbound message arms a follow-up clock;
+  if no reply comes, the conversation resurfaces in ⏰ Due instead of dying
+  in someone's memory. A "try me next week" BUSY reply snoozes it 7 days
+  automatically (it parses what they actually said); snooze buttons
+  (+1d/+2d/+1w/+1mo) live in the drawer. When a thread has sat silent 3+
+  days, the suggested message becomes a light **bump** — not the next step
+  in the flow, which would assume a reply that never came.
+- **Rep identity** — type your name once in the top bar: it signs every
+  message, stamps every logged touch, and the first touch **claims** the
+  prospect, so two reps never cold-open the same roofer. The Daily 50 and
+  queues show only unclaimed prospects and yours.
+- **One-tap actions** — tap-to-call phone numbers, **Open in Messages /
+  Open in Mail** with the suggested text preloaded, Google Maps on every
+  address, and a ★ rating chip that jumps straight to their reviews (skim
+  two before sending the kudos opener).
+- **Call logging** — No answer / Left voicemail / We spoke buttons record
+  phone touches in two seconds without advancing the nurture stage, so the
+  handoff package shows the real history.
+- **Conversation-aware list** — every row shows the nurture stage, last
+  touch age, and whose move it is; the "why you should call" line sits
+  under the business name; established dates read as "3 wk old 🆕".
+- **Appointments** — when a call is agreed, quick-picks (Today 3pm /
+  Tmrw 10am / Tmrw 3pm) stamp the actual time into the handoff package and
+  the "Calls today" tile.
+- **Safety valves** — stage pills are clickable to fix mis-clicks or a
+  wrongly-classified reply, including un-suppressing a false opt-out.
+
 ### First-touchpoint generator
 
 **AI-personalize** on the nurture opener (plus email/text variants) — a

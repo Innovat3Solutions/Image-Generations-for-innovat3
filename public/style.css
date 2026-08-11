@@ -361,6 +361,66 @@ tbody tr:last-child td { border-bottom: none; }
   border-radius: 8px; padding: 10px; font-family: inherit; font-size: 13px;
 }
 
+/* ---------- rep command center ---------- */
+.rep-input {
+  background: var(--surface); color: var(--ink); border: 1px solid var(--grid);
+  border-radius: 8px; padding: 7px 10px; font-size: 13px; width: 120px;
+}
+.rep-input:placeholder-shown { border-color: var(--serious); }
+.queue-chips {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 0 24px 12px;
+}
+.queue-chip {
+  border: 1px solid var(--grid); background: var(--surface); color: var(--ink);
+  border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer;
+}
+.queue-chip b { margin-left: 4px; }
+.queue-chip.zero { color: var(--muted); }
+.queue-chip:hover { border-color: var(--accent); }
+.queue-chip.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.queue-hint { font-size: 11px; color: var(--muted); }
+.call-line {
+  font-size: 11px; color: var(--accent); max-width: 340px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;
+}
+.rev-chip {
+  font-size: 10px; font-weight: 700; color: var(--warning);
+  text-decoration: none; white-space: nowrap;
+}
+.rev-chip:hover { text-decoration: underline; }
+.tel-link { color: inherit; text-decoration: none; white-space: nowrap; }
+.tel-link:hover { color: var(--accent); }
+.stage-mini { font-size: 11px; font-weight: 650; white-space: nowrap; }
+.stage-mini.suppressed { color: var(--critical); }
+.thread-sub { font-size: 10px; color: var(--muted); white-space: nowrap; margin-top: 2px; }
+.move.yours { color: var(--good-text); font-weight: 700; }
+.due-badge {
+  margin-left: 4px; color: var(--critical); font-weight: 700;
+}
+.tier-subheader td {
+  background: var(--wash); font-weight: 700; font-size: 12px;
+  letter-spacing: 0.04em; padding: 8px 12px !important;
+}
+.n-warn {
+  background: color-mix(in srgb, var(--warning) 15%, var(--surface));
+  border: 1px solid var(--warning); border-radius: 8px;
+  padding: 8px 12px; font-size: 12px; margin-bottom: 10px;
+}
+.n-followup, .call-log-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 12px; color: var(--ink-2); margin-top: 10px;
+}
+.btn.sm { padding: 3px 10px; font-size: 11px; }
+.linkish {
+  background: none; border: none; color: var(--accent); cursor: pointer;
+  font-size: 11px; text-decoration: underline; padding: 2px 6px;
+}
+.stage-pill.clickable { cursor: pointer; }
+.stage-pill.clickable:hover { border-color: var(--accent); color: var(--accent); }
+.stage-pill.current.clickable:hover { color: var(--accent-ink); }
+.touch-when { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
+
 /* ---------- nurture flow ---------- */
 .stage-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
 .stage-pill {
