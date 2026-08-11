@@ -119,6 +119,8 @@ for (const [col, type] of [
   ['opportunities_json', 'TEXT'],  // detected pitch opportunities
   ['call_reason', 'TEXT'],         // "why you should call" summary
   ['tier', 'TEXT'],                // high | strong | explore | below
+  ['google_rating', 'REAL'],       // Google Business listing rating (google source / cross-link)
+  ['google_reviews', 'INTEGER'],   // Google review count — unlocks the review-based opener
 ]) {
   try {
     db.exec(`ALTER TABLE prospects ADD COLUMN ${col} ${type}`);
@@ -129,6 +131,23 @@ for (const [col, def] of [['mode', "TEXT DEFAULT 'roleplay'"], ['options_json', 
     db.exec(`ALTER TABLE training_sessions ADD COLUMN ${col} ${def}`);
   } catch { /* column already exists */ }
 }
+try {
+  db.exec("ALTER TABLE prospects ADD COLUMN nurture_stage TEXT DEFAULT 'loaded'");
+} catch { /* column already exists */ }
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS prospect_touches (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prospect_id INTEGER NOT NULL,
+    direction TEXT NOT NULL,            -- out|in
+    channel TEXT DEFAULT 'sms',         -- sms|email|call
+    text TEXT NOT NULL,
+    classification TEXT,                -- POSITIVE|CURIOUS|INTERESTED|BUSY|WRONG_PERSON|NOT_INTERESTED|OPT_OUT|UNCLEAR (inbound only)
+    stage_after TEXT,                   -- nurture stage after this touch
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_touches_prospect ON prospect_touches(prospect_id);
+`);
 
 export function insertProspect(p) {
   const stmt = db.prepare(`
@@ -137,8 +156,8 @@ export function insertProspect(p) {
       entity_status, established_date, address, city, state, zip, county,
       contact_name, contact_title, contact_source, officers_json,
       phone, phone_source, email, email_status, email_source,
-      website, website_confidence, socials_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      website, website_confidence, socials_json, google_rating, google_reviews
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(source, source_id) DO NOTHING
   `);
   const r = stmt.run(
@@ -148,7 +167,8 @@ export function insertProspect(p) {
     p.contact_name ?? null, p.contact_title ?? null, p.contact_source ?? null,
     p.officers_json ?? null, p.phone ?? null, p.phone_source ?? null,
     p.email ?? null, p.email_status ?? null, p.email_source ?? null,
-    p.website ?? null, p.website_confidence ?? null, p.socials_json ?? null
+    p.website ?? null, p.website_confidence ?? null, p.socials_json ?? null,
+    p.google_rating ?? null, p.google_reviews ?? null
   );
   return r.changes > 0;
 }
@@ -159,7 +179,7 @@ export function updateProspect(id, fields) {
     'email', 'email_status', 'email_source', 'website', 'website_confidence',
     'socials_json', 'score', 'score_breakdown_json', 'status', 'assigned_to',
     'notes', 'enriched_at', 'site_signals_json', 'opportunities_json',
-    'call_reason', 'tier',
+    'call_reason', 'tier', 'dba_name', 'google_rating', 'google_reviews',
   ];
   const keys = Object.keys(fields).filter((k) => allowed.includes(k));
   if (!keys.length) return;

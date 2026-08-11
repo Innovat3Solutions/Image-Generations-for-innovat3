@@ -52,6 +52,21 @@ export function titleCase(s) {
     .trim();
 }
 
+/**
+ * The name you'd actually SAY to the owner: prefer the DBA (that's the brand
+ * customers know), drop trailing legal suffixes ("​, INC.", "LLC", "P.A."),
+ * and fix shouty registry all-caps. "LONGBOAT KEY BUILDERS, INC." →
+ * "Longboat Key Builders". Legal name stays untouched in the record.
+ */
+export function friendlyBizName(name, dba = null) {
+  let n = String(dba || name || '').trim();
+  if (!n) return '';
+  n = n.replace(/[,\s]+(l\.?l\.?c\.?|inc\.?|corp\.?|corporation|incorporated|p\.?l\.?l\.?c\.?|l\.?l\.?p\.?|p\.?a\.?|p\.?l\.?|ltd\.?|limited)\s*$/i, '');
+  n = n.replace(/[,\s]+$/, '');
+  if (n === n.toUpperCase() && /[A-Z]{3}/.test(n)) n = titleCase(n);
+  return n || String(name || '').trim();
+}
+
 /** MM/DD/YYYY or MMDDYYYY -> ISO YYYY-MM-DD (null if invalid) */
 export function toISODate(raw) {
   if (!raw) return null;

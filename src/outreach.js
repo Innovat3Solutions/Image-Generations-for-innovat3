@@ -7,7 +7,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { VERTICALS } from './verticals.js';
 import { recommendOffer } from './offers.js';
-import { daysSince } from './util.js';
+import { daysSince, friendlyBizName } from './util.js';
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-5';
 const BETAS = ['server-side-fallback-2026-07-01'];
@@ -36,7 +36,12 @@ function prospectFacts(p) {
   const signals = j(p.site_signals_json);
   const socials = j(p.socials_json, {});
   return {
-    business: p.business_name,
+    // The name customers know: DBA over legal name, suffixes stripped —
+    // "Longboat Key Builders", never "LONGBOAT KEY BUILDERS, INC."
+    business: friendlyBizName(p.business_name, p.dba_name),
+    legalName: p.business_name,
+    googleRating: p.google_rating || null,
+    googleReviews: p.google_reviews || null,
     // A prospect named after the person (solo licensee) shouldn't be
     // addressed like a company ("congrats on getting Jane Doe off the ground")
     businessIsPersonName: !!p.contact_name && p.business_name.toLowerCase() === p.contact_name.toLowerCase(),
@@ -81,13 +86,14 @@ export async function generateOutreach(prospect, channel = 'email', repName = ''
       effort: 'medium',
       format: { type: 'json_schema', schema: OUTREACH_SCHEMA },
     },
-    system: `You write first-touch outreach for Innovat3 Solutions (websites, reviews, CRM, AI receptionists and marketing for small businesses). The ONLY goals of a first touch: introduce us briefly, pay a genuine SPECIFIC compliment rooted in the facts provided (never generic flattery, never invented facts), and end with ONE light question that makes replying easy. Rules:
+    system: `You write first-touch outreach for Innovat3 Solutions (websites, reviews, CRM, AI receptionists and marketing for small businesses), following the INNOVAT3 Nurture Playbook: the cold opener is KUDOS ONLY. Introduce yourself by name, pay a genuine SPECIFIC compliment rooted in the facts provided (never generic flattery, never invented facts — never claim to have seen reviews or work you weren't given), and close warm. The only goal is to earn a reply. Rules:
 - Sound like a real person, not a marketing blast. No buzzwords, no "I hope this finds you well", no exclamation spam.
-- Do NOT pitch packages or prices in the first touch. At most one short clause hinting we help businesses like theirs get found and never miss a lead.
+- NO pitch, NO packages or prices, NO meeting ask, and NO business-problem questions (nothing about missed calls, leads, websites, or marketing) — those come later in the flow.
+- Close with warmth: "keep doing what you're doing"-style kudos, or at most one light personal question about them/their work (e.g. how the first months have been). Never a sales question.
 - If the business is brand-new, congratulate them on the launch specifically (their trade, their city).
 - If they have no website, do NOT shame them — compliment what they DO have (new license, social presence, being established in their area).
-- Email: subject ≤ 6 words, lowercase-casual is fine; body 60-110 words; sign with the rep's name and "Innovat3 Solutions".
-- SMS: subject must be an empty string; body ≤ 300 characters, one question, name who you are.
+- Email: subject ≤ 6 words, lowercase-casual is fine; body 60-110 words; sign with the rep's name and "INNOVAT3 Solutions".
+- SMS: subject must be an empty string; body ≤ 300 characters, name who you are.
 - Comply with CAN-SPAM norms: nothing deceptive in the subject.`,
     messages: [{
       role: 'user',
@@ -124,23 +130,24 @@ export function templateOutreach(f, channel, repName) {
         ? `Came across ${theBiz}${f.city ? ` in ${f.city}` : ''} — you're clearly putting in the work on ${f.socialList || 'social'}, and it shows.`
         : `Came across ${theBiz}${f.city ? ` in ${f.city}` : ''} — always good to see a local ${f.vertical} building a name the old-fashioned way.`;
 
+  // Playbook cold opener: kudos only — no pitch, no prices, no sales question.
   if (channel === 'sms') {
     return {
       subject: '',
-      body: `${hi}, this is ${rep.split(' ')[0]} with Innovat3 Solutions here in Florida. ${f.isNew ? `Congrats on ${launchRef}${months ? ` — ${months} month${months > 1 ? 's' : ''} in already` : ''}!` : `Came across ${theBiz} and wanted to reach out.`} We help ${f.verticalPlural} get found and never miss a lead. Quick question — who handles your calls when you're with a customer?`,
+      body: `${hi}, this is ${rep.split(' ')[0]} with Innovat3 Solutions here in Florida. ${f.isNew ? `Congrats on ${launchRef}${months ? ` — ${months} month${months > 1 ? 's' : ''} in already` : ''}!` : `Came across ${theBiz} and wanted to reach out.`} Really like what you're doing — no pitch here, just wanted to introduce myself and give you some kudos. Keep it up!`,
     };
   }
   return {
-    subject: f.isNew ? `congrats on ${f.businessIsPersonName ? 'the new ' + f.vertical : f.business}` : `quick note about ${theBiz}`,
+    subject: f.isNew ? `congrats on ${f.businessIsPersonName ? 'the new ' + f.vertical : f.business}` : `had to give you some credit`,
     body: `${hi},
 
 ${compliment}
 
-I'm with Innovat3 Solutions — we help ${f.verticalPlural}${f.city ? ` around ${f.city}` : ''} get found online and make sure no lead slips through the cracks. Not writing to pitch you anything today; mostly wanted to introduce myself.
+I'm ${rep === 'The Innovat3 team' ? 'with Innovat3 Solutions' : `${rep.split(' ')[0]} with Innovat3 Solutions`} — we work with a lot of ${f.verticalPlural}${f.city ? ` around ${f.city}` : ''}, and you can usually tell pretty quickly when someone cares about the work. Nothing complicated here; just wanted to reach out and give you some credit.
 
-One question out of curiosity: when a customer calls while you're mid-job, what happens to that call?
+Keep doing what you're doing.
 
 ${rep}
-Innovat3 Solutions`,
+INNOVAT3 Solutions`,
   };
 }

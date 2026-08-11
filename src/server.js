@@ -12,6 +12,7 @@ import { providerStatus } from './enrich/provider-status.js';
 import { registerTrainingRoutes } from './training/index.js';
 import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, UPGRADE_TRIGGERS, RULES, recommendOffer } from './offers.js';
 import { generateOutreach } from './outreach.js';
+import { nurtureState, nextAction, classifyReply, handoffSummary, STAGES } from './nurture.js';
 import { VERTICALS } from './verticals.js';
 import { log, mapConcurrent } from './util.js';
 
@@ -102,6 +103,95 @@ app.post('/api/prospects/:id/outreach', async (req, res) => {
   } catch (err) {
     res.status(502).json({ error: String(err.message || err) });
   }
+});
+
+// ---------- nurture flow (Prospect Nurture & Human Handoff Playbook) ----------
+// Automation warms the relationship; a human monetizes it. These routes are
+// rep-driven: GET the current state + suggested playbook message, POST /sent
+// after sending it, POST /reply with what the prospect wrote back.
+const getProspect = (req) => db.prepare('SELECT * FROM prospects WHERE id = ?').get(Number(req.params.id));
+
+app.get('/api/prospects/:id/nurture', (req, res) => {
+  const row = getProspect(req);
+  if (!row) return res.status(404).json({ error: 'not found' });
+  res.json(nurtureState(row, String(req.query.rep || '')));
+});
+
+const logTouch = db.prepare(`
+  INSERT INTO prospect_touches (prospect_id, direction, channel, text, classification, stage_after)
+  VALUES (?, ?, ?, ?, ?, ?)
+`);
+const setStage = (id, stage) =>
+  db.prepare("UPDATE prospects SET nurture_stage = ?, updated_at = datetime('now') WHERE id = ?").run(stage, id);
+
+// Rep confirms the suggested message went out → log it and advance the stage.
+app.post('/api/prospects/:id/nurture/sent', (req, res) => {
+  const row = getProspect(req);
+  if (!row) return res.status(404).json({ error: 'not found' });
+  if ((row.nurture_stage || 'loaded') === 'suppressed') {
+    return res.status(400).json({ error: 'This prospect is suppressed — no further outreach.' });
+  }
+  const rep = String(req.body?.rep_name || '');
+  const channel = ['sms', 'email', 'call'].includes(req.body?.channel) ? req.body.channel : 'sms';
+  const action = nextAction(row, rep);
+  const text = String(req.body?.text || action.message || '').trim();
+  if (!text) return res.status(400).json({ error: 'Nothing to send at this stage.' });
+  // The client may pass the stage the send corresponds to (e.g. a BUSY
+  // acknowledgment holds the current stage instead of advancing).
+  const requested = String(req.body?.stage_to || '');
+  const stageTo = STAGES.some((s) => s.key === requested)
+    ? requested
+    : (action.stage_to || row.nurture_stage || 'loaded');
+  logTouch.run(row.id, 'out', channel, text, null, stageTo);
+  setStage(row.id, stageTo);
+  if (row.status === 'new') updateProspect(row.id, { status: 'contacted' });
+  res.json(nurtureState(getProspect(req), rep));
+});
+
+// Rep pastes what the prospect replied → classify, advance, suggest next move.
+app.post('/api/prospects/:id/nurture/reply', (req, res) => {
+  const row = getProspect(req);
+  if (!row) return res.status(404).json({ error: 'not found' });
+  const text = String(req.body?.text || '').trim();
+  if (!text) return res.status(400).json({ error: 'Paste the prospect’s reply first.' });
+  const rep = String(req.body?.rep_name || '');
+  const channel = ['sms', 'email', 'call'].includes(req.body?.channel) ? req.body.channel : 'sms';
+  const stage = row.nurture_stage || 'loaded';
+  const cls = classifyReply(text, stage);
+
+  // Inbound stage moves. Most advancement happens when the rep SENDS the next
+  // message; replies only move the needle where the reply itself is the event:
+  let stageTo = stage;
+  if (cls === 'OPT_OUT' || cls === 'NOT_INTERESTED') stageTo = 'suppressed';           // §05: stop immediately
+  else if (cls === 'INTERESTED') stageTo = 'qualified';                                 // high-intent bypass
+  else if (stage === 'outreach_sent' && !['BUSY', 'WRONG_PERSON'].includes(cls)) stageTo = 'engaged';
+  else if (stage === 'opportunity' && cls === 'POSITIVE') stageTo = 'qualified';        // gap acknowledged
+  logTouch.run(row.id, 'in', channel, text, cls, stageTo);
+  if (stageTo !== stage) setStage(row.id, stageTo);
+  if (cls === 'OPT_OUT' || cls === 'NOT_INTERESTED') updateProspect(row.id, { status: 'not_interested' });
+  else if (cls === 'INTERESTED' && !['customer'].includes(row.status)) updateProspect(row.id, { status: 'interested' });
+
+  const fresh = getProspect(req);
+  res.json({ classification: cls, action: nextAction(fresh, rep, cls), state: nurtureState(fresh, rep) });
+});
+
+// Manual override — undo a mis-click or restart a lapsed thread.
+app.post('/api/prospects/:id/nurture/stage', (req, res) => {
+  const row = getProspect(req);
+  if (!row) return res.status(404).json({ error: 'not found' });
+  const stage = String(req.body?.stage || '');
+  if (!STAGES.some((s) => s.key === stage)) return res.status(400).json({ error: 'bad stage' });
+  setStage(row.id, stage);
+  res.json(nurtureState(getProspect(req), String(req.body?.rep_name || '')));
+});
+
+// The salesperson's handoff package (playbook §04) — everything they need
+// to walk in warm: contact, opportunity, gap in the prospect's own words,
+// pricing signals, and the full conversation.
+app.get('/api/prospects/:id/handoff', (req, res) => {
+  const row = getProspect(req);
+  if (!row) return res.status(404).json({ error: 'not found' });
+  res.json({ text: handoffSummary(row, String(req.query.rep || '')) });
 });
 
 app.patch('/api/prospects/:id', (req, res) => {

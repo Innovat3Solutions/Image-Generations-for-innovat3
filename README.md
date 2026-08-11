@@ -16,6 +16,15 @@ prospect, and serves it all in a dashboard your reps work from daily.
 | **NPPES** (national provider registry) | New **healthcare providers & clinics** with practice address, **phone**, and — for organizations — the **authorized official's name and title** | CMS weekly new-enumeration files | no |
 | **SAM.gov** | Newly registered **federal contractors** with a named Government Business **POC (often with email)** | Entity Management API | free key (`SAM_API_KEY`) |
 | **OpenStreetMap** | **Territory prospecting** — existing businesses by category within chosen zip codes, with self-published phones/websites | Overpass API | no |
+| **Google Business listings** | The **storefront view**: the brand name customers actually see (their DBA), plus listing **phone, website, and star-rating/review counts** by zip + vertical | Serper places API | `SERPER_API_KEY` |
+
+State registries know the *legal entity* ("SMITH HOLDINGS OF FLORIDA, LLC");
+Google knows the *brand*. When a listing matches a prospect we already track
+(same phone or website domain), it is **cross-linked instead of duplicated**:
+the listing name becomes the prospect's DBA, missing phone/website get filled
+in, and the review data is attached. Every generated message then uses the
+brand name — and prospects with real Google reviews unlock the review-based
+nurture opener.
 
 "New" means established/licensed within the window you choose (default **180 days**).
 Adding another DBPR board is one config entry — grab the extract URL from that
@@ -134,15 +143,45 @@ they already own that layer — plus the upsell ladder with each step tied to
 that prospect's detected gaps ("their form has no follow-up behind it →
 Connect", "phone-centric, no after-hours → AI").
 
+### Nurture flow (Prospect Nurture & Human Handoff Playbook)
+
+Every prospect drawer carries a guided conversation engine built on the
+INNOVAT3 Conversation Standard: **earn the response → build rapport → ask
+permission → identify ONE real opportunity → let the prospect acknowledge
+the gap → bring in a human.** Automation warms the relationship; humans
+monetize it.
+
+- **Stage tracker** — Loaded → Outreach Sent → Engaged → Permission →
+  Opportunity → Qualified → Handoff Requested → Call Scheduled → Sales
+  Conversation (plus Suppressed for opt-outs).
+- **Suggested next message** at every stage, verbatim from the playbook with
+  merge fields filled from *real* prospect data only — the review-based
+  opener is used only when we actually hold Google review data; the cold
+  opener is kudos-only: no pitch, no $99, no meeting ask.
+- **Reply classifier** — paste what they wrote back; it's read and labeled
+  (interested / curious / busy / wrong person / not interested / opt-out)
+  and the stage advances. High-intent replies ("how much?") **bypass**
+  the remaining steps straight to handoff; opt-outs suppress the prospect
+  immediately and block further sends; "not interested" gets a polite
+  close, never an argument.
+- **One opportunity branch** per prospect (missed calls, lead follow-up,
+  after-hours/AI receptionist, online presence, reactivation), chosen from
+  their actual signals and mapped to the pricing ladder.
+- **Sales handoff package** — one click builds the §04 salesperson brief:
+  contact, opportunity, the gap in the prospect's own words, pricing
+  questions asked, likely starting offer, and the full conversation.
+
 ### First-touchpoint generator
 
-Two buttons on every prospect: **Draft intro email** / **Draft intro text**
-— a copy-paste-ready first touch that introduces Innovat3 and pays a
-specific, honest compliment (new-launch congrats, their trade, their city,
-what they've built) and ends with one easy question designed to get a
-reply. No pitch, no prices — the goal is a response. AI-written with
+**AI-personalize** on the nurture opener (plus email/text variants) — a
+copy-paste-ready first touch that introduces Innovat3 and pays a specific,
+honest compliment (new-launch congrats, their trade, their city, what
+they've built). Kudos only, per the playbook: no pitch, no prices, no
+business-problem questions — the goal is a response. AI-written with
 `ANTHROPIC_API_KEY` (facts-only, CAN-SPAM-conscious); a solid template
-fallback otherwise.
+fallback otherwise. All messages address the prospect by their **brand
+name** (DBA first, legal suffixes stripped) — "Longboat Key Builders",
+never "LONGBOAT KEY BUILDERS, INC."
 
 ## Sales Practice tab (🎧)
 

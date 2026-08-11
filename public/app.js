@@ -125,7 +125,7 @@ async function loadTable() {
     tbody.innerHTML = data.rows.map((r) => `
       <tr data-id="${r.id}">
         <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
-        <td><div class="biz-name">${esc(r.business_name)}</div><div class="biz-sub">${esc(r.license_type || '')}</div></td>
+        <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.license_type || ''))}</div></td>
         <td>${esc(industryLabel(r.industry))}</td>
         <td>${esc(r.established_date || '—')}</td>
         <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
@@ -150,7 +150,7 @@ function rowHtml(r) {
   return `
     <tr data-id="${r.id}">
       <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
-      <td><div class="biz-name">${esc(r.business_name)}</div><div class="biz-sub">${esc(r.license_type || '')}</div></td>
+      <td><div class="biz-name">${esc(r.dba_name || r.business_name)}</div><div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.license_type || ''))}</div></td>
       <td>${esc(industryLabel(r.industry))}</td>
       <td>${esc(r.established_date || '—')}</td>
       <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
@@ -195,7 +195,7 @@ async function openDrawer(id) {
   const drawer = $('#drawer');
   drawer.innerHTML = `
     <button class="close-x" id="drawer-close">✕</button>
-    <h2>${esc(r.business_name)}</h2>
+    <h2>${esc(r.dba_name || r.business_name)}</h2>${r.dba_name ? `<p class="muted" style="margin-top:-4px">legal entity: ${esc(r.business_name)}</p>` : ''}
     <p class="muted">${esc(r.license_type || '')} · ${esc(industryLabel(r.industry))} · <span class="score-badge tier-${esc(r.tier || 'below')}">${r.score}</span></p>
 
     ${r.call_reason ? `<section><h3>Why you should call</h3><div class="call-reason">${esc(r.call_reason)}</div></section>` : ''}
@@ -213,18 +213,8 @@ async function openDrawer(id) {
     </section>` : ''}
 
     <section>
-      <h3>First touchpoint</h3>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn ghost" id="d-email" data-ch="email">✉️ Draft intro email</button>
-        <button class="btn ghost" id="d-sms" data-ch="sms">💬 Draft intro text</button>
-      </div>
-      <div id="d-outreach-wrap" class="hidden">
-        <textarea id="d-outreach" class="outreach-out" readonly></textarea>
-        <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
-          <button class="btn primary" id="d-copy">📋 Copy</button>
-          <span id="d-outreach-note" class="muted" style="font-size:11px"></span>
-        </div>
-      </div>
+      <h3>Nurture flow <span class="muted" style="font-weight:400;font-size:11px">— warm them up by text/email, then hand off to a human</span></h3>
+      <div id="n-panel"><span class="muted">Loading…</span></div>
     </section>
 
     ${opportunities.length ? `<section><h3>Detected opportunities</h3>${opportunities.map((o) => `
@@ -248,8 +238,9 @@ async function openDrawer(id) {
       <dl class="kv">
         <dt>Established</dt><dd>${esc(r.established_date || '—')}</dd>
         <dt>Address</dt><dd>${esc([r.address, r.city, r.state, r.zip].filter(Boolean).join(', ') || '—')}</dd>
-        <dt>Source</dt><dd>${esc({ sunbiz: 'Sunbiz filing', dbpr: 'DBPR license', nppes: 'NPI registry', sam: 'SAM.gov registration', osm: 'OpenStreetMap' }[r.source] || r.source)} · ${esc(r.source_id)}</dd>
+        <dt>Source</dt><dd>${esc({ sunbiz: 'Sunbiz filing', dbpr: 'DBPR license', nppes: 'NPI registry', sam: 'SAM.gov registration', osm: 'OpenStreetMap', google: 'Google Business listing' }[r.source] || r.source)} · ${esc(r.source_id)}</dd>
         <dt>Record status</dt><dd>${esc(r.entity_status || '—')}</dd>
+        ${r.google_reviews ? `<dt>Google reviews</dt><dd>${r.google_rating}★ · ${r.google_reviews} reviews</dd>` : ''}
       </dl>
     </section>
 
@@ -299,37 +290,8 @@ async function openDrawer(id) {
     closeDrawer();
     loadTable();
   };
-  // outreach generator
-  for (const btnId of ['d-email', 'd-sms']) {
-    const btn = document.getElementById(btnId);
-    btn.onclick = async () => {
-      const ch = btn.dataset.ch;
-      btn.disabled = true;
-      const orig = btn.textContent;
-      btn.textContent = 'Writing…';
-      try {
-        const out = await api(`/api/prospects/${id}/outreach`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ channel: ch, rep_name: localStorage.getItem('rep_name') || '' }),
-        });
-        $('#d-outreach-wrap').classList.remove('hidden');
-        $('#d-outreach').value = ch === 'email' && out.subject ? `Subject: ${out.subject}\n\n${out.body}` : out.body;
-        $('#d-outreach-note').textContent = out.generated === 'template'
-          ? 'Template draft — connect ANTHROPIC_API_KEY for fully personalized AI drafts.'
-          : 'AI draft — read it once before sending; it only used verified facts.';
-      } catch (e) {
-        alert(e.message);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = orig;
-      }
-    };
-  }
-  $('#d-copy').onclick = () => {
-    navigator.clipboard.writeText($('#d-outreach').value);
-    $('#d-copy').textContent = '✓ Copied';
-    setTimeout(() => { $('#d-copy').textContent = '📋 Copy'; }, 1500);
-  };
+  // nurture flow panel
+  renderNurture(id).catch((e) => { $('#n-panel').innerHTML = `<span class="muted">${esc(e.message)}</span>`; });
 
   $('#d-reenrich').onclick = async () => {
     $('#d-reenrich').disabled = true;
@@ -350,6 +312,136 @@ async function openDrawer(id) {
 function closeDrawer() {
   $('#drawer').classList.add('hidden');
   $('#drawer-overlay').classList.add('hidden');
+}
+
+/* ---------- nurture flow (Playbook: automation warms, humans monetize) ---------- */
+const repName = () => localStorage.getItem('rep_name') || '';
+
+async function renderNurture(id) {
+  const state = await api(`/api/prospects/${id}/nurture?rep=${encodeURIComponent(repName())}`);
+  paintNurture(id, state, null);
+}
+
+function paintNurture(id, state, lastReply) {
+  const el = $('#n-panel');
+  if (!el) return;
+  // A classified reply may override the default next move (BUSY hold,
+  // polite close, high-intent bypass) — prefer the reply-aware action.
+  const sug = lastReply?.action || state.suggestion;
+  const suppressed = state.stage === 'suppressed';
+  const stages = state.stages.filter((s) => s.key !== 'suppressed');
+  const idx = stages.findIndex((s) => s.key === state.stage);
+  const handoffReady = ['qualified', 'handoff_requested', 'call_scheduled', 'sales_conversation'].includes(state.stage);
+
+  el.innerHTML = `
+    <div class="stage-bar">${suppressed
+      ? '<span class="stage-pill suppressed">⛔ Suppressed — no further outreach on this channel</span>'
+      : stages.map((s, i) => `<span class="stage-pill${i < idx ? ' done' : ''}${i === idx ? ' current' : ''}" title="${esc(s.label)}">${i < idx ? '✓ ' : ''}${esc(s.label)}</span>`).join('')}
+    </div>
+    ${lastReply ? `<div class="n-cls">Reply read as <span class="cls-chip ${esc(lastReply.classification)}">${esc(lastReply.classification.replaceAll('_', ' '))}</span></div>` : ''}
+    ${sug.note ? `<div class="n-note">${esc(sug.note)}${sug.branch && !suppressed ? ` <span class="muted">· Opportunity track: ${esc(state.branches[sug.branch] || sug.branch)}</span>` : ''}</div>` : ''}
+    ${sug.message ? `
+      <textarea id="n-msg" class="outreach-out">${esc(sug.message)}</textarea>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center">
+        <button class="btn primary" id="n-copy">📋 Copy</button>
+        ${suppressed ? '' : '<button class="btn" id="n-sent">✓ I sent this</button>'}
+        ${state.stage === 'loaded' && sug.alt ? '<button class="btn ghost" id="n-alt">✉️ Email version</button><button class="btn ghost" id="n-ai">✨ AI-personalize</button>' : ''}
+        <span id="n-msg-note" class="muted" style="font-size:11px"></span>
+      </div>` : ''}
+    ${!suppressed ? `
+      <label style="display:block;margin-top:12px;font-size:12px;color:var(--ink-2)">They replied? Paste it here — it gets read, classified, and the next move teed up
+        <textarea id="n-reply" placeholder='e.g. "Thanks! Who is this?"'></textarea>
+      </label>
+      <button class="btn ghost" id="n-log" style="margin-top:6px">↩ Log their reply</button>` : ''}
+    ${handoffReady ? `
+      <button class="btn" id="n-handoff" style="margin-top:10px">📄 Build sales handoff package</button>
+      <div id="n-handoff-wrap" class="hidden">
+        <textarea id="n-handoff-out" class="outreach-out" readonly style="min-height:220px"></textarea>
+        <button class="btn primary" id="n-handoff-copy" style="margin-top:6px">📋 Copy package</button>
+      </div>` : ''}
+    ${state.touches.length ? `<details style="margin-top:10px"><summary class="muted" style="cursor:pointer;font-size:12px">Conversation log (${state.touches.length})</summary>
+      <div class="touch-log">${state.touches.map((t) => `<div class="touch ${esc(t.direction)}"><span class="who">${t.direction === 'out' ? 'US →' : '← THEM'}</span> ${esc(t.text)}${t.classification ? ` <span class="cls-chip sm ${esc(t.classification)}">${esc(t.classification.replaceAll('_', ' '))}</span>` : ''}</div>`).join('')}</div></details>` : ''}
+  `;
+
+  const copyBtn = (btnEl, getText) => {
+    if (!btnEl) return;
+    const orig = btnEl.textContent;
+    btnEl.onclick = () => {
+      navigator.clipboard.writeText(getText());
+      btnEl.textContent = '✓ Copied';
+      setTimeout(() => { btnEl.textContent = orig; }, 1500);
+    };
+  };
+  copyBtn($('#n-copy'), () => $('#n-msg').value);
+
+  const sent = $('#n-sent');
+  if (sent) sent.onclick = async () => {
+    sent.disabled = true;
+    try {
+      const text = $('#n-msg').value;
+      const next = await api(`/api/prospects/${id}/nurture/sent`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text, rep_name: repName(), stage_to: sug.stage_to,
+          channel: /^Subject:/i.test(text) ? 'email' : 'sms',
+        }),
+      });
+      paintNurture(id, next, null);
+    } catch (e) { alert(e.message); sent.disabled = false; }
+  };
+
+  const alt = $('#n-alt');
+  if (alt) alt.onclick = () => {
+    const showingEmail = alt.dataset.on === '1';
+    $('#n-msg').value = showingEmail ? sug.message : `Subject: ${sug.alt.email_subject}\n\n${sug.alt.email_body}`;
+    alt.dataset.on = showingEmail ? '' : '1';
+    alt.textContent = showingEmail ? '✉️ Email version' : '💬 Text version';
+  };
+
+  const ai = $('#n-ai');
+  if (ai) ai.onclick = async () => {
+    ai.disabled = true;
+    ai.textContent = 'Writing…';
+    try {
+      const ch = $('#n-alt')?.dataset.on === '1' ? 'email' : 'sms';
+      const out = await api(`/api/prospects/${id}/outreach`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel: ch, rep_name: repName() }),
+      });
+      $('#n-msg').value = ch === 'email' && out.subject ? `Subject: ${out.subject}\n\n${out.body}` : out.body;
+      $('#n-msg-note').textContent = out.generated === 'template'
+        ? 'Personalized template — connect ANTHROPIC_API_KEY for fully AI-written drafts.'
+        : 'AI draft — read it once before sending; it only used verified facts.';
+    } catch (e) { alert(e.message); } finally {
+      ai.disabled = false;
+      ai.textContent = '✨ AI-personalize';
+    }
+  };
+
+  const logBtn = $('#n-log');
+  if (logBtn) logBtn.onclick = async () => {
+    const text = $('#n-reply').value.trim();
+    if (!text) return;
+    logBtn.disabled = true;
+    try {
+      const out = await api(`/api/prospects/${id}/nurture/reply`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, rep_name: repName() }),
+      });
+      paintNurture(id, out.state, { classification: out.classification, action: out.action });
+    } catch (e) { alert(e.message); logBtn.disabled = false; }
+  };
+
+  const ho = $('#n-handoff');
+  if (ho) ho.onclick = async () => {
+    ho.disabled = true;
+    try {
+      const out = await api(`/api/prospects/${id}/handoff?rep=${encodeURIComponent(repName())}`);
+      $('#n-handoff-wrap').classList.remove('hidden');
+      $('#n-handoff-out').value = out.text;
+      copyBtn($('#n-handoff-copy'), () => $('#n-handoff-out').value);
+    } catch (e) { alert(e.message); } finally { ho.disabled = false; }
+  };
 }
 
 /* ---------- runs ---------- */

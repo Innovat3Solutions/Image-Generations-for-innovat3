@@ -12,6 +12,7 @@ import { fetchSunbizProspects } from '../sources/sunbiz.js';
 import { fetchNppesProspects } from '../sources/nppes.js';
 import { fetchSamProspects } from '../sources/sam.js';
 import { fetchOsmProspects } from '../sources/osm.js';
+import { fetchGoogleProspects } from '../sources/google.js';
 import { enrichProspect } from '../enrich/index.js';
 import { applyScore } from './score.js';
 import { mapConcurrent, log } from '../util.js';
@@ -22,6 +23,7 @@ export const SOURCE_REGISTRY = {
   nppes: { label: 'NPPES — new healthcare providers', fetch: fetchNppesProspects },
   sam: { label: 'SAM.gov — new federal contractors', fetch: fetchSamProspects, needsKey: 'SAM_API_KEY' },
   osm: { label: 'OpenStreetMap — businesses by area (needs zips)', fetch: fetchOsmProspects, needsZips: true },
+  google: { label: 'Google Business listings — storefront brands by area (needs zips)', fetch: fetchGoogleProspects, needsZips: true, needsKey: 'SERPER_API_KEY' },
 };
 
 /**
