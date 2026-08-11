@@ -114,6 +114,29 @@ The **Run pipeline** modal live-checks every configured API key
 freshest unworked prospects above the pool threshold, grouped
 🔥 High / 🟢 Strong / 🟡 Explore — "50 businesses worth calling, and why."
 
+## Sales Practice tab (🎧)
+
+`/practice.html` — a flight simulator for the sales team. Reps pick a
+scenario (a skeptical roofer, a busy med spa owner, a cautious law-firm
+partner…), get a **3-minute simulated phone call** where Claude plays the
+prospect and naturally raises the FAQs/objections from the library — price,
+"why so cheap?", "why so expensive?", "how do you do this?", "I already have
+a guy", "send me an email" — then get **scored 0–100** across discovery /
+objection handling / value communication / rapport / closing, with per-objection
+verdicts, strengths, focus areas, and model rebuttals to steal. Scores are
+tracked per rep with a team board.
+
+**New product or promo?** Paste the brief and the tab generates **10 fresh
+scenarios** for it, so every rep faces it from every angle before selling it.
+
+The FAQ/objection library (with the rebuttal points grading is anchored to)
+lives in the database — seeded with Innovat3's ten core objections, add more
+via `POST /api/training/faqs`.
+
+Requires `ANTHROPIC_API_KEY` (platform.claude.com). Runs on Claude Opus 5
+with server-side refusal fallbacks enabled; expect roughly $0.10–0.25 per
+practice call in API usage.
+
 ## Market intelligence (Census CBP)
 
 `GET /api/markets/hvac` (or any vertical) ranks Florida counties by

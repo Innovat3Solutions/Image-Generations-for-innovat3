@@ -25,6 +25,8 @@ services:
       - key: DAILY_RUN_LIMIT
         value: "100"
       # Optional upgrades — add values in the Render dashboard:
+      # - key: ANTHROPIC_API_KEY (sales practice tab — roleplay + grading)
+      #   sync: false
       # - key: APOLLO_API_KEY   (decision-maker emails/phones)
       #   sync: false
       # - key: SAM_API_KEY      (federal contractor source, free key)

@@ -9,6 +9,7 @@ import { applyScore, scoreAll } from './pipeline/score.js';
 import { createRun, updateRun } from './db.js';
 import { marketsForVertical, VERTICAL_NAICS } from './market.js';
 import { providerStatus } from './enrich/provider-status.js';
+import { registerTrainingRoutes } from './training/index.js';
 import { VERTICALS } from './verticals.js';
 import { log, mapConcurrent } from './util.js';
 
@@ -318,6 +319,8 @@ if (DAILY_RUN_HOUR !== null && Number.isInteger(DAILY_RUN_HOUR) && DAILY_RUN_HOU
   }, 60000);
   log(`scheduler: daily pipeline run enabled at ${DAILY_RUN_HOUR}:00 America/New_York (limit ${Number(process.env.DAILY_RUN_LIMIT) || 100})`);
 }
+
+registerTrainingRoutes(app);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => log(`Innovat3 Prospect Engine → http://localhost:${port}`));

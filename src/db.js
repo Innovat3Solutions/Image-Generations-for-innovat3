@@ -67,6 +67,43 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS training_faqs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question TEXT NOT NULL,
+    category TEXT,                       -- price|process|trust|timing|competition
+    rebuttal_points_json TEXT,           -- talking points a good answer hits
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS training_scenarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    persona_json TEXT NOT NULL,          -- {name,business,vertical,personality,situation}
+    product_context TEXT,                -- what the rep is selling this scenario
+    target_faq_ids_json TEXT,            -- FAQ ids the prospect will raise
+    difficulty TEXT DEFAULT 'medium',    -- easy|medium|hard
+    duration_seconds INTEGER DEFAULT 180,
+    source TEXT DEFAULT 'seed',          -- seed|custom|generated
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS training_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rep_name TEXT NOT NULL,
+    scenario_id INTEGER NOT NULL,
+    transcript_json TEXT DEFAULT '[]',   -- [{role:'rep'|'prospect', text, at}]
+    status TEXT DEFAULT 'active',        -- active|completed|abandoned
+    score INTEGER,
+    score_json TEXT,                     -- bucket scores
+    feedback_json TEXT,                  -- strengths, focus areas, faq results, rebuttals
+    started_at TEXT DEFAULT (datetime('now')),
+    ended_at TEXT
+  );
+`);
+
 // Additive migrations for databases created by earlier versions
 for (const [col, type] of [
   ['site_signals_json', 'TEXT'],   // booking/chat/forms/mobile analysis

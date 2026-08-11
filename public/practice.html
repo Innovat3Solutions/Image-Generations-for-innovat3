@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice — Innovat3 Prospect Engine</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎧</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">🎧</span>
+      <div>
+        <h1>Sales Practice</h1>
+        <p class="subtitle">Simulated calls · real objections · coached feedback</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <input type="text" id="rep-name" placeholder="Your name" size="14" style="padding:8px 10px;border:1px solid var(--grid);border-radius:8px;background:var(--surface);color:var(--ink)" />
+      <a class="btn ghost" href="/">← Prospects</a>
+    </div>
+  </header>
+
+  <div id="no-key" class="run-banner hidden">⚠️ Practice mode needs an Anthropic API key — add <code>&nbsp;ANTHROPIC_API_KEY&nbsp;</code> in the server environment.</div>
+
+  <!-- ============ HOME VIEW ============ -->
+  <main id="view-home" class="practice-wrap">
+    <section>
+      <h2 class="section-title">Pick a scenario</h2>
+      <div id="scenario-grid" class="scenario-grid"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">New product or promo?</h2>
+      <div class="gen-box">
+        <p class="muted">Describe it and we'll generate 10 practice scenarios with the objections prospects will actually raise. Every rep should run them before selling it.</p>
+        <textarea id="gen-brief" placeholder="e.g. New Spring Promo: website + AI receptionist bundle at $299/mo, first month free, 48-hour launch guarantee…"></textarea>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn primary" id="gen-btn">Generate 10 scenarios</button>
+          <span id="gen-status" class="muted"></span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Recent calls</h2>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Score</th><th>Rep</th><th>Scenario</th><th>Difficulty</th><th>When</th></tr></thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Team board</h2>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Rep</th><th>Calls</th><th>Avg score</th><th>Best</th></tr></thead>
+          <tbody id="stats-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ CALL VIEW ============ -->
+  <main id="view-call" class="practice-wrap hidden">
+    <div class="call-header">
+      <div>
+        <h2 id="call-persona" style="margin:0"></h2>
+        <p class="muted" id="call-context"></p>
+      </div>
+      <div class="call-controls">
+        <span id="call-timer" class="call-timer">3:00</span>
+        <button class="btn primary" id="end-call">End call & get scored</button>
+      </div>
+    </div>
+    <div id="chat" class="chat"></div>
+    <form id="chat-form" class="chat-input">
+      <input type="text" id="chat-text" placeholder="Say something… (you're the rep)" autocomplete="off" />
+      <button class="btn primary" type="submit">Say it</button>
+    </form>
+  </main>
+
+  <!-- ============ RESULTS VIEW ============ -->
+  <main id="view-results" class="practice-wrap hidden">
+    <div class="results-header">
+      <div class="score-ring" id="result-score"></div>
+      <div>
+        <h2 id="result-headline" style="margin:0"></h2>
+        <p id="result-summary" class="muted" style="max-width:640px"></p>
+      </div>
+    </div>
+    <div class="results-grid">
+      <section class="result-card">
+        <h3>Score breakdown</h3>
+        <div id="result-buckets"></div>
+      </section>
+      <section class="result-card">
+        <h3>Objection handling</h3>
+        <div id="result-faqs"></div>
+      </section>
+      <section class="result-card">
+        <h3>What worked</h3>
+        <ul id="result-strengths"></ul>
+        <h3 style="margin-top:14px">Focus on this</h3>
+        <ul id="result-focus"></ul>
+      </section>
+      <section class="result-card">
+        <h3>Steal these rebuttals</h3>
+        <div id="result-rebuttals"></div>
+      </section>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn primary" id="again-btn">↻ Run it again</button>
+      <button class="btn ghost" id="home-btn">Back to scenarios</button>
+    </div>
+  </main>
+
+  <script src="practice.js"></script>
+</body>
+</html>

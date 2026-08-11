@@ -74,5 +74,6 @@ export async function providerStatus() {
     hunter: { label: 'Hunter (email finding)', ...hunter },
     sam: { label: 'SAM.gov (contractor source)', ...sam },
     census: { label: 'Census (market intel)', ...census },
+    anthropic: { label: 'Claude (sales practice)', configured: !!process.env.ANTHROPIC_API_KEY, ok: !!process.env.ANTHROPIC_API_KEY, needsKeyName: 'ANTHROPIC_API_KEY' },
   };
 }
