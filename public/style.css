@@ -314,6 +314,12 @@ tbody tr:last-child td { border-bottom: none; }
 .handled.missed { color: var(--critical); border-color: var(--critical); }
 .rebuttal { background: var(--wash); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: 13px; }
 .rebuttal .q { font-weight: 650; margin-bottom: 4px; }
+.call-options { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.call-options select { padding: 6px 8px; border: 1px solid var(--grid); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 12px; max-width: 320px; }
+.material-edit { width: 100%; min-height: 90px; resize: vertical; background: var(--page); color: var(--ink); border: 1px solid var(--grid); border-radius: 8px; padding: 10px; font-family: inherit; font-size: 12px; }
+.spark { display: flex; gap: 4px; align-items: flex-end; height: 60px; }
+.spark-col { flex: 1; max-width: 26px; height: 100%; background: var(--grid); border-radius: 4px; display: flex; align-items: flex-end; overflow: hidden; }
+.spark-fill { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; }
 
 @media (max-width: 720px) {
   .topbar { flex-direction: column; gap: 10px; align-items: flex-start; }

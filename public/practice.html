@@ -13,29 +13,53 @@
       <span class="brand-mark">🎧</span>
       <div>
         <h1>Sales Practice</h1>
-        <p class="subtitle">Simulated calls · real objections · coached feedback</p>
+        <p class="subtitle">Roleplay calls · real-call grading · coached feedback</p>
       </div>
     </div>
     <div class="topbar-actions">
-      <input type="text" id="rep-name" placeholder="Your name" size="14" style="padding:8px 10px;border:1px solid var(--grid);border-radius:8px;background:var(--surface);color:var(--ink)" />
+      <input type="text" id="rep-name" placeholder="Your name (e.g. JC, Susan)" size="18" style="padding:8px 10px;border:1px solid var(--grid);border-radius:8px;background:var(--surface);color:var(--ink)" />
       <a class="btn ghost" href="/">← Prospects</a>
     </div>
   </header>
 
-  <div id="no-key" class="run-banner hidden">⚠️ Practice mode needs an Anthropic API key — add <code>&nbsp;ANTHROPIC_API_KEY&nbsp;</code> in the server environment.</div>
+  <div id="demo-banner" class="run-banner hidden">🎬 <strong>&nbsp;Demo mode&nbsp;</strong> — the console is not connected yet, so calls use canned prospect lines and a sample scorecard. Everything is clickable; add <code>&nbsp;ANTHROPIC_API_KEY&nbsp;</code> and the real AI coach takes over automatically.</div>
 
   <!-- ============ HOME VIEW ============ -->
   <main id="view-home" class="practice-wrap">
+    <section id="progress-section" class="hidden">
+      <h2 class="section-title">Your progress</h2>
+      <div class="result-card" id="progress-card"></div>
+    </section>
+
     <section>
-      <h2 class="section-title">Pick a scenario</h2>
+      <h2 class="section-title">Practice a roleplay call</h2>
+      <div class="call-options">
+        <label class="chk"><input type="checkbox" id="opt-gatekeeper" /> Start at the gatekeeper</label>
+        <label class="chk">Drill a specific objection:&nbsp;
+          <select id="opt-focus"><option value="">Coach's choice</option></select>
+        </label>
+      </div>
       <div id="scenario-grid" class="scenario-grid"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Grade a real call</h2>
+      <div class="gen-box">
+        <p class="muted">Had a real call? Paste the transcript (or your best reconstruction) and get the same scorecard — stage reached, missed upsell openings, what to fix, pace check.</p>
+        <input type="text" id="real-context" placeholder="Optional context: who was it, what were you selling…" style="padding:9px 10px;border:1px solid var(--grid);border-radius:8px;background:var(--page);color:var(--ink);font-family:inherit;font-size:13px" />
+        <textarea id="real-transcript" placeholder="ME: Hi, this is JC from Innovat3…&#10;PROSPECT: We're not interested…&#10;ME: Totally understand — quick question though…"></textarea>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn primary" id="real-grade-btn">Grade this call</button>
+          <span id="real-status" class="muted"></span>
+        </div>
+      </div>
     </section>
 
     <section>
       <h2 class="section-title">New product or promo?</h2>
       <div class="gen-box">
         <p class="muted">Describe it and we'll generate 10 practice scenarios with the objections prospects will actually raise. Every rep should run them before selling it.</p>
-        <textarea id="gen-brief" placeholder="e.g. New Spring Promo: website + AI receptionist bundle at $299/mo, first month free, 48-hour launch guarantee…"></textarea>
+        <textarea id="gen-brief" placeholder="e.g. Spring promo: landing page + lead automation bundle, first month free, 5-day delivery…"></textarea>
         <div style="display:flex;gap:10px;align-items:center">
           <button class="btn primary" id="gen-btn">Generate 10 scenarios</button>
           <span id="gen-status" class="muted"></span>
@@ -47,20 +71,25 @@
       <h2 class="section-title">Recent calls</h2>
       <div class="table-wrap" style="margin:0">
         <table>
-          <thead><tr><th>Score</th><th>Rep</th><th>Scenario</th><th>Difficulty</th><th>When</th></tr></thead>
+          <thead><tr><th>Score</th><th>Rep</th><th>Call</th><th>Type</th><th>When</th></tr></thead>
           <tbody id="history-body"></tbody>
         </table>
       </div>
     </section>
 
     <section>
-      <h2 class="section-title">Team board</h2>
+      <h2 class="section-title">Team board <span class="muted" style="font-weight:400;font-size:12px">· goal: 4 closes/week each</span></h2>
       <div class="table-wrap" style="margin:0">
         <table>
           <thead><tr><th>Rep</th><th>Calls</th><th>Avg score</th><th>Best</th></tr></thead>
           <tbody id="stats-body"></tbody>
         </table>
       </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Company materials <span class="muted" style="font-weight:400;font-size:12px">· the coach and the AI prospect are grounded in these</span></h2>
+      <div id="materials-list"></div>
     </section>
   </main>
 
@@ -85,36 +114,44 @@
 
   <!-- ============ RESULTS VIEW ============ -->
   <main id="view-results" class="practice-wrap hidden">
+    <div id="result-demo-note" class="run-banner hidden">🎬 Sample scorecard (demo mode) — real grading activates with the API key.</div>
     <div class="results-header">
       <div class="score-ring" id="result-score"></div>
       <div>
         <h2 id="result-headline" style="margin:0"></h2>
         <p id="result-summary" class="muted" style="max-width:640px"></p>
+        <p id="result-progress" class="muted" style="max-width:640px;font-weight:600"></p>
       </div>
     </div>
     <div class="results-grid">
       <section class="result-card">
-        <h3>Score breakdown</h3>
+        <h3>Category scores (1–10)</h3>
         <div id="result-buckets"></div>
       </section>
       <section class="result-card">
         <h3>Objection handling</h3>
         <div id="result-faqs"></div>
+        <div id="result-growth" class="muted" style="font-size:12px;margin-top:8px"></div>
       </section>
       <section class="result-card">
         <h3>What worked</h3>
         <ul id="result-strengths"></ul>
-        <h3 style="margin-top:14px">Focus on this</h3>
-        <ul id="result-focus"></ul>
+        <h3 style="margin-top:14px">What to fix</h3>
+        <p id="result-fix" style="font-size:13px"></p>
+        <h3 style="margin-top:14px">Try this line instead</h3>
+        <p id="result-altline" style="font-size:13px;font-style:italic"></p>
       </section>
       <section class="result-card">
-        <h3>Steal these rebuttals</h3>
+        <h3>Pace check · 4 closes/week</h3>
+        <p id="result-pace" style="font-size:13px"></p>
+        <h3 style="margin-top:14px">Steal these rebuttals</h3>
         <div id="result-rebuttals"></div>
       </section>
     </div>
-    <div style="display:flex;gap:10px;margin-top:18px">
-      <button class="btn primary" id="again-btn">↻ Run it again</button>
-      <button class="btn ghost" id="home-btn">Back to scenarios</button>
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <a class="btn primary" id="report-btn" href="#" download>⬇ Download score report (PDF)</a>
+      <button class="btn ghost" id="again-btn">↻ Run it again</button>
+      <button class="btn ghost" id="home-btn">Back to practice</button>
     </div>
   </main>
 

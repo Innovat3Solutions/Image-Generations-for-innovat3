@@ -90,11 +90,20 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS training_materials (
+    key TEXT PRIMARY KEY,                -- pricing|call_script|service_limits|upsells|team_goal
+    label TEXT,
+    content TEXT,
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS training_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     rep_name TEXT NOT NULL,
     scenario_id INTEGER NOT NULL,
     transcript_json TEXT DEFAULT '[]',   -- [{role:'rep'|'prospect', text, at}]
+    mode TEXT DEFAULT 'roleplay',        -- roleplay|real_call
+    options_json TEXT,                   -- {gatekeeper, focus_faq_id, demo}
     status TEXT DEFAULT 'active',        -- active|completed|abandoned
     score INTEGER,
     score_json TEXT,                     -- bucket scores
@@ -113,6 +122,11 @@ for (const [col, type] of [
 ]) {
   try {
     db.exec(`ALTER TABLE prospects ADD COLUMN ${col} ${type}`);
+  } catch { /* column already exists */ }
+}
+for (const [col, def] of [['mode', "TEXT DEFAULT 'roleplay'"], ['options_json', 'TEXT']]) {
+  try {
+    db.exec(`ALTER TABLE training_sessions ADD COLUMN ${col} ${def}`);
   } catch { /* column already exists */ }
 }
 

@@ -167,8 +167,48 @@ export const SEED_SCENARIOS = [
   },
 ];
 
+/**
+ * Company materials injected into every roleplay and grading prompt —
+ * from Innovat3's training spec. Placeholders are editable from the
+ * Practice tab; the coach treats missing sections conservatively (e.g.
+ * never quotes concrete prices that haven't been provided).
+ */
+export const SEED_MATERIALS = [
+  {
+    key: 'offer',
+    label: 'Primary offer & upsells',
+    content: `PRIMARY OFFER: Landing pages — this is what every call is selling first.
+UPSELLS (raise naturally when the conversation opens the door, never forced):
+- CRM setup — for clients who don't have a system to manage leads.
+- Lead automation — for clients who ask who's going to follow up with leads.
+- Email marketing — for clients who don't have any email nurture system.`,
+  },
+  {
+    key: 'pricing',
+    label: 'Pricing',
+    content: `NOT YET PROVIDED. Until real pricing is pasted here, reps and the AI prospect must NOT quote concrete prices — practice value-framing and "let me scope that precisely for you" instead.`,
+  },
+  {
+    key: 'call_script',
+    label: 'Call script / approved openings',
+    content: `NOT YET PROVIDED. Paste the 5 approaches, gatekeeper script, probing questions, presentation, and close here. Until then: judge reps on effectiveness in their OWN voice, not script adherence.`,
+  },
+  {
+    key: 'service_limits',
+    label: "What we can and can't promise",
+    content: `NOT YET PROVIDED. Paste the catalog of limits (what's included, what's extra, delivery timelines, revisions). Until then: grading flags any concrete promise about timelines or deliverables as a Product Knowledge risk.`,
+  },
+  {
+    key: 'team_goal',
+    label: 'Weekly team goal',
+    content: `Each rep is aiming for at least 4 closed deals (signed AND paid) per week. Every grade includes a pace check against this goal — direct, not softened.`,
+  },
+];
+
 /** Insert seed content once (idempotent — keyed on question/title). */
 export function seedTrainingContent() {
+  const ins = db.prepare('INSERT OR IGNORE INTO training_materials (key, label, content) VALUES (?, ?, ?)');
+  for (const m of SEED_MATERIALS) ins.run(m.key, m.label, m.content);
   const faqCount = db.prepare('SELECT COUNT(*) c FROM training_faqs').get().c;
   if (faqCount === 0) {
     const ins = db.prepare('INSERT INTO training_faqs (question, category, rebuttal_points_json) VALUES (?, ?, ?)');
