@@ -321,6 +321,46 @@ tbody tr:last-child td { border-bottom: none; }
 .spark-col { flex: 1; max-width: 26px; height: 100%; background: var(--grid); border-radius: 4px; display: flex; align-items: flex-end; overflow: hidden; }
 .spark-fill { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; }
 
+/* ---------- offers page ---------- */
+.ladder { display: flex; align-items: stretch; gap: 6px; flex-wrap: wrap; }
+.ladder-step {
+  background: var(--surface); border: 1px solid var(--grid); border-radius: 10px;
+  padding: 10px 14px; text-align: center; min-width: 110px;
+}
+.ladder-step.entry { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.ladder-arrow { align-self: center; color: var(--muted); font-size: 18px; }
+.ls-name { font-weight: 700; font-size: 12px; letter-spacing: 0.04em; }
+.ls-price { font-size: 16px; font-weight: 650; margin: 2px 0; }
+.ls-stage { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.pkg-card {
+  background: var(--surface); border: 1px solid var(--grid); border-radius: 12px;
+  padding: 0 16px; margin-bottom: 10px;
+}
+.pkg-card.entry { border-color: var(--accent); }
+.pkg-card summary {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 14px 0; cursor: pointer; align-items: center; font-size: 14px;
+}
+.pkg-price { font-weight: 650; white-space: nowrap; }
+.pkg-body { padding: 0 0 16px; }
+.talk-track { background: var(--wash); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; }
+.pkg-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pkg-cols h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
+.pkg-cols ul { padding-left: 18px; font-size: 13px; display: flex; flex-direction: column; gap: 3px; }
+@media (max-width: 640px) { .pkg-cols { grid-template-columns: 1fr; } }
+
+/* ---------- drawer offer + outreach ---------- */
+.offer-box { background: var(--wash); border: 1px solid var(--accent); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+.offer-box .oh { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 700; }
+.offer-path { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.offer-step { display: flex; gap: 8px; font-size: 12px; align-items: baseline; }
+.offer-step .os-name { font-weight: 650; white-space: nowrap; }
+.outreach-out {
+  width: 100%; min-height: 160px; resize: vertical; margin-top: 8px;
+  background: var(--page); color: var(--ink); border: 1px solid var(--grid);
+  border-radius: 8px; padding: 10px; font-family: inherit; font-size: 13px;
+}
+
 @media (max-width: 720px) {
   .topbar { flex-direction: column; gap: 10px; align-items: flex-start; }
   .stats, .filters, .table-wrap { margin-left: 12px; margin-right: 12px; padding-left: 0; padding-right: 0; }

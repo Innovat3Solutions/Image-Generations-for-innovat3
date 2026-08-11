@@ -200,6 +200,33 @@ async function openDrawer(id) {
 
     ${r.call_reason ? `<section><h3>Why you should call</h3><div class="call-reason">${esc(r.call_reason)}</div></section>` : ''}
 
+    ${r.offer ? `<section><h3>Recommended offer</h3>
+      <div class="offer-box">
+        <div class="oh"><span>${esc(r.offer.entry.name)} — $${r.offer.entry.monthly}/mo <span class="muted">· $${r.offer.entry.setup} setup</span></span><a href="/offers.html" class="muted" style="font-size:11px">full pricing →</a></div>
+        <div style="margin-top:6px">${esc(r.offer.why)}</div>
+        <div style="margin-top:8px;font-style:italic;color:var(--ink-2)">${esc(r.offer.entry.talk_track)}</div>
+        <div class="offer-path">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.05em;color:var(--muted);text-transform:uppercase">Upsell ladder</div>
+          ${r.offer.path.map((s, i) => `<div class="offer-step"><span class="os-name">${i === 0 ? '▶' : '↑'} ${esc(s.name)} $${s.monthly}${s.key === 'ai' || s.key === 'growth' ? '+' : ''}/mo</span><span class="muted">${esc(s.trigger)}</span></div>`).join('')}
+        </div>
+      </div>
+    </section>` : ''}
+
+    <section>
+      <h3>First touchpoint</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost" id="d-email" data-ch="email">✉️ Draft intro email</button>
+        <button class="btn ghost" id="d-sms" data-ch="sms">💬 Draft intro text</button>
+      </div>
+      <div id="d-outreach-wrap" class="hidden">
+        <textarea id="d-outreach" class="outreach-out" readonly></textarea>
+        <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+          <button class="btn primary" id="d-copy">📋 Copy</button>
+          <span id="d-outreach-note" class="muted" style="font-size:11px"></span>
+        </div>
+      </div>
+    </section>
+
     ${opportunities.length ? `<section><h3>Detected opportunities</h3>${opportunities.map((o) => `
       <div class="opp"><div class="opp-head"><span>${esc(o.label)}</span><span class="lvl ${esc(o.level)}">${esc(o.level)}</span></div>
       <div class="why">${esc(o.why)}</div></div>`).join('')}</section>` : ''}
@@ -272,6 +299,38 @@ async function openDrawer(id) {
     closeDrawer();
     loadTable();
   };
+  // outreach generator
+  for (const btnId of ['d-email', 'd-sms']) {
+    const btn = document.getElementById(btnId);
+    btn.onclick = async () => {
+      const ch = btn.dataset.ch;
+      btn.disabled = true;
+      const orig = btn.textContent;
+      btn.textContent = 'Writing…';
+      try {
+        const out = await api(`/api/prospects/${id}/outreach`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channel: ch, rep_name: localStorage.getItem('rep_name') || '' }),
+        });
+        $('#d-outreach-wrap').classList.remove('hidden');
+        $('#d-outreach').value = ch === 'email' && out.subject ? `Subject: ${out.subject}\n\n${out.body}` : out.body;
+        $('#d-outreach-note').textContent = out.generated === 'template'
+          ? 'Template draft — connect ANTHROPIC_API_KEY for fully personalized AI drafts.'
+          : 'AI draft — read it once before sending; it only used verified facts.';
+      } catch (e) {
+        alert(e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = orig;
+      }
+    };
+  }
+  $('#d-copy').onclick = () => {
+    navigator.clipboard.writeText($('#d-outreach').value);
+    $('#d-copy').textContent = '✓ Copied';
+    setTimeout(() => { $('#d-copy').textContent = '📋 Copy'; }, 1500);
+  };
+
   $('#d-reenrich').onclick = async () => {
     $('#d-reenrich').disabled = true;
     $('#d-reenrich').textContent = 'Enriching…';

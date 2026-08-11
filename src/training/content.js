@@ -173,35 +173,58 @@ export const SEED_SCENARIOS = [
  * Practice tab; the coach treats missing sections conservatively (e.g.
  * never quotes concrete prices that haven't been provided).
  */
+// From the INNOVAT3 Company Pricing Standard v1.1 (Aug 2026)
 export const SEED_MATERIALS = [
   {
     key: 'offer',
-    label: 'Primary offer & upsells',
-    content: `PRIMARY OFFER: Landing pages — this is what every call is selling first.
-UPSELLS (raise naturally when the conversation opens the door, never forced):
-- CRM setup — for clients who don't have a system to manage leads.
-- Lead automation — for clients who ask who's going to follow up with leads.
-- Email marketing — for clients who don't have any email nurture system.`,
+    label: 'The Sales Ladder (primary offer & upsells)',
+    content: `Sell outcomes in sequence, never a menu: Presence → Reputation → Communication → Automation → Growth → Outsourced Marketing.
+THE $99 LAUNCH PLAN IS THE STANDARD FOOT-IN-THE-DOOR: make the first yes easy, create the relationship, upgrade on measured need.
+Ladder: LAUNCH $99 (landing page + review access) → LOCAL $199 (review automation + Google optimization) → CONNECT $399 (CRM + pipeline + missed-call text back + follow-up) → AI $699+usage (24/7 AI receptionist) → GROWTH $999+usage (reactivation + email + retargeting) → MARKETING TEAM $1,675 (12 content pieces + email marketing) → MARKETING GROWTH $1,995 (20 pieces) → MARKETING PRO $2,495 (30 pieces).
+Rule: lead with the LOWEST package that solves the immediate problem. Explain only the recommended package and at most the next upgrade.`,
   },
   {
     key: 'pricing',
-    label: 'Pricing',
-    content: `NOT YET PROVIDED. Until real pricing is pasted here, reps and the AI prospect must NOT quote concrete prices — practice value-framing and "let me scope that precisely for you" instead.`,
+    label: 'Pricing (monthly / setup)',
+    content: `LAUNCH $99/mo + $199 setup — landing page, review link/QR, hosting, lead form.
+LOCAL $199/mo + $399 setup — + automated review requests, Google Business audit/optimization.
+CONNECT $399/mo + $750 setup — + CRM, 1 pipeline, 1 calendar, missed-call text back, follow-up, 3 workflows, 2 nurture sequences.
+AI $699/mo + usage + $1,250 setup — + AI voice receptionist, qualification, booking, after-hours, quarterly reactivation.
+GROWTH $999/mo + usage + $1,950 setup — + monthly reactivation, email marketing, retargeting pixels/audiences, 10 workflows, reporting.
+MARKETING TEAM $1,675/mo + $3,150 setup — 12 content pieces/mo, multi-platform, email marketing included, client supplies raw media.
+MARKETING GROWTH $1,995/mo + $3,150 — 20 pieces/mo. MARKETING PRO $2,495/mo + $3,150 — 30 pieces/mo, near-daily.
+KEY ADD-ONS: AI Voice $299-399/mo+usage · Missed-Call Text Back $49/mo · Review Automation $79/mo · GBP Management $149-249/mo · Email Marketing $199-399/mo · Reactivation $299/campaign or $199/mo · Extra landing page $99/mo or $299 build.
+ONE-TIME: 5-page site from $1,500 · premium site from $2,500 · e-commerce from $3,500 · CRM migration from $750 · funnel $750-1,500+.
+BUNDLING RULE: if package + add-ons ≥ next package, sell the upgrade (Connect $399 + AI Voice $399 = $798 → sell AI $699).
+Ad spend and usage (AI minutes, SMS, telephony) are ALWAYS billed separately.`,
   },
   {
     key: 'call_script',
-    label: 'Call script / approved openings',
-    content: `NOT YET PROVIDED. Paste the 5 approaches, gatekeeper script, probing questions, presentation, and close here. Until then: judge reps on effectiveness in their OWN voice, not script adherence.`,
+    label: 'Qualification playbook & talk tracks',
+    content: `DIAGNOSE BEFORE QUOTING — never open by reading features. Key questions:
+- Presence: "Do you have a simple page that tells people what you do and how to contact you?"
+- Reviews: "How are you currently asking customers for Google reviews?"
+- Capture: "Where do new leads go when someone fills out a form, calls or messages you?"
+- Follow-up: "What happens if your team misses a call or doesn't reach a lead the first time?"
+- Phones: "Who answers after hours, during lunch, or when the team is busy?"
+- Database: "How many past leads are sitting in your database without follow-up?"
+- Marketing: "Who currently plans, creates, schedules and publishes your marketing?"
+FAST DIAGNOSIS: "just need a page + review link"→Launch · "need reviews/Google help"→Local · "leads falling through cracks"→Connect · "miss calls / need 24-7"→AI · "old leads, want campaigns"→Growth · "run our marketing"→Marketing Team.
+TALK TRACKS: Launch: "We start by giving you a clean conversion page and an easy way for customers to leave Google reviews." Local: "Local adds the system that actively asks for reviews and improves how you show up on Google." Connect: "CRM, pipeline and automatic follow-up so leads stop getting lost." AI: "A 24/7 receptionist that answers, qualifies, routes and books." Growth: "Campaigns, reactivation, email and retargeting — creating more opportunities, not just capturing them." Marketing Team: "You're hiring our marketing team: 12 finished pieces plus email marketing; you supply the raw photos/video."`,
   },
   {
     key: 'service_limits',
     label: "What we can and can't promise",
-    content: `NOT YET PROVIDED. Paste the catalog of limits (what's included, what's extra, delivery timelines, revisions). Until then: grading flags any concrete promise about timelines or deliverables as a Product Knowledge risk.`,
+    content: `NEVER promise: unlimited revisions/content/automations/AI usage/locations; SEO unless contracted; on-site videography or photography (client supplies raw media — we edit/design/publish); ad spend included; custom software or API work inside a package (that's Custom Solutions, scoped separately).
+ALWAYS disclose: usage costs (AI voice minutes, SMS, telephony, premium email volume) and ad spend are billed separately or against the proposal allowance.
+Marketing revision standard: 1 reasonable revision round per asset; direction changes after approval are quoted separately.
+Marketing content: 1 piece = 1 original concept; cross-posting one Reel to IG+FB+TikTok is still 1 piece.
+If the client doesn't supply requested media, we continue with graphics/copy/reviews where possible — the fee does not reduce.`,
   },
   {
     key: 'team_goal',
     label: 'Weekly team goal',
-    content: `Each rep is aiming for at least 4 closed deals (signed AND paid) per week. Every grade includes a pace check against this goal — direct, not softened.`,
+    content: `Each rep is aiming for at least 4 closed deals (signed AND paid) per week. Every grade includes a pace check against this goal — direct, not softened. Compensation rewards acquisition AND expansion: the rep who lands a $99 Launch client gets credit when the account upgrades — sell the relationship, not the transaction.`,
   },
 ];
 
@@ -209,6 +232,10 @@ UPSELLS (raise naturally when the conversation opens the door, never forced):
 export function seedTrainingContent() {
   const ins = db.prepare('INSERT OR IGNORE INTO training_materials (key, label, content) VALUES (?, ?, ?)');
   for (const m of SEED_MATERIALS) ins.run(m.key, m.label, m.content);
+  // Upgrade placeholder/pre-manual rows to the real pricing standard —
+  // but never clobber content someone edited by hand in the UI.
+  const upd = db.prepare("UPDATE training_materials SET content = ?, label = ?, updated_at = datetime('now') WHERE key = ? AND (content LIKE 'NOT YET PROVIDED%' OR content LIKE 'PRIMARY OFFER: Landing pages%' OR content LIKE 'Each rep is aiming for at least 4 closed deals (signed AND paid) per week. Every grade includes a pace check against this goal — direct, not softened.')");
+  for (const m of SEED_MATERIALS) upd.run(m.content, m.label, m.key);
   const faqCount = db.prepare('SELECT COUNT(*) c FROM training_faqs').get().c;
   if (faqCount === 0) {
     const ins = db.prepare('INSERT INTO training_faqs (question, category, rebuttal_points_json) VALUES (?, ?, ?)');

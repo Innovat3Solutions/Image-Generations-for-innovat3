@@ -114,6 +114,36 @@ The **Run pipeline** modal live-checks every configured API key
 freshest unworked prospects above the pool threshold, grouped
 🔥 High / 🟢 Strong / 🟡 Explore — "50 businesses worth calling, and why."
 
+## Offers & Pricing knowledge base (📖)
+
+`/offers.html` — the INNOVAT3 Company Pricing Standard as a working tool:
+the Sales Ladder (Launch $99 → Local $199 → Connect $399 → AI $699 →
+Growth $999 → Marketing tiers $1,675–$2,495), every package with included /
+not-included / talk track, the qualification questions ("diagnose before you
+quote"), upgrade triggers, the add-on menu with the bundling rule, one-time
+project pricing, and the company rules. `src/offers.js` is the single source
+of truth — it also powers the recommendations and the Practice tab's
+grading materials, so updating pricing updates everywhere at once.
+
+### Per-prospect recommended offer
+
+Every prospect card shows which rung of the ladder to enter on — the
+**$99 Launch plan for the vast majority** (per the standard: lowest package
+that solves the immediate problem), stepping up only when signals prove
+they already own that layer — plus the upsell ladder with each step tied to
+that prospect's detected gaps ("their form has no follow-up behind it →
+Connect", "phone-centric, no after-hours → AI").
+
+### First-touchpoint generator
+
+Two buttons on every prospect: **Draft intro email** / **Draft intro text**
+— a copy-paste-ready first touch that introduces Innovat3 and pays a
+specific, honest compliment (new-launch congrats, their trade, their city,
+what they've built) and ends with one easy question designed to get a
+reply. No pitch, no prices — the goal is a response. AI-written with
+`ANTHROPIC_API_KEY` (facts-only, CAN-SPAM-conscious); a solid template
+fallback otherwise.
+
 ## Sales Practice tab (🎧)
 
 `/practice.html` — a flight simulator for the sales team. Reps pick a

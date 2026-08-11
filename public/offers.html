@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offers — Innovat3 Prospect Engine</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">📖</span>
+      <div>
+        <h1>Offers & Pricing</h1>
+        <p class="subtitle">INNOVAT3 Company Pricing Standard v1.1 · sell the outcome, climb the ladder</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a class="btn ghost" href="/">← Prospects</a>
+      <a class="btn ghost" href="/practice.html">🎧 Practice</a>
+    </div>
+  </header>
+
+  <main class="practice-wrap" style="max-width:1100px">
+    <section>
+      <h2 class="section-title">The Sales Ladder — how every deal flows</h2>
+      <div class="ladder" id="ladder"></div>
+      <p class="muted" style="margin-top:8px">Lead with the <strong>lowest package that solves the immediate problem</strong>. The <strong>$99 Launch plan is the standard foot-in-the-door</strong> — its job is the first easy yes. Explain only the recommended package and, at most, the next upgrade.</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">Packages</h2>
+      <div id="packages"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Qualify before you quote</h2>
+      <div class="result-card">
+        <div id="qualification"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">When to upgrade a client</h2>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>From → To</th><th>Trigger</th></tr></thead>
+          <tbody id="upgrades"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Add-on menu</h2>
+      <p class="muted" style="margin-bottom:8px">Bundling rule: if package + add-ons ≥ the next package, <strong>sell the upgrade instead</strong> (Connect $399 + AI Voice $399 = $798 → sell AI at $699).</p>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Add-on</th><th>Price</th><th>Note</th></tr></thead>
+          <tbody id="addons"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">One-time projects</h2>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Project</th><th>Starting price</th></tr></thead>
+          <tbody id="projects"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Company rules — never break these</h2>
+      <div class="result-card"><ul id="rules" style="padding-left:18px;font-size:13px;display:flex;flex-direction:column;gap:8px"></ul></div>
+    </section>
+  </main>
+
+  <script src="offers-page.js"></script>
+</body>
+</html>

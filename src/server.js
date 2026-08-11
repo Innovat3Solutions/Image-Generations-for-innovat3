@@ -10,6 +10,8 @@ import { createRun, updateRun } from './db.js';
 import { marketsForVertical, VERTICAL_NAICS } from './market.js';
 import { providerStatus } from './enrich/provider-status.js';
 import { registerTrainingRoutes } from './training/index.js';
+import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, UPGRADE_TRIGGERS, RULES, recommendOffer } from './offers.js';
+import { generateOutreach } from './outreach.js';
 import { VERTICALS } from './verticals.js';
 import { log, mapConcurrent } from './util.js';
 
@@ -82,7 +84,24 @@ app.get('/api/prospects', (req, res) => {
 app.get('/api/prospects/:id', (req, res) => {
   const row = db.prepare('SELECT * FROM prospects WHERE id = ?').get(Number(req.params.id));
   if (!row) return res.status(404).json({ error: 'not found' });
-  res.json(row);
+  res.json({ ...row, offer: recommendOffer(row) });
+});
+
+// ---------- offers knowledge base ----------
+app.get('/api/offers', (req, res) => {
+  res.json({ packages: PACKAGES, addOns: ADD_ONS, projects: PROJECTS, qualification: QUALIFICATION, upgradeTriggers: UPGRADE_TRIGGERS, rules: RULES });
+});
+
+// ---------- outreach generator ----------
+app.post('/api/prospects/:id/outreach', async (req, res) => {
+  const row = db.prepare('SELECT * FROM prospects WHERE id = ?').get(Number(req.params.id));
+  if (!row) return res.status(404).json({ error: 'not found' });
+  const channel = req.body?.channel === 'sms' ? 'sms' : 'email';
+  try {
+    res.json(await generateOutreach(row, channel, req.body?.rep_name || ''));
+  } catch (err) {
+    res.status(502).json({ error: String(err.message || err) });
+  }
 });
 
 app.patch('/api/prospects/:id', (req, res) => {
