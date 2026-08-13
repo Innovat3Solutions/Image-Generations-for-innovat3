@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Elegant set — #2 Ghost-type back shot — black camo spine print, giant cropped 'LEGACY', 'Offshore To After Hours' (v2, corrected logo)",
+  "prompt": "Elegant high-fashion technical apparel ad, 4:5. Model from behind against near-black night water, black camo LS with white fading 'REEL LEGACY' spine print per reference; giant ghosted 'LEGACY' type cropped by frame at ~15% opacity; exact wave-R letterform top center (R, not a wave icon) with 'REEL LEGACY' beneath; bottom right 'OFFSHORE TO AFTER HOURS'.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1002_navycamo_spine_v3_1786581016.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.16,
+  "project": "reel-legacy",
+  "created": "2026-08-13T01:42:00Z",
+  "note": "First roll rendered a generic wave icon as the logo; re-rolled with explicit 'R letterform, not a wave icon' instruction. Cost includes both rolls."
+}

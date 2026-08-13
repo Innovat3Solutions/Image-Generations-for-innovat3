@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Elegant set — #3 After-hours candid — two anglers resting at blue hour, 'From Sunrise To Last Cast.'",
+  "prompt": "Elegant quiet lifestyle ad, 4:5, candid documentary style. Blue hour on a sportfishing boat stern, two men asleep in deck chairs after the day — one in the WHITE Reel Legacy LS, one in the BLACK camo LS with white sleeve lettering, garments per references. Wave-R lockup right-mid; footer 'FROM SUNRISE TO LAST CAST.'",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rl1001_white_front_back_v3_1786580872.png", "reel-legacy_rlls1002_blackcamo_sleeve_v3_1786581063.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T01:43:00Z",
+  "note": "Inspired by the candid camp-chairs shot on the North Face mood board."
+}

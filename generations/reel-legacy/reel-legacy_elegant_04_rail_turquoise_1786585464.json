@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Elegant set — #4 Rail over turquoise — white LS draped + folded black camo, 'Nothing Extra. Everything Earned.'",
+  "prompt": "Elegant minimal product ad, 4:5. White Reel Legacy LS draped over a yacht bow rail above gin-clear turquoise water, sleeve lettering readable, folded black camo LS on deck; garments per references, silky technical knit. Wave-R lockup top; footer 'NOTHING EXTRA. EVERYTHING EARNED.'",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rll1001_white_sleeve_print_v3_1786580928.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T01:44:00Z",
+  "note": "Composition drawn from the client's own product mood board (rail-over-water shot); copy riffs on their 'NOTHING EXTRA.' line."
+}

@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Elegant set — #1 Sea-spray spotlight portrait — wet black camo LS, 'The Legacy Lives On'",
+  "prompt": "Elegant high-fashion technical apparel advertising creative, 4:5 portrait. Night at sea, black background, single hard spotlight, sea spray frozen in the beam; model in the BLACK tonal camo Reel Legacy long-sleeve (reference image 2), fabric wet with beading droplets revealing the camo sheen, white wave-R chest logo exact per reference image 1. Small elegant type bottom: 'THE LEGACY LIVES ON' / 'BUILT FOR THE HARDEST DAYS ON THE WATER · REEL LEGACY'. Monochrome, cinematic, restrained.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1002_blackcamo_sleeve_v3_1786581063.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T01:40:00Z",
+  "note": "Inspired by the North Face editorial mood board (elegant/classy/simple)."
+}

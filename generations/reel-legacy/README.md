@@ -37,6 +37,20 @@ Those Who Live It.") · 05 last-cast silhouette (4:5, black camo, "Worn On The W
 droplets (9:16, "details matter." — logo fidelity re-roll candidate) · 09 marina dawn
 (9:16, "Earned, Not Given.") · 10 catalog drop card (4:5, $54.99, "Pre-Order — 20% Off").
 
+## Elegant set — editorial campaign (client mood boards, 2026-08-13)
+
+Style brief: elegant / classy / simple, inspired by the client's North Face-style editorial
+board; product accuracy per their Reel Legacy product board. Files `reel-legacy_elegant_01…04`:
+
+01 sea-spray spotlight portrait (wet black camo, "The Legacy Lives On") · 02 ghost-type
+back shot (giant cropped LEGACY over night water, "Offshore To After Hours" — v2 is
+current; v1 rendered a wave icon instead of the R) · 03 after-hours candid (two anglers
+at blue hour, "From Sunrise To Last Cast.") · 04 rail over turquoise ("Nothing Extra.
+Everything Earned.").
+
+New copy lines adopted from the client's product board: "The Legacy Lives On",
+"Offshore To After Hours", "Coastal Performance", "Nothing Extra."
+
 ## Versions
 
 `_v3_` files are the current drafts: same compositions and prints as v2, with the fabric
