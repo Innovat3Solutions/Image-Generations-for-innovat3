@@ -94,3 +94,12 @@ update the template as the real card evolves and re-render.
 - ad32 opt-in loop — "Land. Scan. Save." 3-step: card lands → QR scan → promo redeemed
 - ad33 fridge — the card magneted on a fridge: "The card they keep."
 - ad34 scan/save/win — phone mockup of the offer page UI (sample offers, labeled as samples)
+
+## Consumer series (ads 41-44) — cinematic doorstep scenes
+
+Homeowner-facing ads for mailed ZIPs: the card as a doorstep moment. Full-scene cinematic
+photography (no flat backgrounds), comedy as the focal point, plain logo + site line small
+at an edge. Peephole cat ("Ding dong. It's the good kind of mail."), porch grandpa
+("Old habits don't die"), caped grandma mailbox sprint ("Race you to the mailbox."),
+doorstep sloth hug ("Some mail deserves the fridge."). Cards in-scene are plain navy,
+deliberately blank.

@@ -35,6 +35,10 @@ const ADS = [
   { file: 'ad32_optin_loop.html', w: 1080, h: 1080 },
   { file: 'ad33_fridge.html', w: 1080, h: 1080 },
   { file: 'ad34_scan_save_win.html', w: 1080, h: 1080 },
+  { file: 'ad41_cons_peephole.html', w: 1080, h: 1080 },
+  { file: 'ad42_cons_grandpa.html', w: 1080, h: 1080 },
+  { file: 'ad43_cons_capewoman.html', w: 1080, h: 1080 },
+  { file: 'ad44_cons_slothhug.html', w: 1080, h: 1080 },
 ];
 
 (async () => {
