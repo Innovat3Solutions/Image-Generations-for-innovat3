@@ -12,6 +12,17 @@ sidecar `.json` with the exact prompt, refs, params, and cost.
 | RL-LS1002 | Lifestyle LS, Black Navy Camo — white chest R + white spine fade | `reel-legacy_rlls1002_navycamo_spine_` |
 | RL-LS1002 | Lifestyle LS, Black Camo — white chest R + white sleeve print | `reel-legacy_rlls1002_blackcamo_sleeve_` |
 
+## Campaign creatives
+
+Built from the v2 mockups (passed as reference images for garment/print consistency):
+
+| Creative | Format | File prefix |
+|---|---|---|
+| "Sorry for the delay… but we're back" — rail trio | 4:5 | `reel-legacy_ad_were_back_rail_trio_` |
+| "We're back. Sorry for the delay" — camo spotlight | 4:5 | `reel-legacy_ad_were_back_camo_spotlight_` |
+| "details matter." — faded spine hero, white | 9:16 | `reel-legacy_post_details_matter_faded_back_` |
+| "details matter." — faded spine hero, navy camo | 9:16 | `reel-legacy_post_details_matter_camo_back_` |
+
 ## Versions
 
 `_v2_` files are the current drafts: their logo refs were rebuilt to match the client's

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad creative #2 — 'We're back. Sorry for the delay' — black camo spotlight single",
+  "prompt": "Create a premium streetwear advertising creative in 4:5 portrait format, dark and cinematic: a single black tonal camo long-sleeve shirt with a white wave-R chest logo and white 'REEL LEGACY' lettering down the right sleeve — exactly as the garment in reference image 2, do not redesign the garment or logo — hanging alone on a black wooden hanger from a matte black rail, centered, lit by a single dramatic overhead spotlight cone cutting through subtle haze in a dark charcoal studio, soft pool of light on the floor below. HUGE glowing white neon headline text above the shirt with soft bloom: 'WE'RE BACK.' Directly under it, smaller solid white spaced capitals: 'SORRY FOR THE DELAY'. Top center, small: the white wave-R logo from reference image 1 with 'REEL LEGACY' in small spaced capitals beneath it. Bottom center, small spaced gray capitals: 'BUILT DIFFERENT. — NEW DROP AVAILABLE NOW'. Photorealistic fabric with visible camo pattern, professional advertising photography, moody high-contrast lighting, crisp perfectly readable typography, high-end fashion campaign aesthetic.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1002_blackcamo_sleeve_v2_1786580133.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:21:00Z"
+}

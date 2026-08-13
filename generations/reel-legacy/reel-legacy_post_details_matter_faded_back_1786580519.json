@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Editorial post — 'details matter.' — faded back spine print hero (white RL-1001), 9:16",
+  "prompt": "Create a moody premium streetwear editorial social post in 9:16 vertical format, in the style of high-end minimal fashion photography: a male model photographed FROM BEHIND at a slight three-quarter angle, tightly cropped so his head is mostly out of frame at the top, standing against a dark textured charcoal-gray studio wall with soft directional light and deep shadows. He wears the WHITE Reel Legacy performance long-sleeve shirt from reference image 2: on the back, the words 'REEL LEGACY' printed vertically down the center of the spine in the exact same style as the reference — solid black letters at the top gradually FADING to light gray at the bottom. Keep the garment and the fading spine print IDENTICAL to the reference — do not redesign. The fabric drapes naturally with realistic folds; the fade print is the hero of the shot, sharply in focus. TYPOGRAPHY overlaid: top center, small spaced white capitals 'REEL LEGACY' with tiny letters 'BUILT DIFFERENT.' beneath; on the left side at mid-height, a large bold lowercase white headline on two lines: 'details' / 'matter.' with a short thin horizontal white line under it and below that a small light subline: 'the fade says the rest.'; at the bottom center, small spaced white capitals: 'B U I L T  F O R  T H E  E L E M E N T S'. Photorealistic, cinematic, grainy premium editorial mood, crisp perfectly readable typography, high-end fashion campaign aesthetic.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rl1001_white_front_back_v2_1786579927.png"],
+  "params": { "aspect_ratio": "9:16", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:22:00Z"
+}

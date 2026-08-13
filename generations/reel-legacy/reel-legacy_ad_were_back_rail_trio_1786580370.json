@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad creative #1 — 'Sorry for the delay… but we're back' — hanging rail trio (white spine back, navy camo, white sleeve print)",
+  "prompt": "Create a premium streetwear advertising creative in 4:5 portrait format, set in a dark moody studio: deep charcoal gray background with a soft cinematic light gradient and subtle soft shadows on the floor far below. A horizontal matte black metal clothing rail spans the image; three long-sleeve shirts hang from it on black wooden hangers, floating dramatically: LEFT — the WHITE performance long sleeve seen from the BACK with the vertical 'REEL LEGACY' black spine print fading to gray, exactly as in reference image 2; CENTER — the black-navy camo long sleeve with the white wave-R chest logo, exactly as in reference image 3; RIGHT — the WHITE long sleeve front view with the black wave-R chest logo and black 'REEL LEGACY' lettering down the right sleeve, exactly as in reference image 4. Keep every garment, print placement and logo IDENTICAL to the reference images — do not redesign them. ABOVE the rail, huge glowing white neon text with soft bloom, headline style: 'SORRY FOR THE DELAY.' and directly beneath it, in smaller elegant spaced capitals, solid white non-glowing: '...BUT WE'RE BACK'. At the very top center, small and refined: the white wave-R logo from reference image 1, with 'REEL LEGACY' in small spaced white capitals under it and the tagline 'BUILT DIFFERENT.' in tiny letters beneath that. At the bottom center in small spaced gray capitals: 'PERFORMANCE LONG SLEEVES — AVAILABLE NOW'. Photorealistic fabric, professional advertising photography, cinematic studio lighting, crisp perfectly readable typography, high-end fashion campaign aesthetic.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rl1001_white_front_back_v2_1786579927.png", "reel-legacy_rlls1002_navycamo_spine_v2_1786580087.png", "reel-legacy_rll1001_white_sleeve_print_v2_1786579980.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:19:00Z"
+}
