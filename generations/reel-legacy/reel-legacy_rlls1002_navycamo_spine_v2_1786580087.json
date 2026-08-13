@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "RL-LS1002 Lifestyle Long Sleeve — Black Navy Camo (white chest logo + white back spine fade print) — v2 with corrected wave-R logo",
+  "prompt": "Create a professional e-commerce apparel catalog mockup on a seamless light gray (#f4f4f4) studio background with soft, even lighting: two views side by side of the SAME men's lifestyle long-sleeve crewneck shirt in a BLACK-NAVY TONAL CAMOUFLAGE pattern (dark charcoal black and very dark navy hexagonal-organic camo shapes, subtle low-contrast tonal pattern across the entire garment, lightweight matte moisture-wicking polyester-spandex knit, athletic modern fit), displayed ghost-mannequin style — invisible mannequin, natural three-dimensional fabric drape, soft realistic contact shadow beneath the garment, no person visible. LEFT: front view — the WHITE 'R' logo from reference image 1 (an R whose left leg is a breaking ocean wave curling into the bowl) reproduced EXACTLY as shown, without redesigning it, as a small high-density silicone print in solid white on the wearer's left chest, about 8 cm tall, matte finish. The rest of the front shows only the camo fabric. RIGHT: back view — the words 'REEL LEGACY' in the spaced bold capital letter style of reference image 2, printed in WHITE vertically down the center of the spine, letters reading top to bottom, starting 5 cm below the collar and running down most of the back; the letters are solid white at the top and gradually fade to light gray at the bottom. No other graphics or text anywhere. Photorealistic professional product photography, crisp fabric texture showing the camo pattern clearly, catalog quality.",
+  "refs": ["refs/reel_legacy_r_white.png", "refs/reel_legacy_wordmark_black.png"],
+  "params": { "aspect_ratio": "4:3", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:15:00Z",
+  "note": "v2: corrected wave-R logo."
+}

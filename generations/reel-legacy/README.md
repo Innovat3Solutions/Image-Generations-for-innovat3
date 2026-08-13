@@ -12,16 +12,22 @@ sidecar `.json` with the exact prompt, refs, params, and cost.
 | RL-LS1002 | Lifestyle LS, Black Navy Camo — white chest R + white spine fade | `reel-legacy_rlls1002_navycamo_spine_` |
 | RL-LS1002 | Lifestyle LS, Black Camo — white chest R + white sleeve print | `reel-legacy_rlls1002_blackcamo_sleeve_` |
 
+## Versions
+
+`_v2_` files are the current drafts: their logo refs were rebuilt to match the client's
+actual wave-R lockup (R whose left leg is a breaking wave curling into the bowl), and the
+v1 flaws (ghosted back-sleeve lettering on RL-L1001) are fixed. The v1 files used an
+earlier, incorrect logo recreation and are kept only for history.
+
 ## refs/
 
-`reel_legacy_r_black.png` / `reel_legacy_r_white.png` / `reel_legacy_wordmark_black.png` —
-recreated approximations of the Reel Legacy "R" mark and wordmark (SVG sources included),
-built because the original vector logo files were not available in this repo.
-**For production-final mockups, replace these with the official vector logo exports**
-(black + white PNG at 1024px or larger) and re-run the winning prompts — the sidecar JSONs
-contain everything needed to reproduce each image.
+`reel_legacy_r_black.png` / `reel_legacy_r_white.png` — vector recreation (SVG sources
+included) traced from the client's logo lockup. `reel_legacy_wordmark_black.png` —
+spaced-caps wordmark. For pixel-perfect production finals, drop the official vector logo
+exports (black + white PNG, 1024px+) into this folder and re-run the prompts from the
+sidecar JSONs.
 
 ## Known draft notes
 
-- RL-L1001 sleeve-print draft: faint ghosted lettering on the back view's sleeve — re-roll for final.
-- RL-1001 spine print rendered with rotated letters; spec sheet shows upright stacked letters.
+- Spine prints render with rotated (book-spine) letters; the spec sheets show upright
+  stacked letters. Fixable in a re-roll if the stacked style is required.

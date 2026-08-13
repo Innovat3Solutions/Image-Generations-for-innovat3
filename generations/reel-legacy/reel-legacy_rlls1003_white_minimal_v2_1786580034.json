@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "RL-LS1003 Performance Long Sleeve — White minimal (light-gray side hem print + back circle badge) — v2 with corrected wave-R logo",
+  "prompt": "Create a professional e-commerce apparel catalog mockup on a seamless light gray (#f4f4f4) studio background with soft, even lighting: two views side by side of the SAME men's WHITE minimalist performance long-sleeve crewneck shirt (lightweight matte moisture-wicking polyester-spandex knit, athletic modern fit, flatlock stitching), displayed ghost-mannequin style — invisible mannequin, natural three-dimensional fabric drape, soft realistic contact shadow beneath the garment, no person visible. LEFT: front view — almost completely clean minimal design; the only print is the small text 'REEL LEGACY.' in the spaced capital letter style of reference image 2, printed very small (about 7 cm wide) in subtle LIGHT GRAY tone-on-tone silicone print horizontally near the bottom side hem on the wearer's left front hip area. RIGHT: back view — clean back with only a small circular badge containing the 'R' logo from reference image 1 (an R whose left leg is a breaking ocean wave curling into the bowl, reproduced exactly, not redesigned) printed in subtle light gray, about 4 cm diameter, centered just below the back collar; the R sits inside a thin circular ring of small text. Extremely minimal, premium, understated. No other graphics or text anywhere. Photorealistic professional product photography, crisp fabric texture, catalog quality.",
+  "refs": ["refs/reel_legacy_r_black.png", "refs/reel_legacy_wordmark_black.png"],
+  "params": { "aspect_ratio": "4:3", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:14:00Z",
+  "note": "v2: corrected wave-R logo in back badge."
+}
