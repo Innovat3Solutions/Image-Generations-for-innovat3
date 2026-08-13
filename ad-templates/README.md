@@ -70,3 +70,14 @@ bulldog at an empty table, rocket tortoise (generic slow-growth). Hero photos ar
 AI-generated (nano-banana-2, text-free, subject on the right half); headline, chip,
 copy and CTA are live template text. To make more niches, generate a new right-weighted
 comedic hero, then copy any ad1x file and swap headline/sub/CTA.
+
+## Poster series (ads 21-30) — clean flat-color mood-board style
+
+Ten unique layouts, no shared chrome beyond the plain logo (mark + wordmark, no card/chip)
+and a small site line. Each ad is its own color world with the animal ON the flat field and
+text set into the scene's negative space — no panels, no scrims: sloth wagon (purple),
+mail-satchel snail (maroon), rocket retriever (sky), goldfish-shark (navy), tortoise-vs-
+cheetah split (white), giraffe (white), skateboard turtle (green), lion-mane kitten
+(charcoal), mail-carrier retriever holding a blank card (cream — the physical-card
+explainer), carrier pigeon (teal). Scene images are generated on exact-hex flat backgrounds
+so live text sits directly on them. The card the retriever holds is deliberately blank.

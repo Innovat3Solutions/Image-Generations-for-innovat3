@@ -1,0 +1,15 @@
+{
+  "model": "html-template (poster series) + chromium screenshot",
+  "provider": "local render (playwright); scene: fal-ai/nano-banana-2 @2K, flat-color, text-free",
+  "prompt": "Rendered from ad-templates/ad22_poster_snail.html — edit HTML/CSS and re-run ad-templates/render.js.",
+  "refs": [
+    "ad-templates/assets/logo-mark.png"
+  ],
+  "params": {
+    "width": 1080,
+    "height": 1080
+  },
+  "cost_usd": 0,
+  "project": "zippilot",
+  "created": "2026-08-13T01:09:52Z"
+}

@@ -21,6 +21,16 @@ const ADS = [
   { file: 'ad14_fun_plumber.html',      w: 1080, h: 1080 },
   { file: 'ad15_fun_restaurant.html',   w: 1080, h: 1080 },
   { file: 'ad16_fun_slowgrowth.html',   w: 1080, h: 1080 },
+  { file: 'ad21_poster_sloth.html', w: 1080, h: 1080 },
+  { file: 'ad22_poster_snail.html', w: 1080, h: 1080 },
+  { file: 'ad23_poster_rocketdog.html', w: 1080, h: 1080 },
+  { file: 'ad24_poster_shark.html', w: 1080, h: 1080 },
+  { file: 'ad25_poster_race.html', w: 1080, h: 1080 },
+  { file: 'ad26_poster_giraffe.html', w: 1080, h: 1080 },
+  { file: 'ad27_poster_boost.html', w: 1080, h: 1080 },
+  { file: 'ad28_poster_empower.html', w: 1080, h: 1080 },
+  { file: 'ad29_poster_maildog.html', w: 1080, h: 1080 },
+  { file: 'ad30_poster_pigeon.html', w: 1080, h: 1080 },
 ];
 
 (async () => {
