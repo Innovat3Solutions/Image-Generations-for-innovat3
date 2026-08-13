@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "RL-1001 Performance Long Sleeve — White (chest logo + back spine fade print)",
+  "prompt": "Create a professional e-commerce apparel catalog mockup on a seamless light gray (#f4f4f4) studio background with soft, even lighting: two views side by side of the SAME men's WHITE performance long-sleeve crewneck shirt (lightweight matte moisture-wicking polyester-spandex knit, athletic modern fit), displayed ghost-mannequin style — invisible mannequin, natural three-dimensional fabric drape, soft realistic contact shadow beneath the garment, no person visible. LEFT: front view — the black angular 'R' logo from reference image 1 reproduced EXACTLY as a small high-density silicone print on the wearer's left chest, about 8 cm tall, matte finish, subtly raised 1mm off the fabric. The rest of the front is completely clean. RIGHT: back view — the words 'REEL LEGACY' in the spaced bold capital letter style of reference image 2, printed vertically down the center of the spine: each letter upright, stacked one below another reading top to bottom, starting 5 cm below the collar and running down most of the back; the letters are solid black at the top and gradually fade to light charcoal gray at the bottom. No other graphics or text anywhere. Photorealistic professional product photography, crisp fabric texture, catalog quality.",
+  "refs": ["refs/reel_legacy_r_black.png", "refs/reel_legacy_wordmark_black.png"],
+  "params": { "aspect_ratio": "4:3", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:01:00Z",
+  "note": "Logo refs are Claude-recreated approximations of the Reel Legacy mark (original vector files not provided). Spine letters rendered rotated rather than upright-stacked."
+}

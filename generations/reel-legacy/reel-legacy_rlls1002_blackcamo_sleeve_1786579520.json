@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "RL-LS1002 Lifestyle Long Sleeve — Black Camo (white chest logo + white full-length sleeve print)",
+  "prompt": "Create a professional e-commerce apparel catalog mockup on a seamless light gray (#f4f4f4) studio background with soft, even lighting: two views side by side of the SAME men's lifestyle long-sleeve crewneck shirt in a BLACK TONAL CAMOUFLAGE pattern (black and dark charcoal gray organic camo shapes, subtle low-contrast tonal pattern across the entire garment, lightweight matte moisture-wicking polyester-spandex knit, relaxed athletic fit), displayed ghost-mannequin style — invisible mannequin, natural three-dimensional fabric drape, soft realistic contact shadow beneath the garment, no person visible. LEFT: front view in a slight three-quarter angle — the angular 'R' logo from reference image 1 reproduced EXACTLY but printed in solid WHITE as a small high-density silicone print on the wearer's left chest, about 8 cm tall, matte finish; AND the words 'REEL LEGACY' in the spaced bold capital letter style of reference image 2 printed in solid WHITE running vertically down the full length of the wearer's right sleeve from shoulder to cuff, letters reading top to bottom. RIGHT: back view — completely clean camo back with no prints. No other graphics or text anywhere. Photorealistic professional product photography, crisp fabric texture showing the camo pattern clearly, catalog quality.",
+  "refs": ["refs/reel_legacy_r_white.png", "refs/reel_legacy_wordmark_black.png"],
+  "params": { "aspect_ratio": "4:3", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:05:00Z"
+}

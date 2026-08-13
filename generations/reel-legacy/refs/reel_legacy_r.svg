@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="1024" height="1024">
+  <!-- Reel Legacy "R" mark: bold angular italic R, slashed stem, swoosh leg -->
+  <g fill="#111111">
+    <path fill-rule="evenodd" d="
+      M 118 84
+      L 318 84
+      L 296 208
+      L 234 226
+      Q 278 288 324 330
+      L 270 348
+      Q 226 284 198 252
+      L 164 220
+      L 112 244
+      Z
+      M 178 130
+      L 264 130
+      L 250 176
+      L 176 196
+      Z"/>
+    <!-- Detached lower stem piece below the slash -->
+    <path d="M 106 262 L 158 238 L 144 316 L 90 338 Z"/>
+  </g>
+</svg>

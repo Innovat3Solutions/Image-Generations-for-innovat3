@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "RL-L1001 Active Wear Performance Long Sleeve — White (chest logo + full-length sleeve print)",
+  "prompt": "Create a professional e-commerce apparel catalog mockup on a seamless light gray (#f4f4f4) studio background with soft, even lighting: two views side by side of the SAME men's WHITE active-wear performance long-sleeve crewneck shirt (lightweight matte moisture-wicking polyester-spandex knit, athletic performance fit), displayed ghost-mannequin style — invisible mannequin, natural three-dimensional fabric drape, soft realistic contact shadow beneath the garment, no person visible. LEFT: front view in a slight three-quarter angle — the black angular 'R' logo from reference image 1 reproduced EXACTLY as a small high-density silicone print on the wearer's left chest, about 8 cm tall, matte finish; AND the words 'REEL LEGACY' in the spaced bold capital letter style of reference image 2 printed in solid black running vertically down the full length of the wearer's right sleeve from shoulder to cuff, letters reading top to bottom. RIGHT: back view — completely clean white back with no prints, the sleeve print just visible on the edge of the right sleeve. No other graphics or text anywhere. Photorealistic professional product photography, crisp fabric texture, catalog quality.",
+  "refs": ["refs/reel_legacy_r_black.png", "refs/reel_legacy_wordmark_black.png"],
+  "params": { "aspect_ratio": "4:3", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:02:00Z",
+  "note": "Draft flaw: faint ghosted sleeve lettering visible on the back view's sleeve — re-roll or retouch for finals."
+}
