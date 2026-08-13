@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "RL-LS1003 Performance Long Sleeve — White minimal — v3: fabric upgraded to Lululemon/brrr°-style technical knit",
+  "prompt": "Recreate the apparel catalog mockup in reference image 2 EXACTLY — same two-view composition (clean minimal front view left with small light-gray 'REEL LEGACY.' side hem print, back view right with small light-gray circular wave-R badge below the collar), same white long-sleeve shirt, same light gray studio background and ghost-mannequin presentation — but change ONLY the fabric rendering: the shirt must read as a premium technical performance knit in the style of Lululemon fabric and brrr° mineral-infused cooling fabric, as used by Southern Tide: ultra-fine-gauge smooth polyester-spandex jersey (92/8, 160 gsm), silky cool-touch surface with a subtle satin-like luster that catches soft highlights along the folds, fluid liquid-like drape with soft rounded flowing folds, barely-visible ultra-fine knit texture, lightweight and airy with visible 4-way stretch quality, crisp clean flatlock seams and a refined self-fabric collar. Absolutely NOT heavyweight cotton: no chalky flat matte surface, no slub texture, no fleece, no thick stiff folds. The logo reference in image 1 shows the exact wave-R mark to keep. Photorealistic professional product photography, catalog quality.",
+  "refs": ["refs/reel_legacy_r_black.png", "reel-legacy_rlls1003_white_minimal_v2_1786580034.png"],
+  "params": { "aspect_ratio": "4:3", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:29:00Z"
+}

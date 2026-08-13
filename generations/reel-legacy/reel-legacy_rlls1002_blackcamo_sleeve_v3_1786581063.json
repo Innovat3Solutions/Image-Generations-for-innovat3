@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "RL-LS1002 Lifestyle Long Sleeve — Black Camo — v3: fabric upgraded to Lululemon/brrr°-style technical knit",
+  "prompt": "Recreate the apparel catalog mockup in reference image 2 EXACTLY — same two-view composition (three-quarter front view left with white wave-R chest logo and white 'REEL LEGACY' lettering down the right sleeve, clean back view right), same black tonal camouflage long-sleeve shirt with the same camo pattern, same light gray studio background and ghost-mannequin presentation — but change ONLY the fabric rendering: the shirt must read as a premium technical performance knit in the style of Lululemon fabric and brrr° mineral-infused cooling fabric, as used by Southern Tide: ultra-fine-gauge smooth polyester-spandex jersey (92/8, 160 gsm), silky cool-touch surface with a subtle satin-like luster that catches soft highlights along the folds, fluid liquid-like drape with soft rounded flowing folds, barely-visible ultra-fine knit texture, lightweight and airy with visible 4-way stretch quality, crisp clean flatlock seams and a refined self-fabric collar; the camo print is dyed into the smooth technical knit, not rough cotton. Absolutely NOT heavyweight cotton: no chalky flat matte surface, no slub texture, no fleece, no thick stiff folds. The logo reference in image 1 shows the exact wave-R mark to keep. Photorealistic professional product photography, catalog quality.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1002_blackcamo_sleeve_v2_1786580133.png"],
+  "params": { "aspect_ratio": "4:3", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:31:00Z"
+}
