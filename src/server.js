@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { db, updateProspect } from './db.js';
@@ -23,28 +24,172 @@ const app = express();
 // 401s, marks the instance unhealthy, and serves 502s.
 app.get('/healthz', (req, res) => res.json({ ok: true }));
 
-// Password-protect everything when DASHBOARD_PASSWORD is set (required for
-// any public deployment). Reps sign in once; browsers cache the credentials.
+// ---------- auth: per-user accounts with roles ----------
+// Every teammate signs in with their own username/password (managed in the
+// Settings tab). The env DASHBOARD_USER/PASSWORD pair stays as the master
+// admin — the bootstrap login before any users exist, and the break-glass
+// login if everyone locks themselves out.
 const AUTH_USER = process.env.DASHBOARD_USER || 'innovat3';
 const AUTH_PASS = process.env.DASHBOARD_PASSWORD;
-if (AUTH_PASS) {
-  app.use((req, res, next) => {
-    const header = req.headers.authorization || '';
-    const [scheme, encoded] = header.split(' ');
-    if (scheme === 'Basic' && encoded) {
-      const [user, ...rest] = Buffer.from(encoded, 'base64').toString().split(':');
-      const pass = rest.join(':');
-      if (user === AUTH_USER && pass === AUTH_PASS) return next();
+
+export const hashPassword = (password, salt = crypto.randomBytes(16).toString('hex')) => ({
+  salt,
+  hash: crypto.scryptSync(String(password), salt, 32).toString('hex'),
+});
+const verifyPassword = (password, salt, hash) => {
+  const test = crypto.scryptSync(String(password), salt, 32);
+  const real = Buffer.from(hash, 'hex');
+  return test.length === real.length && crypto.timingSafeEqual(test, real);
+};
+const anyUsers = () => db.prepare('SELECT COUNT(*) c FROM users WHERE active = 1').get().c > 0;
+
+app.use((req, res, next) => {
+  const header = req.headers.authorization || '';
+  const [scheme, encoded] = header.split(' ');
+  if (scheme === 'Basic' && encoded) {
+    const [user, ...rest] = Buffer.from(encoded, 'base64').toString().split(':');
+    const pass = rest.join(':');
+    if (AUTH_PASS && user === AUTH_USER && pass === AUTH_PASS) {
+      req.user = { id: null, username: AUTH_USER, display_name: 'Master admin', role: 'admin' };
+      return next();
     }
-    res.set('WWW-Authenticate', 'Basic realm="Innovat3 Prospect Engine"');
-    res.status(401).send('Authentication required');
-  });
-}
+    const u = db.prepare('SELECT * FROM users WHERE username = ? AND active = 1').get(user);
+    if (u && verifyPassword(pass, u.pass_salt, u.pass_hash)) {
+      req.user = { id: u.id, username: u.username, display_name: u.display_name, role: u.role };
+      return next();
+    }
+  }
+  // Local development with no password configured and no users created
+  if (!AUTH_PASS && !anyUsers()) {
+    req.user = { id: null, username: 'dev', display_name: 'Dev', role: 'admin' };
+    return next();
+  }
+  res.set('WWW-Authenticate', 'Basic realm="Innovat3 Prospect Engine"');
+  res.status(401).send('Authentication required');
+});
+
+const adminOnly = (req, res, next) => {
+  if (req.user?.role === 'admin') return next();
+  res.status(403).json({ error: 'Admins only' });
+};
+
+// The Settings page itself is admin-only
+app.use((req, res, next) => {
+  if (req.path === '/settings.html' && req.user?.role !== 'admin') {
+    return res.status(403).send('Admins only — ask an admin for access.');
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const STATUSES = ['new', 'contacted', 'interested', 'not_interested', 'customer', 'disqualified', 'no_contact'];
+
+// ---------- who am I ----------
+app.get('/api/me', (req, res) => {
+  res.json({ username: req.user.username, name: req.user.display_name, role: req.user.role });
+});
+
+// ---------- team management (Settings tab, admin) ----------
+app.get('/api/users', adminOnly, (req, res) => {
+  res.json(db.prepare('SELECT id, username, display_name, role, active, created_at FROM users ORDER BY id').all());
+});
+
+app.post('/api/users', adminOnly, (req, res) => {
+  const { username, display_name, password, role } = req.body || {};
+  if (!username || !/^[a-z0-9._-]{2,32}$/i.test(username)) return res.status(400).json({ error: 'Username: 2-32 letters/numbers/._-' });
+  if (!display_name?.trim()) return res.status(400).json({ error: 'Display name is required' });
+  if (!password || String(password).length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  if (!['admin', 'user'].includes(role)) return res.status(400).json({ error: 'Role must be admin or user' });
+  const { salt, hash } = hashPassword(password);
+  try {
+    const r = db.prepare('INSERT INTO users (username, display_name, pass_salt, pass_hash, role) VALUES (?, ?, ?, ?, ?)')
+      .run(username.trim(), display_name.trim(), salt, hash, role);
+    res.status(201).json({ id: Number(r.lastInsertRowid) });
+  } catch {
+    res.status(409).json({ error: 'That username is taken' });
+  }
+});
+
+app.patch('/api/users/:id', adminOnly, (req, res) => {
+  const u = db.prepare('SELECT * FROM users WHERE id = ?').get(Number(req.params.id));
+  if (!u) return res.status(404).json({ error: 'not found' });
+  const { role, active, password, display_name } = req.body || {};
+  if (role !== undefined && !['admin', 'user'].includes(role)) return res.status(400).json({ error: 'bad role' });
+  if (password !== undefined && String(password).length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  const sets = [];
+  const params = [];
+  if (role !== undefined) { sets.push('role = ?'); params.push(role); }
+  if (active !== undefined) { sets.push('active = ?'); params.push(active ? 1 : 0); }
+  if (display_name !== undefined && display_name.trim()) { sets.push('display_name = ?'); params.push(display_name.trim()); }
+  if (password !== undefined) {
+    const { salt, hash } = hashPassword(password);
+    sets.push('pass_salt = ?', 'pass_hash = ?');
+    params.push(salt, hash);
+  }
+  if (sets.length) db.prepare(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`).run(...params, u.id);
+  res.json(db.prepare('SELECT id, username, display_name, role, active, created_at FROM users WHERE id = ?').get(u.id));
+});
+
+// ---------- client accounts (who are we prospecting FOR) ----------
+// NULL account_id = Innovat3's own book. Each client account carries its
+// target niches + territory; runs tag their prospects to the account so the
+// client's list stays segmented and exports clean into their CRM.
+app.get('/api/accounts', (req, res) => {
+  if (req.user.role !== 'admin') return res.json([]); // users work the house book only
+  const rows = db.prepare('SELECT * FROM accounts ORDER BY active DESC, name').all();
+  const counts = Object.fromEntries(
+    db.prepare('SELECT account_id, COUNT(*) c FROM prospects WHERE account_id IS NOT NULL GROUP BY account_id').all()
+      .map((r) => [r.account_id, r.c])
+  );
+  res.json(rows.map((a) => ({
+    ...a,
+    niches: JSON.parse(a.niches_json || '[]'),
+    zips: JSON.parse(a.zips_json || '[]'),
+    prospects: counts[a.id] || 0,
+  })));
+});
+
+app.post('/api/accounts', adminOnly, (req, res) => {
+  const { name, notes, niches, zips } = req.body || {};
+  if (!name?.trim()) return res.status(400).json({ error: 'Account name is required' });
+  const cleanZips = (Array.isArray(zips) ? zips : String(zips || '').split(','))
+    .map((z) => String(z).trim()).filter((z) => /^\d{3,5}$/.test(z)).slice(0, 20);
+  const r = db.prepare('INSERT INTO accounts (name, notes, niches_json, zips_json) VALUES (?, ?, ?, ?)')
+    .run(name.trim(), notes?.trim() || null, JSON.stringify(Array.isArray(niches) ? niches : []), JSON.stringify(cleanZips));
+  res.status(201).json({ id: Number(r.lastInsertRowid) });
+});
+
+app.patch('/api/accounts/:id', adminOnly, (req, res) => {
+  const a = db.prepare('SELECT * FROM accounts WHERE id = ?').get(Number(req.params.id));
+  if (!a) return res.status(404).json({ error: 'not found' });
+  const { name, notes, niches, zips, active } = req.body || {};
+  const cleanZips = zips === undefined ? undefined
+    : (Array.isArray(zips) ? zips : String(zips || '').split(',')).map((z) => String(z).trim()).filter((z) => /^\d{3,5}$/.test(z)).slice(0, 20);
+  db.prepare(`UPDATE accounts SET
+      name = COALESCE(?, name), notes = COALESCE(?, notes),
+      niches_json = COALESCE(?, niches_json), zips_json = COALESCE(?, zips_json),
+      active = COALESCE(?, active)
+    WHERE id = ?`).run(
+    name?.trim() ?? null, notes ?? null,
+    niches === undefined ? null : JSON.stringify(niches),
+    cleanZips === undefined ? null : JSON.stringify(cleanZips),
+    active === undefined ? null : (active ? 1 : 0), a.id
+  );
+  res.json(db.prepare('SELECT * FROM accounts WHERE id = ?').get(a.id));
+});
+
+// Which client's book is this request looking at? '' / 'house' = Innovat3's
+// own; 'all' = everything; a number = that client account. Validated to a
+// literal so it can be interpolated into WHERE clauses safely.
+function acctSql(req) {
+  const a = String(req.query.account || '');
+  if (!a || a === 'house') return 'account_id IS NULL';
+  if (a === 'all') return '1=1';
+  const n = Number(a);
+  return Number.isFinite(n) && n > 0 ? `account_id = ${Math.floor(n)}` : 'account_id IS NULL';
+}
 
 // ---------- prospects ----------
 // Latest-touch subselects: the list is conversation-aware — every row knows
@@ -55,7 +200,7 @@ const LAST_TOUCH_COLS = `
 
 app.get('/api/prospects', (req, res) => {
   const { q, industry, source, status, minScore, hasEmail, hasPhone, noWebsite, zip, stage, stages, assigned, lastDir, due, sort = 'score', dir = 'desc', page = '1', pageSize = '50' } = req.query;
-  const where = [];
+  const where = [acctSql(req)];
   const params = [];
   if (q) { where.push('(business_name LIKE ? OR dba_name LIKE ? OR contact_name LIKE ? OR city LIKE ?)'); const like = `%${q}%`; params.push(like, like, like, like); }
   if (zip) {
@@ -109,7 +254,7 @@ app.get('/api/queue', (req, res) => {
   const rep = String(req.query.rep || '');
   const mine = rep ? ' AND (assigned_to IS NULL OR assigned_to = ?)' : '';
   const args = rep ? [rep] : [];
-  const WORKABLE = "status NOT IN ('not_interested','disqualified','customer','no_contact') AND nurture_stage != 'suppressed'";
+  const WORKABLE = `status NOT IN ('not_interested','disqualified','customer','no_contact') AND nurture_stage != 'suppressed' AND ${acctSql(req)}`;
   const lastDirIs = (d) =>
     `(SELECT direction FROM prospect_touches t WHERE t.prospect_id = prospects.id ORDER BY t.id DESC LIMIT 1) = '${d}'`;
   const count = (sql) => db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${sql}${mine}`).get(...args).c;
@@ -117,7 +262,7 @@ app.get('/api/queue', (req, res) => {
     your_move: count(`${WORKABLE} AND ${lastDirIs('in')}`),
     due: count(`${WORKABLE} AND next_touch_at IS NOT NULL AND next_touch_at <= datetime('now')`),
     handoffs: count(`${WORKABLE} AND nurture_stage IN ('qualified','handoff_requested','call_scheduled')`),
-    fresh: count(`status = 'new' AND score >= 50`),
+    fresh: count(`status = 'new' AND score >= 50 AND ${acctSql(req)}`),
   });
 });
 
@@ -337,7 +482,7 @@ app.get('/api/daily', (req, res) => {
   const mine = rep ? 'AND (assigned_to IS NULL OR assigned_to = ?)' : '';
   const rows = db.prepare(`
     SELECT prospects.*, ${LAST_TOUCH_COLS} FROM prospects
-    WHERE status = 'new' AND score >= 50 ${mine}
+    WHERE status = 'new' AND score >= 50 AND ${acctSql(req)} ${mine}
     ORDER BY (created_at >= date('now')) DESC, score DESC, id DESC
     LIMIT ?
   `).all(...(rep ? [rep, size] : [size]));
@@ -364,14 +509,14 @@ app.get('/api/markets/:vertical', async (req, res) => {
 // ---------- stats ----------
 app.get('/api/stats', (req, res) => {
   // Working book = everything except parked no-contact rows
-  const W = "status != 'no_contact'";
+  const W = `status != 'no_contact' AND ${acctSql(req)}`;
   const total = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W}`).get().c;
   const today = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND created_at >= date('now')`).get().c;
   const withEmail = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND email IS NOT NULL AND email_status IN ('verified','valid_mx')`).get().c;
   const withPhone = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND phone IS NOT NULL`).get().c;
   const noWebsite = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND website IS NULL`).get().c;
   const avgScore = db.prepare(`SELECT ROUND(AVG(score)) a FROM prospects WHERE ${W}`).get().a || 0;
-  const parked = db.prepare("SELECT COUNT(*) c FROM prospects WHERE status = 'no_contact'").get().c;
+  const parked = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE status = 'no_contact' AND ${acctSql(req)}`).get().c;
   const inHandoff = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND nurture_stage IN ('qualified','handoff_requested','call_scheduled')`).get().c;
   const callsToday = db.prepare("SELECT COUNT(*) c FROM prospects WHERE date(scheduled_call_at) = date('now')").get().c;
   const touchesToday = db.prepare("SELECT COUNT(*) c FROM prospect_touches WHERE direction = 'out' AND created_at >= date('now')").get().c;
@@ -420,13 +565,21 @@ if (!config.enrichment.email.allowGuessed) {
 const activeRuns = new Set();
 app.post('/api/runs', (req, res) => {
   if (activeRuns.size > 0) return res.status(409).json({ error: 'A run is already in progress' });
-  const { limit, days, industries, sources, zips, categories, requireContact } = req.body || {};
+  const { limit, days, industries, sources, zips, categories, requireContact, account_id } = req.body || {};
+  // Prospecting FOR a client is an admin capability
+  let accountId;
+  if (account_id) {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Only admins can run prospecting for client accounts' });
+    const acct = db.prepare('SELECT id FROM accounts WHERE id = ? AND active = 1').get(Number(account_id));
+    if (!acct) return res.status(400).json({ error: 'Unknown client account' });
+    accountId = acct.id;
+  }
   const cleanZips = Array.isArray(zips)
     ? zips.map((z) => String(z).trim()).filter((z) => /^\d{3,5}$/.test(z)).slice(0, 20)
     : undefined;
-  const runId = createRun({ limit, days, industries, sources, zips: cleanZips, requireContact });
+  const runId = createRun({ limit, days, industries, sources, zips: cleanZips, requireContact, accountId });
   activeRuns.add(runId);
-  executeRun({ limit, days, industries, sources, zips: cleanZips, categories, requireContact, runId })
+  executeRun({ limit, days, industries, sources, zips: cleanZips, categories, requireContact, accountId, runId })
     .catch(() => {})
     .finally(() => activeRuns.delete(runId));
   res.status(202).json({ runId });
@@ -472,7 +625,7 @@ app.get('/api/meta', (req, res) => {
 
 // ---------- CSV export ----------
 app.get('/api/export.csv', (req, res) => {
-  const rows = db.prepare('SELECT * FROM prospects ORDER BY score DESC').all();
+  const rows = db.prepare(`SELECT * FROM prospects WHERE ${acctSql(req)} ORDER BY score DESC`).all();
   const cols = ['business_name', 'dba_name', 'industry', 'license_type', 'established_date', 'contact_name', 'contact_title', 'email', 'email_status', 'phone', 'website', 'city', 'state', 'zip', 'score', 'status', 'assigned_to', 'source', 'source_id', 'notes'];
   const esc = (v) => (v == null ? '' : `"${String(v).replaceAll('"', '""')}"`);
   const csv = [cols.join(','), ...rows.map((r) => cols.map((c) => esc(r[c])).join(','))].join('\n');

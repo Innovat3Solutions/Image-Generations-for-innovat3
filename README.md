@@ -202,6 +202,29 @@ monetize it.
   contact, opportunity, the gap in the prospect's own words, pricing
   questions asked, likely starting offer, and the full conversation.
 
+### Team access & client accounts (⚙️ Settings, admins)
+
+Two roles, managed in the Settings tab:
+
+- **User** — signs in with their own username/password and works the
+  Innovat3 prospect dashboard: search by industry, nurture, Daily 50.
+- **Admin** — everything a user has, plus team management (add teammates,
+  roles, disable, reset passwords) and **client accounts**: B2B prospect
+  generation *for clients*.
+
+**Client accounts** answer "who are we prospecting for?" Each account
+stores the client's target niches and territory zips. Admins get an
+**account switcher** in the top bar: pick a client, hit Run pipeline (their
+niches + zips prefill), and every prospect from that run lands in that
+client's segmented book — separate from Innovat3's own list and from every
+other client. **Export CSV** while their account is selected and you have
+the exact list to import into their CRM. The whole rep command center
+(queues, nurture, follow-ups) works inside each client book too.
+
+Sign-in uses each person's own credentials; the `DASHBOARD_USER` /
+`DASHBOARD_PASSWORD` environment pair remains a master-admin login, so the
+first admin can bootstrap the team and nobody can get locked out.
+
 ### The rep command center
 
 The dashboard is built around one question: **what do I do right now?**

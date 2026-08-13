@@ -17,12 +17,14 @@
       </div>
     </div>
     <div class="topbar-actions">
+      <select id="account-switch" class="account-switch hidden" title="Whose book are you looking at? Innovat3's own prospects, or a client account you're generating lists for."></select>
       <input id="rep-name" class="rep-input" placeholder="Your name" title="Signs your outreach messages and claims prospects you touch" />
+      <a class="btn ghost hidden" id="btn-settings" href="/settings.html">⚙️ Settings</a>
       <a class="btn ghost" href="/offers.html">📖 Offers</a>
       <a class="btn ghost" href="/practice.html">🎧 Practice</a>
       <button class="btn ghost" id="btn-daily">🔥 Today's 50</button>
       <button class="btn ghost" id="btn-reenrich" title="Second enrichment pass over prospects missing email or phone — run this after adding API keys">↻ Re-enrich missing</button>
-      <a class="btn ghost" href="/api/export.csv" download>Export CSV</a>
+      <a class="btn ghost" href="/api/export.csv" id="btn-export" download>Export CSV</a>
       <button class="btn primary" id="btn-run">▶ Run pipeline</button>
     </div>
   </header>
@@ -108,6 +110,9 @@
         </label>
       </div>
       <div class="form-row">
+        <label id="run-account-wrap" class="hidden">Prospecting for
+          <select id="run-account"></select>
+        </label>
         <label style="flex:1">Target zip codes <span class="muted">(optional — full zips or prefixes, comma-separated)</span>
           <input type="text" id="run-zips" placeholder="e.g. 33101, 33130, 334" />
         </label>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — Innovat3 Prospect Engine</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">⚙️</span>
+      <div>
+        <h1>Settings</h1>
+        <p class="subtitle">Team access &amp; client accounts · admins only</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a class="btn ghost" href="/">← Back to dashboard</a>
+    </div>
+  </header>
+
+  <main class="settings-wrap">
+    <!-- ============ TEAM ============ -->
+    <section class="settings-card">
+      <h2>👥 Team</h2>
+      <p class="muted">Each teammate signs in with their own username and password.
+        <strong>Users</strong> work the Innovat3 prospect dashboard.
+        <strong>Admins</strong> can also manage the team, create client accounts, and run prospecting for clients.</p>
+
+      <div class="form-row" style="flex-wrap:wrap">
+        <label>Full name <input id="u-name" placeholder="Maria Lopez" /></label>
+        <label>Username <input id="u-username" placeholder="maria" autocomplete="off" /></label>
+        <label>Password <input id="u-password" type="text" placeholder="min 8 characters" autocomplete="off" /></label>
+        <label>Role
+          <select id="u-role">
+            <option value="user">User — dashboard access</option>
+            <option value="admin">Admin — full access</option>
+          </select>
+        </label>
+        <button class="btn primary" id="u-add" style="align-self:flex-end">+ Add teammate</button>
+      </div>
+      <div id="u-error" class="form-error hidden"></div>
+
+      <table class="settings-table" id="users-table">
+        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="users-body"><tr><td colspan="5" class="muted">Loading…</td></tr></tbody>
+      </table>
+      <p class="muted" style="font-size:11px">The DASHBOARD_USER / DASHBOARD_PASSWORD pair from your host's environment variables always works as a master admin — you can't lock yourself out.</p>
+    </section>
+
+    <!-- ============ CLIENT ACCOUNTS ============ -->
+    <section class="settings-card">
+      <h2>🗂 Client accounts</h2>
+      <p class="muted">Who are we prospecting <em>for</em>? Each client account holds its target niches and territory.
+        Runs made for an account tag every prospect to it — the dashboard's account switcher shows one client's
+        book at a time, and Export CSV delivers exactly that list for their CRM.</p>
+
+      <div class="form-row" style="flex-wrap:wrap">
+        <label style="min-width:200px">Client name <input id="a-name" placeholder="e.g. Suncoast Roof Pros" /></label>
+        <label style="min-width:200px">Territory zips <input id="a-zips" placeholder="33101, 334, 336…" /></label>
+        <label style="flex:1;min-width:220px">Notes <input id="a-notes" placeholder="what a good prospect looks like for them" /></label>
+      </div>
+      <div style="margin:10px 0 4px;font-size:12px;color:var(--ink-2)">Target niches — which industries should their prospect list contain?</div>
+      <div id="a-niches" class="industry-grid"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:10px">
+        <button class="btn primary" id="a-add">+ Create client account</button>
+        <span id="a-error" class="form-error hidden"></span>
+      </div>
+
+      <table class="settings-table" id="accounts-table">
+        <thead><tr><th>Client</th><th>Niches</th><th>Zips</th><th>Prospects</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="accounts-body"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+      </table>
+      <p class="muted" style="font-size:11px">To fill an account: pick it in the dashboard's account switcher, hit <strong>Run pipeline</strong> — its niches and zips prefill — and the prospects land in that client's book. Then <strong>Export CSV</strong> while the account is selected.</p>
+    </section>
+  </main>
+
+  <script src="settings.js"></script>
+</body>
+</html>

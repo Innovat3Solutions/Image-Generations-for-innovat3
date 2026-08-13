@@ -103,6 +103,12 @@ export async function executeRun(params = {}) {
         }
       }
       if (absorbed) log(`run#${runId} round ${round}: ${absorbed} registry records absorbed into existing listings`);
+      // Client-account run: tag this batch to the client so their list stays
+      // segmented from the house book and from other clients
+      if (params.accountId && insertedIds.length) {
+        db.prepare(`UPDATE prospects SET account_id = ? WHERE id IN (${insertedIds.map(() => '?').join(',')})`)
+          .run(params.accountId, ...insertedIds);
+      }
       if (!insertedIds.length) {
         log(`run#${runId} round ${round}: sources exhausted`);
         break;

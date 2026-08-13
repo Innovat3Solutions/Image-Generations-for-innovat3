@@ -1,6 +1,12 @@
 /* Innovat3 Prospect Engine — dashboard */
 const $ = (sel) => document.querySelector(sel);
-const state = { page: 1, sort: 'score', dir: 'desc', meta: null, pollTimer: null };
+const state = { page: 1, sort: 'score', dir: 'desc', meta: null, pollTimer: null, me: null, accounts: [], account: 'house' };
+
+// Whose book is on screen — Innovat3's own ('house') or a client account (id)
+const withAcct = (url) => (state.account && state.account !== 'house'
+  ? url + (url.includes('?') ? '&' : '?') + 'account=' + state.account
+  : url);
+const currentAccount = () => state.accounts.find((a) => String(a.id) === String(state.account)) || null;
 
 const STATUS_LABELS = {
   new: 'New', contacted: 'Contacted', interested: 'Interested',
@@ -109,7 +115,7 @@ async function loadMeta() {
 
 /* ---------- stats ---------- */
 async function loadStats() {
-  const s = await api('/api/stats');
+  const s = await api(withAcct('/api/stats'));
   $('#stats').innerHTML = `
     <div class="tile"><div class="value">${s.total.toLocaleString()}</div><div class="label">Total prospects</div></div>
     <div class="tile"><div class="value">${s.today.toLocaleString()}</div><div class="label">Added today</div></div>
@@ -143,6 +149,7 @@ function filterParams() {
   if (state.queueMode && repName()) p.set('assigned', repName());
   if (!p.has('sort')) { p.set('sort', state.sort); p.set('dir', state.dir); }
   p.set('page', state.page);
+  if (state.account && state.account !== 'house') p.set('account', state.account);
   return p;
 }
 
@@ -231,7 +238,7 @@ async function loadTable() {
 
 /* ---------- work queue chips ---------- */
 async function loadQueue() {
-  const q = await api('/api/queue?rep=' + encodeURIComponent(repName()));
+  const q = await api(withAcct('/api/queue?rep=' + encodeURIComponent(repName())));
   const chips = [
     ['your_move', '🟢 They replied — your move', q.your_move],
     ['due', '⏰ Follow-ups due', q.due],
@@ -257,7 +264,7 @@ async function loadQueue() {
 const TIER_HEADS = { high: '🔥 High Opportunity', strong: '🟢 Strong Fit', explore: '🟡 Worth Exploring' };
 
 async function loadDaily() {
-  const data = await api('/api/daily?size=50&rep=' + encodeURIComponent(repName()));
+  const data = await api(withAcct('/api/daily?size=50&rep=' + encodeURIComponent(repName())));
   const bar = $('#daily-bar');
   bar.classList.remove('hidden');
   bar.innerHTML = `
@@ -756,6 +763,28 @@ function bindEvents() {
   // run modal
   $('#btn-run').onclick = () => {
     $('#modal-overlay').classList.remove('hidden');
+    // Admins pick who this run is FOR; the account's niches + zips prefill
+    const activeAccounts = (state.accounts || []).filter((a) => a.active);
+    if (state.me?.role === 'admin' && activeAccounts.length) {
+      $('#run-account-wrap').classList.remove('hidden');
+      const sel = $('#run-account');
+      sel.innerHTML = `<option value="">🏠 Innovat3 — our book</option>` +
+        activeAccounts.map((a) => `<option value="${a.id}">🗂 ${esc(a.name)}</option>`).join('');
+      sel.value = state.account !== 'house' ? String(state.account) : '';
+      const prefill = () => {
+        const acct = activeAccounts.find((a) => String(a.id) === sel.value);
+        if (!acct) return;
+        if (acct.zips.length) {
+          $('#run-zips').value = acct.zips.join(', ');
+          $('#run-zips').dispatchEvent(new Event('input')); // auto-checks the Google source
+        }
+        if (acct.niches.length) {
+          document.querySelectorAll('.run-ind').forEach((c) => { c.checked = acct.niches.includes(c.value); });
+        }
+      };
+      sel.onchange = prefill;
+      prefill();
+    }
     // Live-check the data provider keys so a dead key is visible BEFORE the run
     $('#provider-status').innerHTML = '<span class="muted">Checking data providers…</span>';
     api('/api/providers').then((ps) => {
@@ -789,6 +818,7 @@ function bindEvents() {
           industries: industries.length ? industries : undefined,
           zips: zips.length ? zips : undefined,
           categories: categories.length ? categories : undefined,
+          account_id: $('#run-account')?.value ? Number($('#run-account').value) : undefined,
         }),
       });
       $('#modal-overlay').classList.add('hidden');
@@ -804,8 +834,54 @@ function bindEvents() {
   });
 }
 
+/* ---------- account switching (admins: whose book am I working?) ---------- */
+function applyAccountUI() {
+  const acct = currentAccount();
+  $('#btn-export').href = withAcct('/api/export.csv');
+  document.title = acct ? `${acct.name} — Innovat3 Prospect Engine` : 'Innovat3 Prospect Engine';
+  const sub = document.querySelector('.subtitle');
+  if (sub) sub.textContent = acct
+    ? `Client book: ${acct.name} — prospects generated for their CRM`
+    : 'New Florida businesses & licensees · Google-first + state registries';
+}
+
+async function initIdentity() {
+  try { state.me = await api('/api/me'); } catch { state.me = { name: '', role: 'user' }; }
+  // the signed-in user IS the rep — prefill once, still editable
+  if (!repName() && state.me.name && !['Dev', 'Master admin'].includes(state.me.name)) {
+    localStorage.setItem('rep_name', state.me.name);
+  }
+  if (state.me.role !== 'admin') return;
+  $('#btn-settings').classList.remove('hidden');
+  state.accounts = await api('/api/accounts').catch(() => []);
+  const activeAccounts = state.accounts.filter((a) => a.active);
+  if (!activeAccounts.length) return;
+
+  const sw = $('#account-switch');
+  sw.classList.remove('hidden');
+  sw.innerHTML = `<option value="house">🏠 Innovat3 — our book</option>` +
+    activeAccounts.map((a) => `<option value="${a.id}">🗂 ${esc(a.name)} (${a.prospects})</option>`).join('');
+  // deep link (?account=N from Settings) wins over the remembered choice
+  const fromUrl = new URLSearchParams(location.search).get('account');
+  state.account = fromUrl || localStorage.getItem('account') || 'house';
+  if (![...sw.options].some((o) => o.value === String(state.account))) state.account = 'house';
+  sw.value = String(state.account);
+  sw.onchange = () => {
+    state.account = sw.value;
+    localStorage.setItem('account', sw.value);
+    state.page = 1;
+    state.queueMode = null;
+    applyAccountUI();
+    loadStats();
+    loadQueue();
+    loadTable();
+  };
+}
+
 /* ---------- boot ---------- */
 (async function init() {
+  await initIdentity();
+
   // Rep identity: signs messages, claims prospects, scopes the queues
   const repInput = $('#rep-name');
   repInput.value = repName();
@@ -817,6 +893,7 @@ function bindEvents() {
 
   await loadMeta();
   bindEvents();
+  applyAccountUI();
   loadStats();
   loadQueue();
   loadTable();

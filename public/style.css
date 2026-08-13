@@ -361,6 +361,27 @@ tbody tr:last-child td { border-bottom: none; }
   border-radius: 8px; padding: 10px; font-family: inherit; font-size: 13px;
 }
 
+/* ---------- settings: team & client accounts ---------- */
+.settings-wrap { max-width: 1080px; margin: 0 auto; padding: 20px 24px 60px; display: flex; flex-direction: column; gap: 20px; }
+.settings-card {
+  background: var(--surface); border: 1px solid var(--grid); border-radius: 14px;
+  padding: 20px 24px;
+}
+.settings-card h2 { font-size: 17px; margin-bottom: 6px; }
+.settings-card > p.muted { font-size: 13px; margin-bottom: 14px; max-width: 720px; }
+.settings-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+.settings-table th {
+  text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--grid);
+}
+.settings-table td { padding: 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+.settings-table .inactive-row td { opacity: 0.5; }
+.form-error { color: var(--critical); font-size: 12px; margin-top: 8px; display: inline-block; }
+.account-switch {
+  background: var(--wash); color: var(--ink); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 7px 10px; font-size: 13px; font-weight: 650; max-width: 240px;
+}
+
 /* ---------- rep command center ---------- */
 .rep-input {
   background: var(--surface); color: var(--ink); border: 1px solid var(--grid);

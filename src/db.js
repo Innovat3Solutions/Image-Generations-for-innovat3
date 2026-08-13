@@ -155,6 +155,35 @@ try {
   db.exec('ALTER TABLE prospect_touches ADD COLUMN rep TEXT');
 } catch { /* column already exists */ }
 
+// Team + client accounts: users sign in with their own credentials; client
+// accounts segment the prospect book ("who are we prospecting FOR") so each
+// client's list stays clean and exports straight into their CRM.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    display_name TEXT NOT NULL,
+    pass_salt TEXT NOT NULL,
+    pass_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',   -- admin | user
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS accounts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    notes TEXT,
+    niches_json TEXT,                    -- vertical keys this client wants prospects in
+    zips_json TEXT,                      -- their territory
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+`);
+try {
+  db.exec('ALTER TABLE prospects ADD COLUMN account_id INTEGER'); // NULL = Innovat3's own book
+} catch { /* column already exists */ }
+
 export function insertProspect(p) {
   const stmt = db.prepare(`
     INSERT INTO prospects (
