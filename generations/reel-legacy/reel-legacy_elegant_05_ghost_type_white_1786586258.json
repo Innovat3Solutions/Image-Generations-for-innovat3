@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Elegant set — #5 Ghost-type white version — high-key dawn fog, giant 'LEGACY' fading downward, 'The Legacy Lives On'",
+  "prompt": "Elegant high-fashion technical apparel advertising creative, 4:5 portrait — light counterpart of the dark ghost-type back shot. Model from behind in pale dawn fog over silver water, wearing the WHITE Reel Legacy long-sleeve with the black-to-nothing fading spine print per reference image 2. Giant charcoal 'LEGACY' capitals cropped by frame with pronounced vertical fade — darkest at the letter tops, dissolving completely toward the bottom, echoing the spine print fade. Black wave-R lockup top center (exact letterform from reference image 1); bottom right 'THE LEGACY LIVES ON'. High-key monochrome, cinematic, photorealistic.",
+  "refs": ["refs/reel_legacy_r_black.png", "reel-legacy_rl1001_white_front_back_v3_1786580872.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T01:58:00Z",
+  "note": "Requested as the white version of elegant #2 with the LEGACY type strongly faded toward the bottom."
+}

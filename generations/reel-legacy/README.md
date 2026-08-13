@@ -46,7 +46,7 @@ board; product accuracy per their Reel Legacy product board. Files `reel-legacy_
 back shot (giant cropped LEGACY over night water, "Offshore To After Hours" — v2 is
 current; v1 rendered a wave icon instead of the R) · 03 after-hours candid (two anglers
 at blue hour, "From Sunrise To Last Cast.") · 04 rail over turquoise ("Nothing Extra.
-Everything Earned.").
+Everything Earned.") · 05 ghost-type white version (high-key dawn fog, giant LEGACY fading downward, "The Legacy Lives On").
 
 New copy lines adopted from the client's product board: "The Legacy Lives On",
 "Offshore To After Hours", "Coastal Performance", "Nothing Extra."
