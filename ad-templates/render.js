@@ -39,6 +39,16 @@ const ADS = [
   { file: 'ad42_cons_grandpa.html', w: 1080, h: 1080 },
   { file: 'ad43_cons_capewoman.html', w: 1080, h: 1080 },
   { file: 'ad44_cons_slothhug.html', w: 1080, h: 1080 },
+  { file: 'ad51_sc_squirrel.html', w: 1080, h: 1080 },
+  { file: 'ad52_sc_dogqueue.html', w: 1080, h: 1080 },
+  { file: 'ad53_sc_frame.html', w: 1080, h: 1080 },
+  { file: 'ad54_sc_catguard.html', w: 1080, h: 1080 },
+  { file: 'ad55_sc_flamingo.html', w: 1080, h: 1080 },
+  { file: 'ad56_sc_tugofwar.html', w: 1080, h: 1080 },
+  { file: 'ad57_sc_peepcrowd.html', w: 1080, h: 1080 },
+  { file: 'ad58_sc_poolman.html', w: 1080, h: 1080 },
+  { file: 'ad59_sc_raccoon.html', w: 1080, h: 1080 },
+  { file: 'ad60_sc_parade.html', w: 1080, h: 1080 },
 ];
 
 (async () => {

@@ -103,3 +103,13 @@ at an edge. Peephole cat ("Ding dong. It's the good kind of mail."), porch grand
 ("Old habits don't die"), caped grandma mailbox sprint ("Race you to the mailbox."),
 doorstep sloth hug ("Some mail deserves the fridge."). Cards in-scene are plain navy,
 deliberately blank.
+
+## Gag-scene consumer series (ads 51-60)
+
+Ten scenes where the humor lives in the image itself and text stays small, in reserved
+dead space, never over the subject. No em dashes in copy. Masked squirrel mailbox heist,
+five-dog card queue, card in a gilded frame, cat guarding the card, flamingos staring at
+the mailbox, toddler-vs-retriever tug of war, peephole crowd (carrier + cat + raccoon +
+pigeon), pool-float grandpa, raccoon night fridge raid, and the pet parade. Carrier
+uniforms were edit-passed to plain navy (no USPS-style insignia). Cards in scene stay
+plain navy.
