@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #5 Last cast silhouette — black camo, 'Worn On The Water'",
+  "prompt": "Premium fishing-lifestyle advertising creative, 4:5 portrait. SCENE: dusk flats water, angler mid-cast on a flats skiff bow platform, silhouetted against orange-to-violet sky. Wears the BLACK camo Reel Legacy long-sleeve from reference image 2, white wave-R chest logo and white sleeve lettering visible — garment and prints IDENTICAL to reference; silky technical knit. TYPOGRAPHY (white): lockup top; left-locked headline 'WORN ON' / 'THE WATER'; footer 'BUILT FOR THE ELEMENTS'.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1002_blackcamo_sleeve_v3_1786581063.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:56:00Z"
+}

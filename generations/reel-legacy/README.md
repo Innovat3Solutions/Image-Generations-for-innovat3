@@ -23,6 +23,20 @@ Built from the v2 mockups (passed as reference images for garment/print consiste
 | "details matter." — faded spine hero, white | 9:16 | `reel-legacy_post_details_matter_faded_back_` |
 | "details matter." — faded spine hero, navy camo | 9:16 | `reel-legacy_post_details_matter_camo_back_` |
 
+## Ad set 10 — brand-world campaign (per brand/BRAND_GUIDELINES.md)
+
+Backgrounds drawn from the brand world (coastal city to open water); garments conditioned
+on the `_v3_` mockups; taglines verbatim from the copy deck. Files `reel-legacy_ad10_01…10`:
+
+01 sunrise dock (4:5, spine print, "From Sunrise To Last Cast.") · 02 Miami dusk bow
+(4:5, navy camo, "Built Different.") · 03 boat run helm (9:16, sleeve print, "What You
+Wear. It's How You Live.") · 04 boardwalk golden hour (4:5, minimal white, "Designed For
+Those Who Live It.") · 05 last-cast silhouette (4:5, black camo, "Worn On The Water") ·
+06 collection still life (4:5, cooler/tumbler/tee, "Every Piece, Built For The Water.") ·
+07 technical feature diagram (4:5, navy camo, "Built For The Elements.") · 08 macro
+droplets (9:16, "details matter." — logo fidelity re-roll candidate) · 09 marina dawn
+(9:16, "Earned, Not Given.") · 10 catalog drop card (4:5, $54.99, "Pre-Order — 20% Off").
+
 ## Versions
 
 `_v3_` files are the current drafts: same compositions and prints as v2, with the fabric

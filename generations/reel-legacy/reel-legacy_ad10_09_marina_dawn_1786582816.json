@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #9 Marina dawn — white LS, 'Earned, Not Given.'",
+  "prompt": "Premium editorial advertising creative, 9:16 vertical. Early morning marina, man seated on skiff gunwale in the WHITE Reel Legacy long-sleeve (black wave-R chest logo per reference), cool dawn palette. Headline 'EARNED,' / 'NOT GIVEN.'; footer 'BUILT TO LAST · BACKED BY LEGACY'.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rl1001_white_front_back_v3_1786580872.png"],
+  "params": { "aspect_ratio": "9:16", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T01:00:00Z"
+}

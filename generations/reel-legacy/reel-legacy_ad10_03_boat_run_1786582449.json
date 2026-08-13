@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #3 Boat run helm — white sleeve print, 'What You Wear. It's How You Live.'",
+  "prompt": "Premium fishing-lifestyle advertising creative, 9:16 vertical for stories. SCENE: a center-console fishing boat running fast across open turquoise-and-deep-blue water on a bright morning, white spray kicking off the hull. A man at the helm wears the WHITE Reel Legacy active-wear long-sleeve from reference image 2 with the black wave-R chest logo and black 'REEL LEGACY' lettering down the right sleeve — garment and prints IDENTICAL to reference; silky fine-gauge technical knit, never cotton. TYPOGRAPHY (white): lockup top; headline 'WHAT YOU WEAR.' / 'IT'S HOW YOU LIVE.'; footer 'PERFORMANCE THAT MOVES WITH YOU'.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rll1001_white_sleeve_print_v3_1786580928.png"],
+  "params": { "aspect_ratio": "9:16", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:54:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #6 Collection still life — cooler, tumbler, folded tee on boat deck, 'Every Piece, Built For The Water.'",
+  "prompt": "Premium product-collection advertising creative, 4:5 portrait. SCENE: stern deck of a fishing boat at morning, teak and white gelcoat. Still life: Stone White cooler with black wave-R, stainless tumbler with engraved wave-R, folded WHITE Reel Legacy long-sleeve (black chest logo) on top — logo exactly as reference image 1; silky technical knit fabric. TYPOGRAPHY (white): lockup top; 'EVERY PIECE,' / 'BUILT FOR THE WATER.'; footer 'APPAREL · HEADWEAR · GEAR'.",
+  "refs": ["refs/reel_legacy_r_black.png", "reel-legacy_rl1001_white_front_back_v3_1786580872.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:57:00Z"
+}

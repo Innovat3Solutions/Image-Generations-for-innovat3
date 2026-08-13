@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #1 Sunrise dock — RL-1001 white spine print, 'From Sunrise To Last Cast.' + Pre-Order 20% Off",
+  "prompt": "Premium fishing-lifestyle advertising creative, 4:5 portrait. SCENE: golden sunrise on a weathered wooden dock over calm water, fishing rods leaning on the rail, soft warm haze, long shadows. A male model stands mid-frame seen from a three-quarter back angle looking out at the water, wearing the WHITE Reel Legacy performance long-sleeve from reference image 2 with the vertical 'REEL LEGACY' black fading spine print on the back — keep the garment and print IDENTICAL to the reference; fabric reads as silky fine-gauge technical knit with fluid drape and subtle luster, never cotton. TYPOGRAPHY (all white, monochrome): top center small — the white wave-R logo from reference image 1 above 'REEL LEGACY' in small spaced capitals; lower third, large condensed uppercase headline: 'FROM SUNRISE' / 'TO LAST CAST.'; beneath it small spaced-caps: 'PRE-ORDER — 20% OFF'. Photorealistic premium campaign photography, warm cinematic light.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rl1001_white_front_back_v3_1786580872.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:52:00Z"
+}

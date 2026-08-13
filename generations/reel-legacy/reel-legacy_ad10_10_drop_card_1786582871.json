@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #10 Catalog drop card — RL-1001 white front+back, 'NEW DROP' / $54.99 / Pre-Order 20% Off",
+  "prompt": "Premium catalog drop-card advertising creative, 4:5 portrait on light gray #f4f4f4. Two-view white long-sleeve mockup per reference (front chest logo, back fading spine print), eyebrow 'NEW DROP', name 'LEGACY PERFORMANCE LONG SLEEVE', 'WHITE · S–3XL · UPF 50+', '$54.99', ghost button 'PRE-ORDER — 20% OFF', logo lockup top left. Black type on light, square corners, hairline rules.",
+  "refs": ["refs/reel_legacy_r_black.png", "reel-legacy_rl1001_white_front_back_v3_1786580872.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T01:01:00Z"
+}

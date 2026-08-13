@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #7 Technical feature diagram — navy camo, 'Built For The Elements.' with callouts",
+  "prompt": "Premium technical-feature advertising creative, 4:5 portrait, dark. Navy camo Reel Legacy long-sleeve floating ghost-mannequin on #0a0a0a studio, white wave-R chest logo per reference; four hairline feature callouts (UPF 50+, Moisture Wicking · Quick Dry, 4-Way Stretch, Anti-Odor). Headline 'BUILT FOR THE ELEMENTS.'; footer '92% POLYESTER · 8% SPANDEX · 160 GSM'.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1002_navycamo_spine_v3_1786581016.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:58:00Z"
+}

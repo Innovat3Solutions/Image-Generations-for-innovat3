@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #4 Boardwalk golden hour — RL-LS1003 minimal white, 'Designed For Those Who Live It.'",
+  "prompt": "Premium coastal lifestyle advertising creative, 4:5 portrait. SCENE: palm-lined Miami waterfront boardwalk at golden hour, turquoise bay, white towers in distance. Model walks toward camera in the WHITE minimalist Reel Legacy long-sleeve from reference image 2 (small light-gray 'REEL LEGACY.' hem print) — garment IDENTICAL to reference; silky fine-gauge technical knit. TYPOGRAPHY (white): lockup top; 'DESIGNED FOR THOSE WHO LIVE IT.'; footer 'SHOP THE COLLECTION'.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1003_white_minimal_v3_1786580972.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:55:00Z"
+}

@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #8 Macro droplets — chest logo close-up, 'details matter.' quick-dry story",
+  "prompt": "Premium macro-detail advertising creative, 9:16 vertical. Extreme close-up of the black wave-R silicone chest logo on the white technical knit, water droplets beading; 'details matter.' headline, 'quick-dry. saltwater-proof. proven.' subline; footer 'MOISTURE WICKING · QUICK DRY · UPF 50+'.",
+  "refs": ["refs/reel_legacy_r_black.png", "reel-legacy_rl1001_white_front_back_v3_1786580872.png"],
+  "params": { "aspect_ratio": "9:16", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:59:00Z",
+  "note": "Macro logo drifted slightly from the exact wave-R geometry — weakest logo fidelity of the set; re-roll candidate."
+}

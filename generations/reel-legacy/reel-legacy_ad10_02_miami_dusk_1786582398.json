@@ -1,0 +1,11 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai (MCP)",
+  "product": "Ad set 10 — #2 Miami dusk bow stance — navy camo, 'Built Different.' / 'Join The Legacy'",
+  "prompt": "Premium coastal advertising creative, 4:5 portrait. SCENE: dusk on the water in Miami — a man stands at the bow of a center-console boat, the glowing Miami skyline and purple-blue dusk sky behind him across the bay, city lights reflecting on calm dark water. He wears the BLACK-NAVY tonal camo Reel Legacy long-sleeve from reference image 2 with the white wave-R chest logo — keep garment, camo pattern and logo IDENTICAL to the reference; fabric reads as silky fine-gauge technical knit with fluid drape, never cotton. TYPOGRAPHY (all white): top center small — white wave-R logo from reference image 1 with 'REEL LEGACY' spaced caps beneath; lower third headline 'BUILT DIFFERENT.'; sub 'JOIN THE LEGACY'. Photorealistic premium campaign photography, cinematic dusk light.",
+  "refs": ["refs/reel_legacy_r_white.png", "reel-legacy_rlls1002_navycamo_spine_v3_1786581016.png"],
+  "params": { "aspect_ratio": "4:5", "resolution": "1K", "output_format": "png" },
+  "cost_usd": 0.08,
+  "project": "reel-legacy",
+  "created": "2026-08-13T00:53:00Z"
+}
