@@ -1,0 +1,16 @@
+{
+  "model": "html-template (card + opt-in series) + chromium screenshot",
+  "provider": "local render (playwright); card: HTML template render (card_front.html); fridge bg: fal-ai/nano-banana-2",
+  "prompt": "Rendered from ad-templates/ad33_fridge.html — edit HTML/CSS and re-run ad-templates/render.js.",
+  "refs": [
+    "ad-templates/assets/card_front.png",
+    "ad-templates/assets/logo-mark.png"
+  ],
+  "params": {
+    "width": 1080,
+    "height": 1080
+  },
+  "cost_usd": 0,
+  "project": "zippilot",
+  "created": "2026-08-13T01:42:47Z"
+}

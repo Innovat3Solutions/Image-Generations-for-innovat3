@@ -81,3 +81,16 @@ cheetah split (white), giraffe (white), skateboard turtle (green), lion-mane kit
 (charcoal), mail-carrier retriever holding a blank card (cream — the physical-card
 explainer), carrier pigeon (teal). Scene images are generated on exact-hex flat backgrounds
 so live text sits directly on them. The card the retriever holds is deliberately blank.
+
+## Card & opt-in series (ads 31-34) + the card itself
+
+`card_front.html` is the actual mailer card as an HTML template, matching the original
+sample design (navy brand panel, 8 front tiles with the sample businesses, real QR).
+Rendered at 2x to `assets/card_front.png` via scratch render_card.js (viewport 1600x860,
+deviceScaleFactor 2). Because we author the card, showing it in ads is now honest —
+update the template as the real card evolves and re-render.
+
+- ad31 card reveal — "Meet the card." product-shot layout with feature pills
+- ad32 opt-in loop — "Land. Scan. Save." 3-step: card lands → QR scan → promo redeemed
+- ad33 fridge — the card magneted on a fridge: "The card they keep."
+- ad34 scan/save/win — phone mockup of the offer page UI (sample offers, labeled as samples)

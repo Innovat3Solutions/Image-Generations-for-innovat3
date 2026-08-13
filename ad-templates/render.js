@@ -31,6 +31,10 @@ const ADS = [
   { file: 'ad28_poster_empower.html', w: 1080, h: 1080 },
   { file: 'ad29_poster_maildog.html', w: 1080, h: 1080 },
   { file: 'ad30_poster_pigeon.html', w: 1080, h: 1080 },
+  { file: 'ad31_card_reveal.html', w: 1080, h: 1080 },
+  { file: 'ad32_optin_loop.html', w: 1080, h: 1080 },
+  { file: 'ad33_fridge.html', w: 1080, h: 1080 },
+  { file: 'ad34_scan_save_win.html', w: 1080, h: 1080 },
 ];
 
 (async () => {
