@@ -1,0 +1,20 @@
+{
+  "model": "bytedance/seedream/v5/pro/edit",
+  "provider": "fal.ai",
+  "campaign": "R3-12 Websites pricing offer - Your New Website As Low As $99/mo",
+  "prompt": "Cream system card, logo native, glassmorphic pricing plan card over laptop, WE CAN GET YOU STARTED pill (fal request 019ff878-5e39-76a0-93ce-bb944ee1f5a5)",
+  "refs": [
+    "fal CDN: innovat3-logo-black-transparent.png"
+  ],
+  "params": {
+    "image_size": "1440x1800"
+  },
+  "cost_usd_estimate": 0.07,
+  "project": "innovat3",
+  "created": "2026-08-13T00:15:21Z",
+  "post_fix": {
+    "model": "bytedance/seedream/v5/pro/edit",
+    "action": "fixed typo upfrent->upfront",
+    "cost_usd_estimate": 0.07
+  }
+}
