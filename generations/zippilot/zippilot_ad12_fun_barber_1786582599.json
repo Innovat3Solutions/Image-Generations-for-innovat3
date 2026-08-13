@@ -1,0 +1,15 @@
+{
+  "model": "html-template (personality series) + chromium screenshot",
+  "provider": "local render (playwright); hero photo: fal-ai/nano-banana-2 @2K, text-free",
+  "prompt": "Rendered from ad-templates/ad12_fun_barber.html — edit HTML/CSS and re-run ad-templates/render.js.",
+  "refs": [
+    "ad-templates/assets/logo-mark.png"
+  ],
+  "params": {
+    "width": 1080,
+    "height": 1080
+  },
+  "cost_usd": 0,
+  "project": "zippilot",
+  "created": "2026-08-13T00:56:39Z"
+}

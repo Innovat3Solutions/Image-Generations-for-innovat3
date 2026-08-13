@@ -15,6 +15,12 @@ const ADS = [
   { file: 'ad08_own_your_zip.html',     w: 1080, h: 1080 },
   { file: 'ad09_reach.html',            w: 1080, h: 1350 },
   { file: 'ad10_pricing.html',          w: 1080, h: 1080 },
+  { file: 'ad11_fun_mechanic.html',     w: 1080, h: 1080 },
+  { file: 'ad12_fun_barber.html',       w: 1080, h: 1080 },
+  { file: 'ad13_fun_landscaper.html',   w: 1080, h: 1080 },
+  { file: 'ad14_fun_plumber.html',      w: 1080, h: 1080 },
+  { file: 'ad15_fun_restaurant.html',   w: 1080, h: 1080 },
+  { file: 'ad16_fun_slowgrowth.html',   w: 1080, h: 1080 },
 ];
 
 (async () => {

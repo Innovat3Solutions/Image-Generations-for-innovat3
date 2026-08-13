@@ -61,3 +61,12 @@ Navy `#0A1E3C` · blue `#2F80ED` · green `#5BC236` · ice `#9DC3F5`. Locked hea
 wordmark), locked footer (green pill CTA + TheZipPilot.com). Ads vary only the middle
 content. When the real card design is finalized, add a photographed/composited card ad —
 never an AI-invented one.
+
+## Personality series (ads 11-16)
+
+Funny, niche-specific poster ads so a small-business owner instantly sees themselves:
+tortoise mechanic, lion in the barber chair, sloth landscaper, octopus plumber, hungry
+bulldog at an empty table, rocket tortoise (generic slow-growth). Hero photos are
+AI-generated (nano-banana-2, text-free, subject on the right half); headline, chip,
+copy and CTA are live template text. To make more niches, generate a new right-weighted
+comedic hero, then copy any ad1x file and swap headline/sub/CTA.
