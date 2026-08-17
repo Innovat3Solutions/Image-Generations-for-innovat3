@@ -39,6 +39,23 @@ if (process.env.SUNBIZ_SFTP_HOST) config.sunbiz.sftp.host = process.env.SUNBIZ_S
 if (process.env.SUNBIZ_SFTP_USER) config.sunbiz.sftp.user = process.env.SUNBIZ_SFTP_USER;
 if (process.env.SUNBIZ_SFTP_PASSWORD) config.sunbiz.sftp.password = process.env.SUNBIZ_SFTP_PASSWORD;
 
+// API keys arrive by copy-paste into hosting dashboards — trailing newlines,
+// spaces, and wrapping quotes are the #1 cause of mystery 401/403s. Sanitize
+// them in place (some consumers, like the Anthropic SDK, read process.env
+// directly) and say so, so a dirty paste fixes itself on the next boot.
+for (const name of [
+  'ANTHROPIC_API_KEY', 'APOLLO_API_KEY', 'HUNTER_API_KEY', 'ZEROBOUNCE_API_KEY',
+  'SERPER_API_KEY', 'SCRAPEGRAPHAI_API_KEY', 'SAM_API_KEY', 'CENSUS_API_KEY',
+]) {
+  const raw = process.env[name];
+  if (!raw) continue;
+  const cleaned = raw.trim().replace(/^["']+|["']+$/g, '');
+  if (cleaned !== raw) {
+    process.env[name] = cleaned;
+    console.log(`[config] ${name} contained whitespace/quotes from a paste — auto-cleaned`);
+  }
+}
+
 export const providers = {
   apollo: process.env.APOLLO_API_KEY || null,
   hunter: process.env.HUNTER_API_KEY || null,

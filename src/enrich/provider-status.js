@@ -6,33 +6,73 @@ import { providers } from '../config.js';
 import { fetchWithTimeout } from '../util.js';
 import { checkApollo } from './apollo.js';
 
+/**
+ * "Key rejected" alone doesn't tell an admin what to FIX. Fingerprint the
+ * stored key (safe prefix + length — enough to eyeball against the vendor
+ * dashboard, never the whole secret) and flag the classic paste accidents.
+ */
+function keyInfo(key, expected = null) {
+  if (!key) return null;
+  const issues = [];
+  if (/^["']|["']$/.test(key)) issues.push('wrapped in quotes');
+  if (key !== key.trim() || /[\r\n]/.test(key)) issues.push('stray whitespace/line break');
+  if (expected?.prefix && !key.startsWith(expected.prefix)) {
+    issues.push(`expected to start with "${expected.prefix}"`);
+  }
+  return {
+    fingerprint: `${key.slice(0, 5)}… · ${key.length} chars`,
+    issues: issues.length ? issues : undefined,
+  };
+}
+
 async function checkScrapegraph() {
   if (!providers.scrapegraph) return { configured: false, needsKeyName: 'SCRAPEGRAPHAI_API_KEY' };
+  const info = keyInfo(providers.scrapegraph, { prefix: 'sgai-' });
   try {
-    const res = await fetchWithTimeout('https://api.scrapegraphai.com/v1/credits', {
+    // v2 API (v1 rejects newly issued keys as deprecated)
+    const res = await fetchWithTimeout('https://v2-api.scrapegraphai.com/api/credits', {
       headers: { 'SGAI-APIKEY': providers.scrapegraph },
       timeout: 10000,
     });
-    if (!res.ok) return { configured: true, ok: false, error: `HTTP ${res.status} — check the key` };
-    const data = await res.json();
-    return { configured: true, ok: true, note: data?.remaining_credits != null ? `${data.remaining_credits} credits left` : undefined };
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      return {
+        configured: true, ok: false, keyInfo: info,
+        error: `${data?.error?.message || `HTTP ${res.status}`} — re-copy the key from scrapegraphai.com/dashboard (starts with sgai-)`,
+      };
+    }
+    const credits = data?.remaining_credits ?? data?.credits ?? data?.balance;
+    return { configured: true, ok: true, keyInfo: info, note: credits != null ? `${credits} credits left` : undefined };
   } catch (err) {
-    return { configured: true, ok: false, error: String(err.message || err) };
+    return { configured: true, ok: false, keyInfo: info, error: String(err.message || err) };
   }
 }
 
 async function checkSerper() {
   if (!providers.serper) return { configured: false };
+  const info = keyInfo(providers.serper);
+  // serper.dev keys are 40 hex chars — a 64-char key is usually from
+  // serpapi.com, a different product with the same-sounding name
+  if (/^[0-9a-f]{64}$/i.test(providers.serper)) {
+    info.issues = [...(info.issues || []), 'looks like a serpapi.com key — this app uses serper.dev (different service)'];
+  }
   try {
     const res = await fetchWithTimeout('https://google.serper.dev/search', {
       method: 'POST', timeout: 8000,
       headers: { 'X-API-KEY': providers.serper, 'Content-Type': 'application/json' },
       body: JSON.stringify({ q: 'ping', num: 1 }),
     });
-    if (res.ok) return { configured: true, ok: true };
-    return { configured: true, ok: false, error: res.status === 403 || res.status === 401 ? `Key rejected (${res.status})` : res.status === 429 ? 'Out of credits (429)' : `error ${res.status}` };
+    if (res.ok) return { configured: true, ok: true, keyInfo: info };
+    const data = await res.json().catch(() => null);
+    const vendorMsg = data?.message ? ` — serper says "${data.message}"` : '';
+    return {
+      configured: true, ok: false, keyInfo: info,
+      error: res.status === 403 || res.status === 401
+        ? `Key rejected (${res.status})${vendorMsg} — re-copy from serper.dev → Dashboard → API Key`
+        : res.status === 429 ? 'Out of credits (429) — top up at serper.dev' : `error ${res.status}${vendorMsg}`,
+    };
   } catch (err) {
-    return { configured: true, ok: false, error: String(err.message || err) };
+    return { configured: true, ok: false, keyInfo: info, error: String(err.message || err) };
   }
 }
 

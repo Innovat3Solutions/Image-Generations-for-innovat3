@@ -361,6 +361,11 @@ tbody tr:last-child td { border-bottom: none; }
   border-radius: 8px; padding: 10px; font-family: inherit; font-size: 13px;
 }
 
+.prov-key {
+  display: block; font-size: 10px; color: var(--muted);
+  font-family: ui-monospace, monospace; margin-top: 2px;
+}
+
 /* ---------- settings: team & client accounts ---------- */
 .settings-wrap { max-width: 1080px; margin: 0 auto; padding: 20px 24px 60px; display: flex; flex-direction: column; gap: 20px; }
 .settings-card {

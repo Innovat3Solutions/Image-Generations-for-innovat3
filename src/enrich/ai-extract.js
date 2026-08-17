@@ -95,21 +95,28 @@ export function findSubPages(html, baseUrl, max = 2) {
   return out;
 }
 
-/** Engine 1 — ScrapeGraphAI hosted API: their fetch + their extraction. */
+/**
+ * Engine 1 — ScrapeGraphAI hosted API (v2 Extract): their infra fetches +
+ * renders the page AND runs the schema extraction. 5 credits per call.
+ * https://docs.scrapegraphai.com/services/extract
+ */
 async function hostedExtract(websiteUrl) {
-  const res = await fetchWithTimeout('https://api.scrapegraphai.com/v1/smartscraper', {
+  const res = await fetchWithTimeout('https://v2-api.scrapegraphai.com/api/extract', {
     method: 'POST',
     timeout: 90000,
     headers: { 'SGAI-APIKEY': providers.scrapegraph, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      website_url: websiteUrl,
-      user_prompt: EXTRACT_PROMPT,
-      output_schema: EXTRACT_SCHEMA,
+      url: websiteUrl,
+      prompt: EXTRACT_PROMPT,
+      schema: EXTRACT_SCHEMA,
     }),
   });
-  if (!res.ok) throw new Error(`scrapegraphai ${res.status}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(`scrapegraphai ${res.status}${body?.error?.message ? ` — ${body.error.message}` : ''}`);
+  }
   const data = await res.json();
-  return data.result || data;
+  return data.json || data.result || data;
 }
 
 /** Engine 2 — local: our page text + Claude structured output. */

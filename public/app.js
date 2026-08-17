@@ -792,7 +792,12 @@ function bindEvents() {
         const cls = !p.configured ? 'off' : p.ok ? 'ok' : 'fail';
         const mark = !p.configured ? '○' : p.ok ? '✓' : '✕';
         const err = p.configured && !p.ok ? ` — ${esc(p.error || 'failing')}` : !p.configured ? ' — no key' : '';
-        return `<span class="prov ${cls}" title="${esc(p.error || '')}">${mark} ${esc(p.label)}${err}</span>`;
+        const note = p.ok && p.note ? ` <span class="muted">(${esc(p.note)})</span>` : '';
+        // key fingerprint + paste problems: exactly what to eyeball on the vendor dashboard
+        const keyLine = p.configured && !p.ok && p.keyInfo
+          ? `<span class="prov-key">stored key: ${esc(p.keyInfo.fingerprint)}${p.keyInfo.issues ? ` · ⚠ ${esc(p.keyInfo.issues.join('; '))}` : ''}</span>`
+          : '';
+        return `<span class="prov ${cls}" title="${esc(p.error || '')}">${mark} ${esc(p.label)}${err}${note}${keyLine}</span>`;
       }).join('');
     }).catch(() => {
       $('#provider-status').innerHTML = '<span class="muted">Provider check unavailable</span>';
