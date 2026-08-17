@@ -613,7 +613,9 @@ app.get('/api/meta', (req, res) => {
       key,
       label: s.label,
       needsZips: !!s.needsZips,
-      available: s.needsKey ? !!process.env[s.needsKey] : true,
+      available: s.needsKey
+        ? !!(process.env[s.needsKey] || (s.altKey && process.env[s.altKey]))
+        : true,
       needsKey: s.needsKey || null,
     })),
     osmCategories: Object.entries(config.osm.categories).map(([key, c]) => ({ key, label: c.label })),

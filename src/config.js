@@ -45,7 +45,7 @@ if (process.env.SUNBIZ_SFTP_PASSWORD) config.sunbiz.sftp.password = process.env.
 // directly) and say so, so a dirty paste fixes itself on the next boot.
 for (const name of [
   'ANTHROPIC_API_KEY', 'APOLLO_API_KEY', 'HUNTER_API_KEY', 'ZEROBOUNCE_API_KEY',
-  'SERPER_API_KEY', 'SCRAPEGRAPHAI_API_KEY', 'SAM_API_KEY', 'CENSUS_API_KEY',
+  'SERPER_API_KEY', 'SERPAPI_API_KEY', 'SCRAPEGRAPHAI_API_KEY', 'SAM_API_KEY', 'CENSUS_API_KEY',
 ]) {
   const raw = process.env[name];
   if (!raw) continue;
@@ -61,5 +61,6 @@ export const providers = {
   hunter: process.env.HUNTER_API_KEY || null,
   zerobounce: process.env.ZEROBOUNCE_API_KEY || null,
   serper: process.env.SERPER_API_KEY || null,
+  serpapi: process.env.SERPAPI_API_KEY || null, // fallback for serper — same job, different vendor
   scrapegraph: process.env.SCRAPEGRAPHAI_API_KEY || null,
 };

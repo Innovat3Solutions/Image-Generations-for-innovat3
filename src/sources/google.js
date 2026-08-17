@@ -148,9 +148,48 @@ export function absorbIntoListing(candidate) {
   return true;
 }
 
+/**
+ * Places lookup through whichever provider is up: serper.dev places first,
+ * SerpAPI's google_maps engine as the fallback — results normalized to the
+ * serper place shape either way.
+ */
+async function fetchPlaces(query) {
+  if (providers.serper) {
+    try {
+      const res = await fetchWithTimeout('https://google.serper.dev/places', {
+        method: 'POST',
+        headers: { 'X-API-KEY': providers.serper, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q: query, gl: 'us' }),
+      });
+      if (!res.ok) throw new Error(`serper places ${res.status}`);
+      return (await res.json()).places || [];
+    } catch (err) {
+      if (!providers.serpapi) throw err;
+      log(`google: serper failed (${err.message}) — falling back to SerpAPI`);
+    }
+  }
+  const res = await fetchWithTimeout(
+    `https://serpapi.com/search.json?engine=google_maps&type=search&q=${encodeURIComponent(query)}&api_key=${providers.serpapi}`,
+    { timeout: 30000 }
+  );
+  if (!res.ok) throw new Error(`serpapi maps ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(`serpapi: ${data.error}`);
+  return (data.local_results || []).map((r) => ({
+    title: r.title,
+    cid: r.place_id,
+    address: r.address,
+    phoneNumber: r.phone,
+    website: r.website,
+    rating: r.rating,
+    ratingCount: r.reviews,
+    category: r.type,
+  }));
+}
+
 export async function fetchGoogleProspects({ skipIds = new Set(), limit = Infinity, zips = null, boards = null } = {}) {
-  if (!providers.serper) {
-    log('google SKIPPED — needs SERPER_API_KEY');
+  if (!providers.serper && !providers.serpapi) {
+    log('google SKIPPED — needs SERPER_API_KEY (or SERPAPI_API_KEY)');
     return [];
   }
   if (!zips || !zips.length) {
@@ -164,14 +203,8 @@ export async function fetchGoogleProspects({ skipIds = new Set(), limit = Infini
     outer:
     for (const zip of zips) {
       for (const vk of verticalKeys) {
-        const res = await fetchWithTimeout('https://google.serper.dev/places', {
-          method: 'POST',
-          headers: { 'X-API-KEY': providers.serper, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ q: `${QUERIES[vk]} near ${zip}`, gl: 'us' }),
-        });
-        if (!res.ok) throw new Error(`serper places ${res.status}`);
-        const data = await res.json();
-        for (const place of data.places || []) {
+        const places = await fetchPlaces(`${QUERIES[vk]} near ${zip}`);
+        for (const place of places) {
           if (!place.title) continue;
           // stay in-territory: Serper "near <zip>" can drift into neighbors
           if (place.address && !/\bFL\b|Florida/i.test(place.address)) continue;

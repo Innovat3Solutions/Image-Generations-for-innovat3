@@ -76,6 +76,22 @@ async function checkSerper() {
   }
 }
 
+async function checkSerpapi() {
+  if (!providers.serpapi) return { configured: false };
+  const info = keyInfo(providers.serpapi);
+  try {
+    const res = await fetchWithTimeout(`https://serpapi.com/account.json?api_key=${providers.serpapi}`, { timeout: 10000 });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || data?.error) {
+      return { configured: true, ok: false, keyInfo: info, error: `${data?.error || `HTTP ${res.status}`} — re-copy from serpapi.com/manage-api-key` };
+    }
+    const left = data?.total_searches_left ?? data?.plan_searches_left;
+    return { configured: true, ok: true, keyInfo: info, note: left != null ? `${left} searches left` : undefined };
+  } catch (err) {
+    return { configured: true, ok: false, keyInfo: info, error: String(err.message || err) };
+  }
+}
+
 async function checkHunter() {
   if (!providers.hunter) return { configured: false };
   try {
@@ -120,12 +136,13 @@ async function checkCensus() {
 }
 
 export async function providerStatus() {
-  const [apollo, serper, hunter, sam, census, scrapegraph] = await Promise.all([
-    checkApollo(), checkSerper(), checkHunter(), checkSam(), checkCensus(), checkScrapegraph(),
+  const [apollo, serper, serpapi, hunter, sam, census, scrapegraph] = await Promise.all([
+    checkApollo(), checkSerper(), checkSerpapi(), checkHunter(), checkSam(), checkCensus(), checkScrapegraph(),
   ]);
   return {
     apollo: { label: 'Apollo (emails + phones)', ...apollo },
-    serper: { label: 'Serper (website discovery)', ...serper },
+    serper: { label: 'Serper (website + listings discovery)', ...serper },
+    serpapi: { label: 'SerpAPI (automatic backup for Serper)', ...serpapi },
     hunter: { label: 'Hunter (email finding)', ...hunter },
     sam: { label: 'SAM.gov (contractor source)', ...sam },
     census: { label: 'Census (market intel)', ...census },

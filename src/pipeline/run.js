@@ -23,7 +23,7 @@ export const SOURCE_REGISTRY = {
   nppes: { label: 'NPPES — new healthcare providers', fetch: fetchNppesProspects },
   sam: { label: 'SAM.gov — new federal contractors', fetch: fetchSamProspects, needsKey: 'SAM_API_KEY' },
   osm: { label: 'OpenStreetMap — businesses by area (needs zips)', fetch: fetchOsmProspects, needsZips: true },
-  google: { label: 'Google Business listings — storefront brands by area (needs zips)', fetch: fetchGoogleProspects, needsZips: true, needsKey: 'SERPER_API_KEY' },
+  google: { label: 'Google Business listings — storefront brands by area (needs zips)', fetch: fetchGoogleProspects, needsZips: true, needsKey: 'SERPER_API_KEY', altKey: 'SERPAPI_API_KEY' },
 };
 
 /**
@@ -43,7 +43,7 @@ export async function executeRun(params = {}) {
   // Default source set: Google-first when we can (zips + key present) — the
   // listing is the storefront truth; registries follow as the lookup layer.
   const defaultSources = [
-    ...(zips && process.env.SERPER_API_KEY ? ['google'] : []),
+    ...(zips && (process.env.SERPER_API_KEY || process.env.SERPAPI_API_KEY) ? ['google'] : []),
     'sunbiz', 'dbpr', 'nppes', 'sam',
   ];
   const sources = (params.sources ?? defaultSources)

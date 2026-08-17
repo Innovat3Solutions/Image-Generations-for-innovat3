@@ -392,7 +392,8 @@ checks, domain-guess website discovery). Add keys to level it up:
 | Key | Unlocks |
 |---|---|
 | `APOLLO_API_KEY` | **Direct decision-maker contact data** — Apollo matches the officer/licensee name + business against their B2B database and returns verified work email, phone, and LinkedIn. The biggest upgrade for "give me an email or phone for every prospect." |
-| `SERPER_API_KEY` | Google-quality website + social discovery |
+| `SERPER_API_KEY` | Google-quality website + social discovery, and the Google Business listings source |
+| `SERPAPI_API_KEY` | Optional **automatic backup** for Serper (serpapi.com — a different vendor, same job): if Serper errors or runs dry, search and listings fail over seamlessly |
 | `HUNTER_API_KEY` | Email finding via domain search + deliverability verification |
 | `ZEROBOUNCE_API_KEY` | Alternative email verifier |
 | `ANTHROPIC_API_KEY` | AI site extraction (local engine), outreach drafts, sales practice |

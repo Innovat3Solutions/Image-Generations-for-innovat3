@@ -121,6 +121,29 @@ async function serperSearch(query) {
   return res.json();
 }
 
+/** SerpAPI fallback — same Google results, normalized to serper's shape. */
+async function serpapiSearch(query) {
+  const res = await fetchWithTimeout(
+    `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(query)}&num=10&api_key=${providers.serpapi}`
+  );
+  if (!res.ok) throw new Error(`serpapi ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(`serpapi: ${data.error}`);
+  return { organic: (data.organic_results || []).map((r) => ({ link: r.link })) };
+}
+
+/** Google search through whichever paid provider is up: serper → serpapi. */
+async function webSearch(query) {
+  if (providers.serper) {
+    try {
+      return await serperSearch(query);
+    } catch (err) {
+      if (!providers.serpapi) throw err;
+    }
+  }
+  return serpapiSearch(query);
+}
+
 /**
  * Discover the prospect's website + socials + on-site contact info.
  * Returns { website, website_confidence, socials, emails, phones }.
@@ -147,10 +170,10 @@ export async function discoverWebsite(prospect) {
   }
 
   // Provider-backed search first (highest quality)
-  if (providers.serper) {
+  if (providers.serper || providers.serpapi) {
     try {
       const q = `"${prospect.business_name}" ${prospect.city || ''} FL`;
-      const data = await serperSearch(q);
+      const data = await webSearch(q);
       for (const item of (data.organic || []).slice(0, 6)) {
         try {
           const host = new URL(item.link).hostname;
