@@ -4,92 +4,118 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Innovat3 Prospect Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23bff227'/><text x='50' y='68' font-size='52' font-weight='800' text-anchor='middle' fill='%23131313' font-family='sans-serif'>3</text></svg>" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="brand-mark">🎯</span>
-      <div>
-        <h1>Innovat3 Prospect Engine</h1>
-        <p class="subtitle">New Florida businesses &amp; licensees · Sunbiz + DBPR</p>
-      </div>
+      <h1>INNOVAT<span class="brand-3">3</span></h1>
+      <select id="account-switch" class="account-switch hidden" title="Whose book are you looking at?"></select>
     </div>
+    <div class="topbar-title">Prospect Engine</div>
     <div class="topbar-actions">
-      <select id="account-switch" class="account-switch hidden" title="Whose book are you looking at? Innovat3's own prospects, or a client account you're generating lists for."></select>
-      <input id="rep-name" class="rep-input" placeholder="Your name" title="Signs your outreach messages and claims prospects you touch" />
-      <a class="btn ghost hidden" id="btn-settings" href="/settings.html">⚙️ Settings</a>
-      <a class="btn ghost" href="/offers.html">📖 Offers</a>
-      <a class="btn ghost" href="/practice.html">🎧 Practice</a>
-      <button class="btn ghost" id="btn-daily">🔥 Today's 50</button>
-      <button class="btn ghost" id="btn-reenrich" title="Second enrichment pass over prospects missing email or phone — run this after adding API keys">↻ Re-enrich missing</button>
-      <a class="btn ghost" href="/api/export.csv" id="btn-export" download>Export CSV</a>
+      <button class="icon-btn" id="btn-reenrich" title="Re-enrich prospects missing email or phone">↻</button>
+      <a class="icon-btn" href="/api/export.csv" id="btn-export" title="Export CSV" download>⇩</a>
       <button class="btn primary" id="btn-run">▶ Run pipeline</button>
+      <button class="rep-avatar" id="rep-avatar" title="You — signs your outreach">?</button>
+      <input id="rep-name" class="rep-input hidden" placeholder="Your name" />
     </div>
   </header>
 
   <div id="run-banner" class="run-banner hidden"></div>
 
-  <section class="stats" id="stats"></section>
+  <div class="shell">
+    <!-- icon rail -->
+    <nav class="rail">
+      <a href="/" class="active" title="Dashboard">◆</a>
+      <button id="btn-daily" title="Today's 50">50</button>
+      <a href="/offers.html" title="Offers &amp; pricing">$</a>
+      <a href="/practice.html" title="Practice">◎</a>
+      <a href="/settings.html" id="btn-settings" class="hidden" title="Settings">✦</a>
+    </nav>
 
-  <!-- The rep's work queue: what do I do right now? -->
-  <section class="queue-chips" id="queue-chips"></section>
+    <!-- main column -->
+    <main class="main-col">
+      <!-- work queue cards -->
+      <section class="queue-chips" id="queue-chips"></section>
 
-  <section class="filters" id="filters">
-    <input type="search" id="f-q" placeholder="Search name, contact, city…" />
-    <select id="f-industry"><option value="">All industries</option></select>
-    <select id="f-source">
-      <option value="">All sources</option>
-      <option value="sunbiz">Sunbiz (new entities)</option>
-      <option value="dbpr">DBPR (new licenses)</option>
-      <option value="nppes">NPPES (healthcare)</option>
-      <option value="sam">SAM.gov (contractors)</option>
-      <option value="osm">OpenStreetMap (area)</option>
-    </select>
-    <input type="text" id="f-zip" placeholder="Zips: 33101, 334…" size="16" title="Comma-separated zip codes or prefixes" />
-    <select id="f-status"><option value="">All statuses</option></select>
-    <select id="f-minscore">
-      <option value="">Any score</option>
-      <option value="80">Score ≥ 80</option>
-      <option value="60">Score ≥ 60</option>
-      <option value="40">Score ≥ 40</option>
-    </select>
-    <label class="chk"><input type="checkbox" id="f-hasemail" /> Has email</label>
-    <label class="chk"><input type="checkbox" id="f-hasphone" /> Has phone</label>
-    <label class="chk"><input type="checkbox" id="f-nowebsite" /> No website</label>
-  </section>
+      <!-- slim stat strip -->
+      <section class="stats" id="stats"></section>
 
-  <div id="daily-bar" class="daily-bar hidden"></div>
-
-  <main class="table-wrap">
-    <table id="table">
-      <thead>
-        <tr>
-          <th data-sort="score" class="sortable sorted-desc">Score</th>
-          <th data-sort="name" class="sortable">Business</th>
-          <th>Industry</th>
-          <th data-sort="established" class="sortable">Established</th>
-          <th>Contact</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Web</th>
-          <th data-sort="city" class="sortable">City</th>
-          <th data-sort="last_touch" class="sortable">Thread</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div class="table-footer">
-      <span id="count-label"></span>
-      <div class="pager">
-        <button class="btn ghost" id="prev">‹ Prev</button>
-        <span id="page-label"></span>
-        <button class="btn ghost" id="next">Next ›</button>
+      <div class="section-head">
+        <h2>Prospect queue</h2>
+        <div class="filters" id="filters">
+          <input type="search" id="f-q" placeholder="⌕ Search name, city…" />
+          <select id="f-industry"><option value="">All industries</option></select>
+          <select id="f-source">
+            <option value="">All sources</option>
+            <option value="google">Google listings</option>
+            <option value="sunbiz">Sunbiz</option>
+            <option value="dbpr">DBPR</option>
+            <option value="nppes">NPPES</option>
+            <option value="sam">SAM.gov</option>
+            <option value="osm">OpenStreetMap</option>
+          </select>
+          <input type="text" id="f-zip" placeholder="Zips: 33101, 334…" size="13" title="Comma-separated zip codes or prefixes" />
+          <select id="f-status"><option value="">All statuses</option></select>
+          <select id="f-minscore">
+            <option value="">Any score</option>
+            <option value="80">Score ≥ 80</option>
+            <option value="60">Score ≥ 60</option>
+            <option value="40">Score ≥ 40</option>
+          </select>
+          <label class="chk"><input type="checkbox" id="f-hasemail" /> Has email</label>
+          <label class="chk"><input type="checkbox" id="f-hasphone" /> Has phone</label>
+          <label class="chk"><input type="checkbox" id="f-nowebsite" /> No website</label>
+        </div>
       </div>
-    </div>
-  </main>
+
+      <div id="daily-bar" class="daily-bar hidden"></div>
+
+      <div class="table-wrap">
+        <table id="table" style="table-layout: fixed;">
+          <thead>
+            <tr>
+              <th data-sort="score" class="sortable sorted-desc" style="width: 56px;">Score</th>
+              <th data-sort="name" class="sortable">Business · why call</th>
+              <th style="width: 128px;">Contact</th>
+              <th style="width: 176px;">Reach</th>
+              <th data-sort="city" class="sortable" style="width: 96px;">City</th>
+              <th data-sort="last_touch" class="sortable" style="width: 150px;">Thread</th>
+              <th style="width: 116px;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="table-footer">
+          <span id="count-label"></span>
+          <div class="pager">
+            <button class="btn" id="prev">‹</button>
+            <span id="page-label"></span>
+            <button class="btn" id="next">›</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- right rail -->
+    <aside class="side-col" id="side-col">
+      <div id="nbc-wrap"></div>
+      <div class="side-title" id="cal-title">Follow-up calendar</div>
+      <div class="cal" id="cal"></div>
+      <div class="cal-legend">
+        <span><i style="background: var(--accent);"></i>Today</span>
+        <span><i style="background: var(--white-pill);"></i>Follow-ups due</span>
+        <span><i style="background: var(--purple);"></i>Sales calls</span>
+      </div>
+      <div class="side-title">Handoffs in motion</div>
+      <div class="handoff-list" id="handoff-list"></div>
+    </aside>
+  </div>
 
   <!-- Detail drawer -->
   <div class="drawer-overlay hidden" id="drawer-overlay"></div>

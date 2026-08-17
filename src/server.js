@@ -525,6 +525,32 @@ app.get('/api/stats', (req, res) => {
   res.json({ total, today, withEmail, withPhone, noWebsite, avgScore, parked, inHandoff, callsToday, touchesToday, byStatus, byIndustry });
 });
 
+// ---------- follow-up calendar (right rail) ----------
+// Per-day counts of due follow-ups and scheduled sales calls for a month.
+app.get('/api/calendar', (req, res) => {
+  const month = /^\d{4}-\d{2}$/.test(String(req.query.month || ''))
+    ? String(req.query.month)
+    : new Date().toISOString().slice(0, 7);
+  const acct = acctSql(req);
+  const days = {};
+  for (const r of db.prepare(`
+    SELECT CAST(strftime('%d', next_touch_at) AS INTEGER) d, COUNT(*) c FROM prospects
+    WHERE ${acct} AND next_touch_at LIKE ? AND nurture_stage != 'suppressed'
+      AND status NOT IN ('not_interested','disqualified','customer','no_contact')
+    GROUP BY d
+  `).all(`${month}%`)) {
+    days[r.d] = { due: r.c, call: 0 };
+  }
+  for (const r of db.prepare(`
+    SELECT CAST(strftime('%d', scheduled_call_at) AS INTEGER) d, COUNT(*) c FROM prospects
+    WHERE ${acct} AND scheduled_call_at LIKE ? GROUP BY d
+  `).all(`${month}%`)) {
+    days[r.d] = days[r.d] || { due: 0, call: 0 };
+    days[r.d].call = r.c;
+  }
+  res.json({ month, days });
+});
+
 // ---------- provider diagnostics ----------
 app.get('/api/providers', async (req, res) => {
   res.json(await providerStatus());

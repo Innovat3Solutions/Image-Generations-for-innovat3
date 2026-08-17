@@ -57,7 +57,7 @@ function mapsUrl(r) {
 const STAGE_SHORT = {
   loaded: null, outreach_sent: 'Opener sent', engaged: 'Engaged', permission: 'Permission',
   opportunity: 'Opportunity', qualified: 'Qualified', handoff_requested: 'Handoff asked',
-  call_scheduled: 'Call set', sales_conversation: 'With sales', suppressed: '⛔ Suppressed',
+  call_scheduled: 'Call set', sales_conversation: 'With sales', suppressed: 'Suppressed',
 };
 
 async function api(path, opts) {
@@ -113,20 +113,20 @@ async function loadMeta() {
   $('#run-days').value = state.meta.defaults.days;
 }
 
-/* ---------- stats ---------- */
+/* ---------- slim stat strip ---------- */
 async function loadStats() {
   const s = await api(withAcct('/api/stats'));
+  state.statsCache = s;
   $('#stats').innerHTML = `
-    <div class="tile"><div class="value">${s.total.toLocaleString()}</div><div class="label">Total prospects</div></div>
-    <div class="tile"><div class="value">${s.today.toLocaleString()}</div><div class="label">Added today</div></div>
-    <div class="tile"><div class="value">${s.withEmail.toLocaleString()}</div><div class="label">Reachable by email</div><div class="hint">verified or valid MX</div></div>
-    <div class="tile"><div class="value">${s.withPhone.toLocaleString()}</div><div class="label">Have phone</div></div>
-    <div class="tile"><div class="value">${s.noWebsite.toLocaleString()}</div><div class="label">No website yet</div><div class="hint">prime for digital services</div></div>
-    <div class="tile"><div class="value">${(s.touchesToday || 0).toLocaleString()}</div><div class="label">Touches sent today</div><div class="hint">team activity</div></div>
-    <div class="tile"><div class="value">${(s.inHandoff || 0).toLocaleString()}</div><div class="label">In handoff</div><div class="hint">qualified → call</div></div>
-    <div class="tile"><div class="value">${(s.callsToday || 0).toLocaleString()}</div><div class="label">Calls today</div><div class="hint">scheduled sales calls</div></div>
-    <div class="tile"><div class="value">${(s.parked || 0).toLocaleString()}</div><div class="label">Parked — no contact</div><div class="hint">retried by re-enrich sweeps</div></div>
+    <div class="tile"><span class="value">${s.total.toLocaleString()}</span><span class="label">total</span></div>
+    <div class="tile"><span class="value">${s.today.toLocaleString()}</span><span class="label">added today</span></div>
+    <div class="tile"><span class="value">${s.withEmail.toLocaleString()}</span><span class="label">email-reachable</span></div>
+    <div class="tile"><span class="value">${s.withPhone.toLocaleString()}</span><span class="label">have phone</span></div>
+    <div class="tile hot"><span class="value">${s.noWebsite.toLocaleString()}</span><span class="label">no website yet</span></div>
+    <div class="tile"><span class="value">${(s.parked || 0).toLocaleString()}</span><span class="label">parked</span></div>
+    <div class="tile"><span class="value">${s.avgScore || 0}</span><span class="label">avg score</span></div>
   `;
+  renderSideStats();
 }
 
 /* ---------- table ---------- */
@@ -176,36 +176,34 @@ function webCell(r) {
 
 /* One row template everywhere — conversation-aware. */
 function threadCell(r) {
-  if (r.nurture_stage === 'suppressed') return '<span class="stage-mini suppressed">⛔ suppressed</span>';
+  if (r.nurture_stage === 'suppressed') return '<span class="stage-mini suppressed">suppressed</span>';
   if (!r.last_touch_at) return '<span class="muted">not started</span>';
   const stage = STAGE_SHORT[r.nurture_stage] || '';
   const move = r.last_touch_dir === 'in'
-    ? '<span class="move yours">🟢 your move</span>'
+    ? '<span class="move yours">your move</span>'
     : '<span class="move theirs">waiting on them</span>';
-  const due = isDue(r) ? '<span class="due-badge">⏰ due</span>' : '';
+  const due = isDue(r) ? '<span class="due-badge">DUE</span>' : '';
   return `<div class="stage-mini">${esc(stage)}</div><div class="thread-sub">${ago(r.last_touch_at)} · ${move}${due}</div>`;
 }
 
 function rowHtml(r) {
-  const age = ageWords(r.established_date);
   const brandNew = r.established_date
     && (Date.now() - new Date(r.established_date + 'T00:00:00Z').getTime()) / 86400000 <= 90;
+  const why = [industryLabel(r.industry), r.call_reason].filter(Boolean).join(' · ');
   return `
     <tr data-id="${r.id}">
       <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
-      <td>
-        <div class="biz-name">${esc(r.dba_name || r.business_name)}${r.google_rating ? ` <a class="rev-chip" href="${esc(mapsUrl(r))}" target="_blank" rel="noopener" title="Open their Google reviews — skim 2-3 before the kudos opener">★ ${r.google_rating} (${r.google_reviews})</a>` : ''}</div>
-        <div class="biz-sub">${esc(r.dba_name ? r.business_name : (r.legal_name || r.license_type || ''))}</div>
-        ${r.call_reason ? `<div class="call-line" title="${esc(r.call_reason)}">${esc(r.call_reason)}</div>` : ''}
+      <td style="overflow: hidden;">
+        <div class="biz-name">${esc(r.dba_name || r.business_name)}${r.google_rating ? ` <a class="rev-chip" href="${esc(mapsUrl(r))}" target="_blank" rel="noopener" title="Open their Google reviews">★ ${r.google_rating}</a>` : ''}${brandNew ? ' <span class="new-badge">NEW</span>' : ''}</div>
+        <div class="call-line" title="${esc(why)}">${esc(why || (r.legal_name || r.license_type || ''))}</div>
       </td>
-      <td>${esc(industryLabel(r.industry))}</td>
-      <td title="${esc(r.established_date || '')}">${age ? `${brandNew ? '🆕 ' : ''}${esc(age)}` : '—'}</td>
-      <td>${r.contact_name ? `<div>${esc(r.contact_name)}</div><div class="biz-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
-      <td>${emailCell(r)}</td>
-      <td>${r.phone ? `<a href="${telHref(r.phone)}" class="tel-link" title="Call">${esc(r.phone)}</a>` : '—'}</td>
-      <td>${webCell(r)}</td>
-      <td>${esc(r.city || '—')}</td>
-      <td>${threadCell(r)}</td>
+      <td style="overflow: hidden;">${r.contact_name ? `<div style="font-weight: 600; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(r.contact_name)}</div><div class="thread-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
+      <td style="overflow: hidden;">
+        ${r.email ? `<div class="reach-mail">${esc(r.email)} <span class="${['verified', 'valid_mx'].includes(r.email_status) ? 'reach-ok' : 'reach-maybe'}">${['verified', 'valid_mx'].includes(r.email_status) ? '✓' : '?'}</span></div>` : '<div class="reach-mail muted">no email</div>'}
+        ${r.phone ? `<div class="thread-sub"><a href="${telHref(r.phone)}" class="tel-link" title="Call">${esc(r.phone)}</a></div>` : ''}
+      </td>
+      <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2);">${esc(r.city || '—')}</td>
+      <td style="overflow: hidden;">${threadCell(r)}</td>
       <td><select class="status-select" data-id="${r.id}">
         ${Object.entries(STATUS_LABELS).map(([k, v]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('')}
       </select></td>
@@ -221,8 +219,8 @@ async function loadTable() {
     const msg = state.queueMode
       ? { your_move: 'No replies waiting on you. 🎉', due: 'No follow-ups due — the pipeline is worked.', handoffs: 'No handoffs pending.', fresh: 'No untouched prospects — run the pipeline.' }[state.queueMode]
       : 'Hit <em>Run pipeline</em> to pull today\'s new Florida businesses and licensees.';
-    tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state">
-      <div class="big">${state.queueMode ? '✅' : '🎯'}</div>
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+      <div class="big">${state.queueMode ? '✓' : '◆'}</div>
       <p><strong>${state.queueMode ? msg : 'No prospects yet.'}</strong></p>
       ${state.queueMode ? '' : `<p>${msg}</p>`}
     </div></td></tr>`;
@@ -236,32 +234,152 @@ async function loadTable() {
   $('#next').disabled = data.page >= pages;
 }
 
-/* ---------- work queue chips ---------- */
+/* ---------- work queue cards ---------- */
 async function loadQueue() {
   const q = await api(withAcct('/api/queue?rep=' + encodeURIComponent(repName())));
-  const chips = [
-    ['your_move', '🟢 They replied — your move', q.your_move],
-    ['due', '⏰ Follow-ups due', q.due],
-    ['handoffs', '🤝 Handoffs', q.handoffs],
-    ['fresh', '🆕 Untouched leads', q.fresh],
+  state.queueCache = q;
+  const cards = [
+    ['your_move', 'q-accent', 'They replied — your move', q.your_move, 'Answer within the hour wins'],
+    ['due', 'q-white', 'Follow-ups due', q.due, q.due > 0 ? 'Oldest first — clear the clock' : 'Nothing overdue'],
+    ['handoffs', '', 'Handoffs', q.handoffs, 'Qualified → sales call'],
+    ['fresh', '', 'Untouched', q.fresh, 'Score ≥ 50 · freshest first'],
   ];
-  $('#queue-chips').innerHTML = chips.map(([key, label, n]) =>
-    `<button class="queue-chip${state.queueMode === key ? ' active' : ''}${n > 0 ? '' : ' zero'}" data-queue="${key}">${label} <b>${n}</b></button>`
-  ).join('') + '<span class="queue-hint">— your work queue: green first, then due, then fresh</span>';
-  document.querySelectorAll('.queue-chip').forEach((b) => {
+  $('#queue-chips').innerHTML = cards.map(([key, cls, title, n, hint]) => `
+    <button class="queue-card ${cls}${state.queueMode === key ? ' active' : ''}" data-queue="${key}">
+      <span class="qc-head"><span class="qc-title">${title}</span><span class="qc-arrow">↗</span></span>
+      <span class="qc-n">${n}</span>
+      <span class="qc-hint">${hint}</span>
+    </button>`).join('');
+  document.querySelectorAll('.queue-card').forEach((b) => {
     b.onclick = () => {
       state.queueMode = state.queueMode === b.dataset.queue ? null : b.dataset.queue;
       state.dailyMode = false;
-      $('#btn-daily').classList.remove('primary');
       state.page = 1;
       loadQueue();
       loadTable();
     };
   });
+  loadSideRail();
+}
+
+/* ---------- right rail: next best call · calendar · handoffs ---------- */
+const initialsOf = (name) => (name || '')
+  .split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '?';
+
+function renderSideStats() {
+  const el = $('#side-stats');
+  const s = state.statsCache;
+  if (!el || !s) return;
+  el.innerHTML = `
+    <div><div class="value">${s.touchesToday || 0}</div><div class="label">Touches today</div></div>
+    <div><div class="value">${s.callsToday || 0}</div><div class="label">Calls today</div></div>
+    <div><div class="value hot">${s.inHandoff || 0}</div><div class="label">In handoff</div></div>`;
+}
+
+async function renderNextBest() {
+  const wrap = $('#nbc-wrap');
+  if (!wrap) return;
+  let row = null;
+  let why = '';
+  try {
+    let d = await api(withAcct('/api/prospects?lastDir=in&sort=last_touch&dir=asc&pageSize=1'));
+    if (d.rows.length) {
+      row = d.rows[0];
+      why = `Replied ${ago(row.last_touch_at)} · ${STAGE_SHORT[row.nurture_stage] || 'in flow'}`;
+    } else {
+      d = await api(withAcct('/api/prospects?due=1&sort=last_touch&dir=asc&pageSize=1'));
+      if (d.rows.length) {
+        row = d.rows[0];
+        why = `Follow-up due · ${STAGE_SHORT[row.nurture_stage] || 'in flow'}`;
+      }
+    }
+  } catch { /* rail is optional */ }
+  wrap.innerHTML = `
+    ${row ? `
+    <div class="nbc" data-id="${row.id}">
+      <div class="nbc-avatar">${esc(initialsOf(row.dba_name || row.business_name))}</div>
+      <div style="min-width: 0;">
+        <div class="nbc-name">${esc(row.dba_name || row.business_name)}</div>
+        <div class="nbc-sub">Score ${row.score} · <span style="color: var(--accent);">your move</span></div>
+      </div>
+      <div style="margin-left: auto; color: var(--accent); font-size: 15px;">↗</div>
+    </div>
+    <div class="nbc-heading">Next best call</div>
+    <div class="nbc-line">${esc(why)}</div>` : `
+    <div class="nbc-heading">Next best call</div>
+    <div class="nbc-line">Queue clear — work Today's 50 or run the pipeline.</div>`}
+    <div class="side-stats" id="side-stats"></div>`;
+  renderSideStats();
+  const card = wrap.querySelector('.nbc');
+  if (card) card.onclick = () => openDrawer(card.dataset.id);
+}
+
+async function renderCalendar() {
+  const el = $('#cal');
+  if (!el) return;
+  const now = new Date();
+  const month = now.toISOString().slice(0, 7);
+  let days = {};
+  try { days = (await api(withAcct(`/api/calendar?month=${month}`))).days || {}; } catch { /* optional */ }
+  $('#cal-title').textContent = `Follow-up calendar — ${now.toLocaleString([], { month: 'long' })}`;
+  const count = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const today = now.getDate();
+  let html = '';
+  for (let start = 1; start <= count; start += 7) {
+    html += '<div class="cal-row">' + Array.from({ length: Math.min(7, count - start + 1) }, (_, i) => {
+      const d = start + i;
+      const info = days[d] || {};
+      const cls = d === today ? 'today' : info.call ? 'call' : info.due ? 'due' : d > today ? 'future' : '';
+      const tip = [info.due ? `${info.due} follow-up${info.due > 1 ? 's' : ''} due` : '', info.call ? `${info.call} sales call${info.call > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ');
+      return `<div class="cal-day ${cls}" data-day="${d}" title="${esc(tip)}">${d}</div>`;
+    }).join('') + '</div>';
+  }
+  el.innerHTML = html;
+  el.querySelectorAll('.cal-day.due').forEach((d) => {
+    d.onclick = () => { state.queueMode = 'due'; state.page = 1; loadQueue(); loadTable(); };
+  });
+}
+
+async function renderHandoffs() {
+  const el = $('#handoff-list');
+  if (!el) return;
+  let rows = [];
+  try {
+    rows = (await api(withAcct('/api/prospects?stages=qualified,handoff_requested,call_scheduled&sort=last_touch&dir=asc&pageSize=3'))).rows;
+  } catch { /* optional */ }
+  const palettes = [
+    ['var(--purple)', '#fff'],
+    ['var(--accent)', 'var(--accent-ink)'],
+    ['var(--white-pill)', 'var(--accent-ink)'],
+  ];
+  el.innerHTML = rows.length ? rows.map((r, i) => {
+    const [bg, fg] = palettes[i % palettes.length];
+    const when = r.scheduled_call_at
+      ? `Call ${parseDb(r.scheduled_call_at).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' })}`
+      : (STAGE_SHORT[r.nurture_stage] || 'Qualified');
+    const who = (r.contact_name || '').split(' ')[0];
+    return `
+    <div class="handoff-card" data-id="${r.id}">
+      <div class="hc-notch" style="background: ${bg};"></div>
+      <div class="hc-avatar" style="background: ${bg}; color: ${fg};">${esc(initialsOf(r.dba_name || r.business_name))}</div>
+      <div style="min-width: 0;">
+        <div class="hc-name">${esc(r.dba_name || r.business_name)}</div>
+        <div class="hc-sub">${esc(when)}${who ? ` · ${esc(who)}` : ''}</div>
+      </div>
+      <div class="hc-arrow">↗</div>
+    </div>`;
+  }).join('') : '<div class="nbc-line">No handoffs in motion yet.</div>';
+  el.querySelectorAll('.handoff-card').forEach((c) => { c.onclick = () => openDrawer(c.dataset.id); });
+}
+
+function loadSideRail() {
+  renderNextBest();
+  renderCalendar();
+  renderHandoffs();
 }
 
 /* ---------- The Daily 50 ---------- */
-const TIER_HEADS = { high: '🔥 High Opportunity', strong: '🟢 Strong Fit', explore: '🟡 Worth Exploring' };
+const TIER_HEADS = { high: 'High Opportunity', strong: 'Strong Fit', explore: 'Worth Exploring' };
 
 async function loadDaily() {
   const data = await api(withAcct('/api/daily?size=50&rep=' + encodeURIComponent(repName())));
@@ -269,19 +387,19 @@ async function loadDaily() {
   bar.classList.remove('hidden');
   bar.innerHTML = `
     <strong>TODAY'S ${data.rows.length}</strong>
-    <span class="tier-count">🔥 ${data.counts.high} High Opportunity</span>
-    <span class="tier-count">🟢 ${data.counts.strong} Strong Fit</span>
-    <span class="tier-count">🟡 ${data.counts.explore} Worth Exploring</span>
+    <span class="tier-count">${data.counts.high} high opportunity</span>
+    <span class="tier-count">${data.counts.strong} strong fit</span>
+    <span class="tier-count">${data.counts.explore} worth exploring</span>
     <span class="muted">${data.date} · fresh unclaimed prospects, best first</span>
   `;
   const groups = { high: [], strong: [], explore: [] };
   for (const r of data.rows) (groups[r.tier] || groups.explore).push(r);
   $('#tbody').innerHTML = data.rows.length
     ? ['high', 'strong', 'explore'].filter((t) => groups[t].length).map((t) =>
-        `<tr class="tier-subheader"><td colspan="11">${TIER_HEADS[t]} (${groups[t].length})</td></tr>` +
+        `<tr class="tier-subheader"><td colspan="7">${TIER_HEADS[t]} (${groups[t].length})</td></tr>` +
         groups[t].map(rowHtml).join('')
       ).join('')
-    : `<tr><td colspan="11"><div class="empty-state"><div class="big">🔥</div><p><strong>No qualified prospects yet today.</strong></p><p>Run the pipeline to fill today's sheet.</p></div></td></tr>`;
+    : `<tr><td colspan="7"><div class="empty-state"><div class="big">50</div><p><strong>No qualified prospects yet today.</strong></p><p>Run the pipeline to fill today's sheet.</p></div></td></tr>`;
   $('#count-label').textContent = `${data.rows.length} on today's sheet`;
   $('#page-label').textContent = '';
   $('#prev').disabled = true;
@@ -297,80 +415,88 @@ async function openDrawer(id) {
   const opportunities = r.opportunities_json ? JSON.parse(r.opportunities_json) : [];
   const signals = r.site_signals_json ? JSON.parse(r.site_signals_json) : null;
   const drawer = $('#drawer');
+  const offer = r.offer;
+  const whyLine = [industryLabel(r.industry), r.city].filter(Boolean).join(' · ');
   drawer.innerHTML = `
     <button class="close-x" id="drawer-close">✕</button>
-    <h2>${esc(r.dba_name || r.business_name)}</h2>${r.dba_name || r.legal_name ? `<p class="muted" style="margin-top:-4px">legal entity: ${esc(r.dba_name ? r.business_name : r.legal_name)}</p>` : ''}
-    <p class="muted">${esc(r.license_type || '')} · ${esc(industryLabel(r.industry))} · <span class="score-badge tier-${esc(r.tier || 'below')}">${r.score}</span></p>
 
-    ${r.call_reason ? `<section><h3>Why you should call</h3><div class="call-reason">${esc(r.call_reason)}</div></section>` : ''}
+    <div style="display: flex; gap: 13px; align-items: center; padding-right: 40px;">
+      <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; flex: none;">${esc(initialsOf(r.dba_name || r.business_name))}</div>
+      <div style="min-width: 0;">
+        <h2>${esc(r.dba_name || r.business_name)}</h2>
+        <div style="font-size: 11.5px; font-weight: 500; color: var(--muted); margin-top: 2px;">${esc([r.dba_name ? r.business_name : r.legal_name, whyLine].filter(Boolean).join(' · '))}${r.google_rating ? ` · <span style="color: var(--accent); font-weight: 700;">★ ${r.google_rating} (${r.google_reviews})</span>` : ''}</div>
+      </div>
+      <div style="margin-left: auto; text-align: center; flex: none;">
+        <span class="score-badge tier-${esc(r.tier || 'below')}" style="width: 44px; height: 44px; font-size: 15px;">${r.score}</span>
+        <div style="font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); margin-top: 3px;">SCORE</div>
+      </div>
+    </div>
 
-    ${r.offer ? `<section><h3>Recommended offer</h3>
+    ${r.call_reason ? `<section><div class="call-reason"><div style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; opacity: 0.6;">WHY YOU SHOULD CALL</div><div style="margin-top: 5px;">${esc(r.call_reason)}</div></div></section>` : ''}
+
+    ${offer ? `<section>
       <div class="offer-box">
-        <div class="oh"><span>${esc(r.offer.entry.name)} — $${r.offer.entry.monthly}/mo <span class="muted">· $${r.offer.entry.setup} setup</span></span><a href="/offers.html" class="muted" style="font-size:11px">full pricing →</a></div>
-        <div style="margin-top:6px">${esc(r.offer.why)}</div>
-        <div style="margin-top:8px;font-style:italic;color:var(--ink-2)">${esc(r.offer.entry.talk_track)}</div>
+        <div class="oh"><span>${esc(offer.entry.name)} — $${offer.entry.monthly}/mo <span style="font-weight: 500; font-size: 11.5px; color: #8b8b8b;">· $${offer.entry.setup} setup</span></span><a href="/offers.html">full pricing →</a></div>
+        <div style="margin-top: 5px; color: #3d3d3d;">${esc(offer.why)}</div>
+        <div class="talk">${esc(offer.entry.talk_track)}</div>
         <div class="offer-path">
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.05em;color:var(--muted);text-transform:uppercase">Upsell ladder</div>
-          ${r.offer.path.map((s, i) => `<div class="offer-step"><span class="os-name">${i === 0 ? '▶' : '↑'} ${esc(s.name)} $${s.monthly}${s.key === 'ai' || s.key === 'growth' ? '+' : ''}/mo</span><span class="muted">${esc(s.trigger)}</span></div>`).join('')}
+          ${offer.path.map((p, i) => `<span class="offer-step${i === 0 ? ' entry' : ''}">${i === 0 ? '▶ ' : ''}${esc(p.name.toUpperCase())} $${p.monthly}${p.key === 'ai' || p.key === 'growth' ? '+' : ''}</span>`).join('')}
         </div>
       </div>
     </section>` : ''}
 
     <section>
-      <h3>Nurture flow <span class="muted" style="font-weight:400;font-size:11px">— warm them up by text/email, then hand off to a human</span></h3>
+      <h3>Nurture flow — automation warms, humans close</h3>
       <div id="n-panel"><span class="muted">Loading…</span></div>
     </section>
 
     ${opportunities.length ? `<section><h3>Detected opportunities</h3>${opportunities.map((o) => `
-      <div class="opp"><div class="opp-head"><span>${esc(o.label)}</span><span class="lvl ${esc(o.level)}">${esc(o.level)}</span></div>
-      <div class="why">${esc(o.why)}</div></div>`).join('')}</section>` : ''}
+      <div class="opp"><div class="opp-head"><span>${esc(o.label)}</span><span class="why">${esc(o.why)}</span></div><span class="lvl ${esc(o.level)}">${esc(o.level.toUpperCase())}</span></div>`).join('')}</section>` : ''}
 
-    <section>
-      <h3>Contact</h3>
-      <dl class="kv">
-        <dt>Decision maker</dt><dd>${esc(r.contact_name || '—')} ${r.contact_title ? `<span class="muted">(${esc(r.contact_title)})</span>` : ''}</dd>
-        <dt>Email</dt><dd>${r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a> <span class="chip ${esc(r.email_status || '')}">${esc(r.email_status || '')}</span> <button class="copy-btn" data-copy="${esc(r.email)}">copy</button>` : '—'}</dd>
-        <dt>Phone</dt><dd>${r.phone ? `<a href="${telHref(r.phone)}">${esc(r.phone)}</a> <button class="copy-btn" data-copy="${esc(r.phone)}">copy</button>` : '—'}</dd>
-        <dt>Website</dt><dd>${r.website ? `<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website)}</a> <span class="muted">(${esc(r.website_confidence || '')})</span>` : 'none found'}</dd>
-        ${signals ? `<dt>Site quality</dt><dd>${signals.quality}/100 <span class="muted">· ${signals.platform}${signals.mobileViewport ? '' : ' · not mobile-ready'}${signals.hasBooking ? ' · booking ✓' : ' · no booking'}${signals.hasChat ? ' · chat ✓' : ' · no chat'}${signals.hasCrm ? ' · CRM ✓' : ''}</span></dd>` : ''}
-        <dt>Socials</dt><dd>${Object.keys(socials).length ? Object.entries(socials).map(([k, v]) => `<a href="${esc(v)}" target="_blank" rel="noopener">${k}</a>`).join(' · ') : 'none found'}</dd>
-      </dl>
+    <section style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div>
+        <h3>Contact</h3>
+        <div style="font-size: 12px; line-height: 1.9; color: var(--ink-3);">
+          ${r.contact_name ? `${esc(r.contact_name)} <span class="muted">${r.contact_title ? `(${esc(r.contact_title)})` : ''}</span><br>` : '<span class="muted">no decision maker yet</span><br>'}
+          ${r.email ? `<span style="overflow-wrap: anywhere;">${esc(r.email)}</span> <span class="reach-ok">${['verified', 'valid_mx'].includes(r.email_status) ? '✓' : ''}</span> <button class="copy-btn" data-copy="${esc(r.email)}">copy</button><br>` : '<span class="muted">no verified email</span><br>'}
+          ${r.phone ? `<a href="${telHref(r.phone)}" style="color: var(--ink-3);">${esc(r.phone)}</a> <button class="copy-btn" data-copy="${esc(r.phone)}">copy</button><br>` : ''}
+          <span class="muted">Website:</span> ${r.website ? `<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website.replace(/^https?:\/\/(www\.)?/, ''))}</a>${signals ? ` <span class="muted">· site ${signals.quality}/100</span>` : ''}` : 'none found'}<br>
+          <span class="muted">Socials:</span> ${Object.keys(socials).length ? Object.entries(socials).map(([k, v]) => `<a href="${esc(v)}" target="_blank" rel="noopener">${esc(k)}</a>`).join(' · ') : 'none found'}
+        </div>
+      </div>
+      <div>
+        <h3>Business</h3>
+        <div style="font-size: 12px; line-height: 1.9; color: var(--ink-3);">
+          Est. ${esc(r.established_date || '—')} ${ageWords(r.established_date) ? `<span class="muted">(${esc(ageWords(r.established_date))})</span>` : ''}<br>
+          ${[r.address, r.city, r.zip].filter(Boolean).length ? `${esc([r.address, r.city, r.zip].filter(Boolean).join(', '))} <a href="${esc(mapsUrl(r))}" target="_blank" rel="noopener" style="font-size: 10.5px;">map ↗</a><br>` : ''}
+          <span class="muted">Source:</span> ${esc({ sunbiz: 'Sunbiz', dbpr: 'DBPR', nppes: 'NPPES', sam: 'SAM.gov', osm: 'OSM', google: 'Google listing' }[r.source] || r.source)} · ${esc(r.source_id)}<br>
+          <span class="muted">Status:</span> ${esc(r.entity_status || '—')}<br>
+          ${officers?.officers?.length ? `<span class="muted">Officers:</span> ${officers.officers.slice(0, 3).map((o) => `${esc(o.title || '')} ${esc(o.name)}`).join(' · ')}` : ''}
+        </div>
+      </div>
     </section>
-
-    <section>
-      <h3>Business</h3>
-      <dl class="kv">
-        <dt>Established</dt><dd>${r.established_date ? `${esc(r.established_date)} <span class="muted">(${esc(ageWords(r.established_date))})</span>` : '—'}</dd>
-        <dt>Address</dt><dd>${[r.address, r.city, r.state, r.zip].filter(Boolean).length ? `<a href="${esc(mapsUrl(r))}" target="_blank" rel="noopener">${esc([r.address, r.city, r.state, r.zip].filter(Boolean).join(', '))}</a> 📍` : '—'}</dd>
-        <dt>Source</dt><dd>${esc({ sunbiz: 'Sunbiz filing', dbpr: 'DBPR license', nppes: 'NPI registry', sam: 'SAM.gov registration', osm: 'OpenStreetMap', google: 'Google Business listing' }[r.source] || r.source)} · ${esc(r.source_id)}</dd>
-        <dt>Record status</dt><dd>${esc(r.entity_status || '—')}</dd>
-        ${r.google_reviews ? `<dt>Google reviews</dt><dd><a href="${esc(mapsUrl(r))}" target="_blank" rel="noopener">${r.google_rating}★ · ${r.google_reviews} reviews</a> <span class="muted">— skim 2-3 before the kudos opener</span></dd>` : ''}
-      </dl>
-    </section>
-
-    ${officers?.officers?.length ? `<section><h3>Officers (Sunbiz)</h3><dl class="kv">${officers.officers.map((o) => `<dt>${esc(o.title || 'Officer')}</dt><dd>${esc(o.name)}${o.city ? ` <span class="muted">· ${esc(o.city)}, ${esc(o.state)}</span>` : ''}</dd>`).join('')}${officers.registeredAgent?.name ? `<dt>Reg. agent</dt><dd>${esc(officers.registeredAgent.name)}</dd>` : ''}</dl></section>` : ''}
 
     <section>
       <h3>Score breakdown</h3>
-      <div class="breakdown">${Object.entries(breakdown).map(([k, v]) => `<span class="chip">${esc(k.replaceAll('_', ' '))}: +${v}</span>`).join('') || '<span class="muted">not scored yet</span>'}</div>
+      <div class="breakdown">${Object.entries(breakdown).map(([k, v]) => `<span class="chip">+${v} ${esc(k.replaceAll('_', ' '))}</span>`).join('') || '<span class="muted">not scored yet</span>'}</div>
     </section>
 
     <section>
       <h3>Sales workflow</h3>
-      <div class="form-row" style="margin-top:0">
+      <div class="form-row" style="margin-top: 0;">
         <label>Status
           <select id="d-status">${Object.entries(STATUS_LABELS).map(([k, v]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
         </label>
-        <label>Assigned to
+        <label>Rep
           <input id="d-assigned" value="${esc(r.assigned_to || '')}" placeholder="rep name" />
         </label>
       </div>
-      <label style="display:block;margin-top:10px;font-size:12px;color:var(--ink-2)">Notes
-        <textarea id="d-notes">${esc(r.notes || '')}</textarea>
+      <label style="display: block; margin-top: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);">Notes
+        <textarea id="d-notes" style="width: 100%; margin-top: 5px; min-height: 60px;">${esc(r.notes || '')}</textarea>
       </label>
       <div class="drawer-actions">
         <button class="btn primary" id="d-save">Save</button>
-        <button class="btn ghost" id="d-reenrich">↻ Re-enrich</button>
+        <button class="btn" id="d-reenrich">↻ Re-enrich</button>
       </div>
     </section>
   `;
@@ -450,7 +576,7 @@ function paintNurture(id, state, lastReply) {
   el.innerHTML = `
     ${repName() ? '' : `<div class="n-warn">⚠ Type your name in the top bar first — it signs every message (right now they'd say "{{your name}}") and claims prospects you touch.</div>`}
     <div class="stage-bar">${suppressed
-      ? `<span class="stage-pill suppressed">⛔ Suppressed — no further outreach on this channel</span><button class="linkish" id="n-unsuppress">un-suppress (classified wrong?)</button>`
+      ? `<span class="stage-pill suppressed">Suppressed — no further outreach on this channel</span><button class="linkish" id="n-unsuppress">un-suppress (classified wrong?)</button>`
       : stages.map((s, i) => `<span class="stage-pill${i < idx ? ' done' : ''}${i === idx ? ' current' : ''} clickable" data-stage="${esc(s.key)}" title="Click to move here — fixes a mis-click or a wrongly-read reply">${i < idx ? '✓ ' : ''}${esc(s.label)}</span>`).join('')}
     </div>
     ${lastReply ? `<div class="n-cls">Reply read as <span class="cls-chip ${esc(lastReply.classification)}">${esc(lastReply.classification.replaceAll('_', ' '))}</span></div>` : ''}
@@ -458,28 +584,28 @@ function paintNurture(id, state, lastReply) {
     ${sug.message ? `
       <textarea id="n-msg" class="outreach-out">${esc(sug.message)}</textarea>
       <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center">
-        <button class="btn primary" id="n-copy">📋 Copy</button>
+        <button class="btn primary" id="n-copy">Copy</button>
         ${suppressed ? '' : '<button class="btn" id="n-sent">✓ I sent this</button>'}
-        ${!suppressed && drawerContact.phone ? `<a class="btn ghost" id="n-open-sms" href="#">📱 Open in Messages</a>` : ''}
-        ${!suppressed && drawerContact.email ? `<a class="btn ghost" id="n-open-mail" href="#">✉️ Open in Mail</a>` : ''}
-        ${state.stage === 'loaded' && sug.alt ? '<button class="btn ghost" id="n-alt">✉️ Email version</button><button class="btn ghost" id="n-ai">✨ AI-personalize</button>' : ''}
+        ${!suppressed && drawerContact.phone ? `<a class="btn ghost" id="n-open-sms" href="#">Messages ↗</a>` : ''}
+        ${!suppressed && drawerContact.email ? `<a class="btn ghost" id="n-open-mail" href="#">Mail ↗</a>` : ''}
+        ${state.stage === 'loaded' && sug.alt ? '<button class="btn ghost" id="n-alt">Email version</button><button class="btn ghost" id="n-ai">AI-personalize</button>' : ''}
         <span id="n-msg-note" class="muted" style="font-size:11px"></span>
       </div>` : ''}
     ${!suppressed && drawerContact.phone ? `
-      <div class="call-log-row">📞 Called them? <button class="btn ghost sm" data-call="no_answer">No answer</button>
+      <div class="call-log-row"><span class="row-label">Called them?</span> <button class="btn ghost sm" data-call="no_answer">No answer</button>
         <button class="btn ghost sm" data-call="voicemail">Left voicemail</button>
-        <button class="btn ghost sm" data-call="spoke">🗣 We spoke</button></div>` : ''}
+        <button class="btn ghost sm" data-call="spoke">We spoke</button></div>` : ''}
     ${!suppressed ? `
-      <div class="n-followup">⏰ Next follow-up: <b>${fmtWhen(state.next_touch_at) || 'not set'}</b>
+      <div class="n-followup"><span class="row-label">Next follow-up</span> <b>${fmtWhen(state.next_touch_at) || 'not set'}</b>
         <button class="btn ghost sm" data-snooze="1">+1d</button>
         <button class="btn ghost sm" data-snooze="2">+2d</button>
         <button class="btn ghost sm" data-snooze="7">+1w</button>
         <button class="btn ghost sm" data-snooze="30">+1mo</button>
         ${state.next_touch_at ? '<button class="btn ghost sm" data-snooze="clear">clear</button>' : ''}
-        <span class="muted" style="font-size:11px">— resurfaces in the ⏰ Due queue</span>
+        <span class="muted" style="font-size:11px">— resurfaces in the Due queue</span>
       </div>` : ''}
     ${schedulable ? `
-      <div class="n-followup">📅 Sales call: <b>${fmtWhen(state.scheduled_call_at) || 'not scheduled'}</b>
+      <div class="n-followup"><span class="row-label">Sales call</span> <b>${fmtWhen(state.scheduled_call_at) || 'not scheduled'}</b>
         <button class="btn ghost sm" data-sched="today-pm">Today 3pm</button>
         <button class="btn ghost sm" data-sched="tmrw-am">Tmrw 10am</button>
         <button class="btn ghost sm" data-sched="tmrw-pm">Tmrw 3pm</button>
@@ -488,15 +614,15 @@ function paintNurture(id, state, lastReply) {
       <label style="display:block;margin-top:12px;font-size:12px;color:var(--ink-2)">They replied? Paste it here — it gets read, classified, and the next move teed up
         <textarea id="n-reply" placeholder='e.g. "Thanks! Who is this?"'></textarea>
       </label>
-      <button class="btn ghost" id="n-log" style="margin-top:6px">↩ Log their reply</button>` : ''}
+      <button class="btn ghost" id="n-log" style="margin-top:6px">↩ Log reply</button>` : ''}
     ${handoffReady ? `
-      <button class="btn" id="n-handoff" style="margin-top:10px">📄 Build sales handoff package</button>
+      <button class="btn" id="n-handoff" style="margin-top:10px">Build handoff package</button>
       <div id="n-handoff-wrap" class="hidden">
         <textarea id="n-handoff-out" class="outreach-out" readonly style="min-height:220px"></textarea>
-        <button class="btn primary" id="n-handoff-copy" style="margin-top:6px">📋 Copy package</button>
+        <button class="btn primary" id="n-handoff-copy" style="margin-top:6px">Copy package</button>
       </div>` : ''}
     ${state.touches.length ? `<details style="margin-top:10px"><summary class="muted" style="cursor:pointer;font-size:12px">Conversation log (${state.touches.length})</summary>
-      <div class="touch-log">${state.touches.map((t) => `<div class="touch ${esc(t.direction)}"><span class="who">${t.direction === 'out' ? 'US →' : '← THEM'}</span> ${esc(t.text)}${t.classification ? ` <span class="cls-chip sm ${esc(t.classification)}">${esc(t.classification.replaceAll('_', ' '))}</span>` : ''}<span class="touch-when">${t.channel === 'call' ? '📞 ' : ''}${ago(t.created_at)}${t.rep ? ` · ${esc(t.rep)}` : ''}</span></div>`).join('')}</div></details>` : ''}
+      <div class="touch-log">${state.touches.map((t) => `<div class="touch ${esc(t.direction)}"><span class="who">${t.direction === 'out' ? 'US →' : '← THEM'}</span> ${esc(t.text)}${t.classification ? ` <span class="cls-chip sm ${esc(t.classification)}">${esc(t.classification.replaceAll('_', ' '))}</span>` : ''}<span class="touch-when">${t.channel === 'call' ? 'CALL · ' : ''}${ago(t.created_at)}${t.rep ? ` · ${esc(t.rep)}` : ''}</span></div>`).join('')}</div></details>` : ''}
   `;
 
   // one-tap send: opens the rep's own Messages/Mail app with the text loaded
@@ -603,7 +729,7 @@ function paintNurture(id, state, lastReply) {
     const showingEmail = alt.dataset.on === '1';
     $('#n-msg').value = showingEmail ? sug.message : `Subject: ${sug.alt.email_subject}\n\n${sug.alt.email_body}`;
     alt.dataset.on = showingEmail ? '' : '1';
-    alt.textContent = showingEmail ? '✉️ Email version' : '💬 Text version';
+    alt.textContent = showingEmail ? 'Email version' : 'Text version';
   };
 
   const ai = $('#n-ai');
@@ -622,7 +748,7 @@ function paintNurture(id, state, lastReply) {
         : 'AI draft — read it once before sending; it only used verified facts.';
     } catch (e) { alert(e.message); } finally {
       ai.disabled = false;
-      ai.textContent = '✨ AI-personalize';
+      ai.textContent = 'AI-personalize';
     }
   };
 
@@ -752,11 +878,13 @@ function bindEvents() {
     }
   };
 
-  // Daily 50 toggle
+  // Daily 50 toggle (icon rail)
   $('#btn-daily').onclick = () => {
     state.dailyMode = !state.dailyMode;
-    $('#btn-daily').classList.toggle('primary', state.dailyMode);
+    $('#btn-daily').classList.toggle('active', state.dailyMode);
     $('#filters').style.display = state.dailyMode ? 'none' : '';
+    state.queueMode = null;
+    loadQueue();
     loadTable();
   };
 
@@ -768,8 +896,8 @@ function bindEvents() {
     if (state.me?.role === 'admin' && activeAccounts.length) {
       $('#run-account-wrap').classList.remove('hidden');
       const sel = $('#run-account');
-      sel.innerHTML = `<option value="">🏠 Innovat3 — our book</option>` +
-        activeAccounts.map((a) => `<option value="${a.id}">🗂 ${esc(a.name)}</option>`).join('');
+      sel.innerHTML = `<option value="">Innovat3 — our book</option>` +
+        activeAccounts.map((a) => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
       sel.value = state.account !== 'house' ? String(state.account) : '';
       const prefill = () => {
         const acct = activeAccounts.find((a) => String(a.id) === sel.value);
@@ -864,8 +992,8 @@ async function initIdentity() {
 
   const sw = $('#account-switch');
   sw.classList.remove('hidden');
-  sw.innerHTML = `<option value="house">🏠 Innovat3 — our book</option>` +
-    activeAccounts.map((a) => `<option value="${a.id}">🗂 ${esc(a.name)} (${a.prospects})</option>`).join('');
+  sw.innerHTML = `<option value="house">Innovat3 — our book</option>` +
+    activeAccounts.map((a) => `<option value="${a.id}">${esc(a.name)} (${a.prospects})</option>`).join('');
   // deep link (?account=N from Settings) wins over the remembered choice
   const fromUrl = new URLSearchParams(location.search).get('account');
   state.account = fromUrl || localStorage.getItem('account') || 'house';
@@ -887,14 +1015,19 @@ async function initIdentity() {
 (async function init() {
   await initIdentity();
 
-  // Rep identity: signs messages, claims prospects, scopes the queues
-  const repInput = $('#rep-name');
-  repInput.value = repName();
-  repInput.addEventListener('change', () => {
-    localStorage.setItem('rep_name', repInput.value.trim());
+  // Rep identity: the avatar circle — signs messages, claims prospects,
+  // scopes the queues. Click it to set your name.
+  const avatar = $('#rep-avatar');
+  const paintAvatar = () => { avatar.textContent = initialsOf(repName()); avatar.title = repName() ? `${repName()} — signs your outreach` : 'Click to set your name'; };
+  paintAvatar();
+  avatar.onclick = () => {
+    const n = prompt('Your name (signs your outreach, claims prospects you touch):', repName());
+    if (n === null) return;
+    localStorage.setItem('rep_name', n.trim());
+    paintAvatar();
     loadQueue();
     if (state.dailyMode) loadTable();
-  });
+  };
 
   await loadMeta();
   bindEvents();
