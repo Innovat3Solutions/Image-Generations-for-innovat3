@@ -44,4 +44,5 @@ export const providers = {
   hunter: process.env.HUNTER_API_KEY || null,
   zerobounce: process.env.ZEROBOUNCE_API_KEY || null,
   serper: process.env.SERPER_API_KEY || null,
+  scrapegraph: process.env.SCRAPEGRAPHAI_API_KEY || null,
 };

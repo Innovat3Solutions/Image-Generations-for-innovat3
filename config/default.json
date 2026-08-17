@@ -37,8 +37,20 @@
       "password": "PubAccess1845!",
       "dir": "/Public/doc/cor"
     },
-    "filingTypesInclude": ["FLAL", "DOML", "DOMP", "FLP", "NONP"],
-    "excludeNameKeywords": ["HOLDINGS", "TRUST", "HOA", "HOMEOWNERS", "CONDOMINIUM ASSOCIATION"]
+    "filingTypesInclude": [
+      "FLAL",
+      "DOML",
+      "DOMP",
+      "FLP",
+      "NONP"
+    ],
+    "excludeNameKeywords": [
+      "HOLDINGS",
+      "TRUST",
+      "HOA",
+      "HOMEOWNERS",
+      "CONDOMINIUM ASSOCIATION"
+    ]
   },
   "dbpr": {
     "enabled": true,
@@ -114,26 +126,82 @@
     "enabled": true,
     "overpassUrl": "https://overpass-api.de/api/interpreter",
     "categories": {
-      "restaurants": { "label": "Restaurants & Cafes", "filters": ["amenity~\"^(restaurant|cafe|fast_food|bar)$\""] },
-      "beauty": { "label": "Beauty / Salons / Barbers", "filters": ["shop~\"^(beauty|hairdresser|massage|tattoo)$\""] },
-      "trades": { "label": "Trades & Crafts", "filters": ["craft"] },
-      "retail": { "label": "Retail Shops", "filters": ["shop"] },
-      "offices": { "label": "Offices & Services", "filters": ["office"] },
-      "fitness": { "label": "Gyms & Fitness", "filters": ["leisure~\"^(fitness_centre|sports_centre)$\""] },
-      "auto": { "label": "Auto Repair & Dealers", "filters": ["shop~\"^(car_repair|car|tyres)$\""] },
-      "medical": { "label": "Clinics & Medical", "filters": ["amenity~\"^(clinic|dentist|doctors|pharmacy|veterinary)$\""] }
+      "restaurants": {
+        "label": "Restaurants & Cafes",
+        "filters": [
+          "amenity~\"^(restaurant|cafe|fast_food|bar)$\""
+        ]
+      },
+      "beauty": {
+        "label": "Beauty / Salons / Barbers",
+        "filters": [
+          "shop~\"^(beauty|hairdresser|massage|tattoo)$\""
+        ]
+      },
+      "trades": {
+        "label": "Trades & Crafts",
+        "filters": [
+          "craft"
+        ]
+      },
+      "retail": {
+        "label": "Retail Shops",
+        "filters": [
+          "shop"
+        ]
+      },
+      "offices": {
+        "label": "Offices & Services",
+        "filters": [
+          "office"
+        ]
+      },
+      "fitness": {
+        "label": "Gyms & Fitness",
+        "filters": [
+          "leisure~\"^(fitness_centre|sports_centre)$\""
+        ]
+      },
+      "auto": {
+        "label": "Auto Repair & Dealers",
+        "filters": [
+          "shop~\"^(car_repair|car|tyres)$\""
+        ]
+      },
+      "medical": {
+        "label": "Clinics & Medical",
+        "filters": [
+          "amenity~\"^(clinic|dentist|doctors|pharmacy|veterinary)$\""
+        ]
+      }
     }
   },
   "enrichment": {
     "website": {
-      "tlds": ["com", "net", "biz"],
+      "tlds": [
+        "com",
+        "net",
+        "biz"
+      ],
       "maxCandidates": 12,
       "minMatchScore": 3
     },
     "email": {
       "allowGuessed": false,
-      "patterns": ["info", "contact", "office", "hello", "{first}", "{first}.{last}", "{f}{last}"],
+      "patterns": [
+        "info",
+        "contact",
+        "office",
+        "hello",
+        "{first}",
+        "{first}.{last}",
+        "{f}{last}"
+      ],
       "smtpProbe": false
+    },
+    "ai": {
+      "enabled": true,
+      "maxPages": 3
     }
   }
 }

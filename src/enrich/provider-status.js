@@ -6,6 +6,21 @@ import { providers } from '../config.js';
 import { fetchWithTimeout } from '../util.js';
 import { checkApollo } from './apollo.js';
 
+async function checkScrapegraph() {
+  if (!providers.scrapegraph) return { configured: false, needsKeyName: 'SCRAPEGRAPHAI_API_KEY' };
+  try {
+    const res = await fetchWithTimeout('https://api.scrapegraphai.com/v1/credits', {
+      headers: { 'SGAI-APIKEY': providers.scrapegraph },
+      timeout: 10000,
+    });
+    if (!res.ok) return { configured: true, ok: false, error: `HTTP ${res.status} — check the key` };
+    const data = await res.json();
+    return { configured: true, ok: true, note: data?.remaining_credits != null ? `${data.remaining_credits} credits left` : undefined };
+  } catch (err) {
+    return { configured: true, ok: false, error: String(err.message || err) };
+  }
+}
+
 async function checkSerper() {
   if (!providers.serper) return { configured: false };
   try {
@@ -65,8 +80,8 @@ async function checkCensus() {
 }
 
 export async function providerStatus() {
-  const [apollo, serper, hunter, sam, census] = await Promise.all([
-    checkApollo(), checkSerper(), checkHunter(), checkSam(), checkCensus(),
+  const [apollo, serper, hunter, sam, census, scrapegraph] = await Promise.all([
+    checkApollo(), checkSerper(), checkHunter(), checkSam(), checkCensus(), checkScrapegraph(),
   ]);
   return {
     apollo: { label: 'Apollo (emails + phones)', ...apollo },
@@ -74,6 +89,7 @@ export async function providerStatus() {
     hunter: { label: 'Hunter (email finding)', ...hunter },
     sam: { label: 'SAM.gov (contractor source)', ...sam },
     census: { label: 'Census (market intel)', ...census },
-    anthropic: { label: 'Claude (sales practice)', configured: !!process.env.ANTHROPIC_API_KEY, ok: !!process.env.ANTHROPIC_API_KEY, needsKeyName: 'ANTHROPIC_API_KEY' },
+    scrapegraph: { label: 'ScrapeGraphAI (AI site extraction)', ...scrapegraph },
+    anthropic: { label: 'Claude (AI extraction, outreach & practice)', configured: !!process.env.ANTHROPIC_API_KEY, ok: !!process.env.ANTHROPIC_API_KEY, needsKeyName: 'ANTHROPIC_API_KEY' },
   };
 }

@@ -85,6 +85,18 @@ zips; everything else treats them as an optional refinement.
    `verified` (provider-confirmed) → `valid_mx` (domain accepts mail) → `guessed`.
 5. **Phone** — from the state record when present, else `tel:` links / patterns on
    their website.
+6. **AI site extraction** (the [ScrapeGraphAI](https://github.com/ScrapeGraphAI/Scrapegraph-ai)
+   SmartScraper pattern) — when the cheap heuristics still leave a contact gap,
+   a model *reads* the site like a human: homepage plus contact/about/team
+   subpages. It recovers what selectors and regexes miss — obfuscated emails
+   ("office (at) domain (dot) com"), owners named only in prose, services
+   listed in image alt text — plus service area and financing/emergency/booking
+   signals. Two engines: **local** (our fetch + Claude, uses the
+   `ANTHROPIC_API_KEY` you already have) or **hosted** (ScrapeGraphAI's cloud
+   API via `SCRAPEGRAPHAI_API_KEY` — their infra renders JS-heavy sites and
+   handles anti-bot, so it reads pages our plain fetch can't). AI-found emails
+   are candidates only: they pass the same verification gate as every other
+   source, so the strict no-guessed-emails policy holds.
 
 ## Target verticals
 
@@ -383,6 +395,8 @@ checks, domain-guess website discovery). Add keys to level it up:
 | `SERPER_API_KEY` | Google-quality website + social discovery |
 | `HUNTER_API_KEY` | Email finding via domain search + deliverability verification |
 | `ZEROBOUNCE_API_KEY` | Alternative email verifier |
+| `ANTHROPIC_API_KEY` | AI site extraction (local engine), outreach drafts, sales practice |
+| `SCRAPEGRAPHAI_API_KEY` | Hosted AI extraction via [ScrapeGraphAI](https://scrapegraphai.com) — JS-rendered and bot-protected sites our plain fetch can't read |
 
 With Apollo enabled the contact waterfall becomes: Apollo verified email →
 email on their own website → Hunter → Apollo unverified → MX-checked pattern

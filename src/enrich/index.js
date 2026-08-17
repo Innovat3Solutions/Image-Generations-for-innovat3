@@ -11,8 +11,9 @@ import { findEmail } from './email.js';
 import { apolloEnrich } from './apollo.js';
 import { analyzeSite } from './site-analysis.js';
 import { registryCrossRef } from './registry.js';
+import { aiSiteExtract, aiExtractAvailable } from './ai-extract.js';
 import { config, providers } from '../config.js';
-import { parsePersonName } from '../util.js';
+import { parsePersonName, looksLikeCompany, titleCase } from '../util.js';
 import { updateProspect } from '../db.js';
 
 const EMAIL_RANK = { verified: 3, valid_mx: 2, guessed: 1 };
@@ -28,7 +29,7 @@ export async function enrichProspect(row) {
     row = { ...row, ...updates };
   }
 
-  const person = row.contact_name ? parsePersonName(row.contact_name) : null;
+  let person = row.contact_name ? parsePersonName(row.contact_name) : null;
   const web = await discoverWebsite(row);
 
   if (web.website) {
@@ -38,6 +39,34 @@ export async function enrichProspect(row) {
     if (signals) updates.site_signals_json = JSON.stringify(signals);
   }
   const socials = { ...web.socials };
+
+  // AI extraction (the ScrapeGraphAI SmartScraper pattern): when the cheap
+  // heuristics leave contact gaps, have a model read the site — including
+  // contact/about subpages — for emails, phones, and the people behind it.
+  const website0 = updates.website || row.website;
+  if (aiExtractAvailable() && website0 && (!row.email || !row.phone || !row.contact_name)) {
+    const ai = await aiSiteExtract({ ...row, website: website0 }, web.html);
+    if (ai) {
+      for (const e of ai.emails) if (!web.emails.includes(e)) web.emails.push(e);
+      for (const p of ai.phones) if (!web.phones.includes(p)) web.phones.push(p);
+      // A named human beats no decision maker — but never overwrite one
+      if (!row.contact_name && ai.people.length) {
+        const boss = ai.people.find((p) => /owner|founder|principal|president|ceo|broker|dr\.?|doctor/i.test(p.title)) || ai.people[0];
+        if (!looksLikeCompany(boss.name)) {
+          updates.contact_name = titleCase(boss.name);
+          updates.contact_title = boss.title;
+          updates.contact_source = 'site_ai';
+          person = person || parsePersonName(boss.name);
+        }
+      }
+      // Extra site facts ride along with the signal analysis
+      if (ai.facts) {
+        const signals = updates.site_signals_json ? JSON.parse(updates.site_signals_json) : {};
+        signals.ai = ai.facts;
+        updates.site_signals_json = JSON.stringify(signals);
+      }
+    }
+  }
 
   const website = updates.website || row.website;
   const domain = website ? new URL(website).hostname.replace(/^www\./, '') : null;
