@@ -123,6 +123,9 @@ async function loadStats() {
     <div class="tile"><span class="value">${s.withEmail.toLocaleString()}</span><span class="label">email-reachable</span></div>
     <div class="tile"><span class="value">${s.withPhone.toLocaleString()}</span><span class="label">have phone</span></div>
     <div class="tile hot"><span class="value">${s.noWebsite.toLocaleString()}</span><span class="label">no website yet</span></div>
+    <div class="tile"><span class="value">${(s.touchesToday || 0).toLocaleString()}</span><span class="label">touches today</span></div>
+    <div class="tile"><span class="value">${(s.inHandoff || 0).toLocaleString()}</span><span class="label">in handoff</span></div>
+    <div class="tile"><span class="value">${(s.callsToday || 0).toLocaleString()}</span><span class="label">calls today</span></div>
     <div class="tile"><span class="value">${(s.parked || 0).toLocaleString()}</span><span class="label">parked</span></div>
     <div class="tile"><span class="value">${s.avgScore || 0}</span><span class="label">avg score</span></div>
   `;
@@ -276,24 +279,14 @@ function renderSideStats() {
     <div><div class="value hot">${s.inHandoff || 0}</div><div class="label">In handoff</div></div>`;
 }
 
-async function renderNextBest() {
+function renderNextBest(row, reason) {
   const wrap = $('#nbc-wrap');
   if (!wrap) return;
-  let row = null;
-  let why = '';
-  try {
-    let d = await api(withAcct('/api/prospects?lastDir=in&sort=last_touch&dir=asc&pageSize=1'));
-    if (d.rows.length) {
-      row = d.rows[0];
-      why = `Replied ${ago(row.last_touch_at)} · ${STAGE_SHORT[row.nurture_stage] || 'in flow'}`;
-    } else {
-      d = await api(withAcct('/api/prospects?due=1&sort=last_touch&dir=asc&pageSize=1'));
-      if (d.rows.length) {
-        row = d.rows[0];
-        why = `Follow-up due · ${STAGE_SHORT[row.nurture_stage] || 'in flow'}`;
-      }
-    }
-  } catch { /* rail is optional */ }
+  const why = row
+    ? (reason === 'due'
+      ? `Follow-up due · ${STAGE_SHORT[row.nurture_stage] || 'in flow'}`
+      : `Replied ${ago(row.last_touch_at)} · ${STAGE_SHORT[row.nurture_stage] || 'in flow'}`)
+    : '';
   wrap.innerHTML = `
     ${row ? `
     <div class="nbc" data-id="${row.id}">
@@ -314,13 +307,11 @@ async function renderNextBest() {
   if (card) card.onclick = () => openDrawer(card.dataset.id);
 }
 
-async function renderCalendar() {
+function renderCalendar(days) {
   const el = $('#cal');
   if (!el) return;
   const now = new Date();
-  const month = now.toISOString().slice(0, 7);
-  let days = {};
-  try { days = (await api(withAcct(`/api/calendar?month=${month}`))).days || {}; } catch { /* optional */ }
+  days = days || {};
   $('#cal-title').textContent = `Follow-up calendar — ${now.toLocaleString([], { month: 'long' })}`;
   const count = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   const today = now.getDate();
@@ -340,13 +331,10 @@ async function renderCalendar() {
   });
 }
 
-async function renderHandoffs() {
+function renderHandoffs(rows) {
   const el = $('#handoff-list');
   if (!el) return;
-  let rows = [];
-  try {
-    rows = (await api(withAcct('/api/prospects?stages=qualified,handoff_requested,call_scheduled&sort=last_touch&dir=asc&pageSize=3'))).rows;
-  } catch { /* optional */ }
+  rows = rows || [];
   const palettes = [
     ['var(--purple)', '#fff'],
     ['var(--accent)', 'var(--accent-ink)'],
@@ -372,10 +360,14 @@ async function renderHandoffs() {
   el.querySelectorAll('.handoff-card').forEach((c) => { c.onclick = () => openDrawer(c.dataset.id); });
 }
 
-function loadSideRail() {
-  renderNextBest();
-  renderCalendar();
-  renderHandoffs();
+async function loadSideRail() {
+  if (!$('#side-col')) return;
+  try {
+    const rail = await api(withAcct('/api/rail'));
+    renderNextBest(rail.next_best, rail.next_best_reason);
+    renderCalendar(rail.days);
+    renderHandoffs(rail.handoffs);
+  } catch { /* the rail is a bonus — never block the table on it */ }
 }
 
 /* ---------- The Daily 50 ---------- */
@@ -1011,9 +1003,25 @@ async function initIdentity() {
   };
 }
 
+/* ---------- side menu collapse ---------- */
+function applyRail() {
+  const collapsed = localStorage.getItem('rail_collapsed') === '1';
+  $('#rail').classList.toggle('collapsed', collapsed);
+  const t = $('#rail-toggle');
+  t.querySelector('.ri-icon').textContent = collapsed ? '›' : '‹';
+  t.querySelector('.ri-label').textContent = 'Collapse';
+  t.title = collapsed ? 'Expand menu' : 'Collapse menu';
+}
+
 /* ---------- boot ---------- */
 (async function init() {
-  await initIdentity();
+  applyRail();
+  $('#rail-toggle').onclick = () => {
+    localStorage.setItem('rail_collapsed', localStorage.getItem('rail_collapsed') === '1' ? '0' : '1');
+    applyRail();
+  };
+
+  await Promise.all([initIdentity(), loadMeta()]);
 
   // Rep identity: the avatar circle — signs messages, claims prospects,
   // scopes the queues. Click it to set your name.
@@ -1029,12 +1037,26 @@ async function initIdentity() {
     if (state.dailyMode) loadTable();
   };
 
-  await loadMeta();
   bindEvents();
   applyAccountUI();
   loadStats();
   loadQueue();
   loadTable();
+
+  // Live counts: refresh queues + stats every 60s while the tab is visible
+  setInterval(() => {
+    if (document.hidden) return;
+    loadStats();
+    loadQueue();
+  }, 60000);
+
+  // '/' jumps to search from anywhere outside an input
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) {
+      e.preventDefault();
+      $('#f-q').focus();
+    }
+  });
   // resume banner if a run is already in flight
   const runs = await api('/api/runs');
   const active = runs.find((r) => r.status === 'running');

@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,6 +20,7 @@ import { log, mapConcurrent } from './util.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+app.use(compression()); // gzip every response — the prospect list shrinks ~8x
 
 // Health check — must stay ABOVE the auth wall or the host's checker gets
 // 401s, marks the instance unhealthy, and serves 502s.
@@ -527,11 +529,7 @@ app.get('/api/stats', (req, res) => {
 
 // ---------- follow-up calendar (right rail) ----------
 // Per-day counts of due follow-ups and scheduled sales calls for a month.
-app.get('/api/calendar', (req, res) => {
-  const month = /^\d{4}-\d{2}$/.test(String(req.query.month || ''))
-    ? String(req.query.month)
-    : new Date().toISOString().slice(0, 7);
-  const acct = acctSql(req);
+function calendarDays(month, acct) {
   const days = {};
   for (const r of db.prepare(`
     SELECT CAST(strftime('%d', next_touch_at) AS INTEGER) d, COUNT(*) c FROM prospects
@@ -548,7 +546,47 @@ app.get('/api/calendar', (req, res) => {
     days[r.d] = days[r.d] || { due: 0, call: 0 };
     days[r.d].call = r.c;
   }
-  res.json({ month, days });
+  return days;
+}
+
+app.get('/api/calendar', (req, res) => {
+  const month = /^\d{4}-\d{2}$/.test(String(req.query.month || ''))
+    ? String(req.query.month)
+    : new Date().toISOString().slice(0, 7);
+  res.json({ month, days: calendarDays(month, acctSql(req)) });
+});
+
+// ---------- the whole right rail in ONE request ----------
+// Next best call + calendar + handoffs-in-motion together, so the dashboard
+// paints the rail with a single round-trip instead of four.
+app.get('/api/rail', (req, res) => {
+  const acct = acctSql(req);
+  const WORKABLE = `status NOT IN ('not_interested','disqualified','customer','no_contact') AND nurture_stage != 'suppressed' AND ${acct}`;
+  const lastDirIs = `(SELECT direction FROM prospect_touches t WHERE t.prospect_id = prospects.id ORDER BY t.id DESC LIMIT 1)`;
+
+  let next_best = db.prepare(`
+    SELECT prospects.*, ${LAST_TOUCH_COLS} FROM prospects
+    WHERE ${WORKABLE} AND ${lastDirIs} = 'in'
+    ORDER BY last_touch_at ASC LIMIT 1
+  `).get() || null;
+  let next_best_reason = next_best ? 'replied' : null;
+  if (!next_best) {
+    next_best = db.prepare(`
+      SELECT prospects.*, ${LAST_TOUCH_COLS} FROM prospects
+      WHERE ${WORKABLE} AND next_touch_at IS NOT NULL AND next_touch_at <= datetime('now')
+      ORDER BY next_touch_at ASC LIMIT 1
+    `).get() || null;
+    if (next_best) next_best_reason = 'due';
+  }
+
+  const month = new Date().toISOString().slice(0, 7);
+  const handoffs = db.prepare(`
+    SELECT prospects.*, ${LAST_TOUCH_COLS} FROM prospects
+    WHERE ${WORKABLE} AND nurture_stage IN ('qualified','handoff_requested','call_scheduled')
+    ORDER BY last_touch_at ASC LIMIT 3
+  `).all();
+
+  res.json({ next_best, next_best_reason, month, days: calendarDays(month, acct), handoffs });
 });
 
 // ---------- provider diagnostics ----------

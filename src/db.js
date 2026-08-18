@@ -155,6 +155,15 @@ try {
   db.exec('ALTER TABLE prospect_touches ADD COLUMN rep TEXT');
 } catch { /* column already exists */ }
 
+// Hot-path indexes for the queues, rail, and account books
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_prospects_next_touch ON prospects(next_touch_at);
+  CREATE INDEX IF NOT EXISTS idx_prospects_stage ON prospects(nurture_stage);
+  CREATE INDEX IF NOT EXISTS idx_prospects_account ON prospects(account_id);
+  CREATE INDEX IF NOT EXISTS idx_prospects_assigned ON prospects(assigned_to);
+  CREATE INDEX IF NOT EXISTS idx_touches_prospect_seq ON prospect_touches(prospect_id, id DESC);
+`);
+
 // Team + client accounts: users sign in with their own credentials; client
 // accounts segment the prospect book ("who are we prospecting FOR") so each
 // client's list stays clean and exports straight into their CRM.

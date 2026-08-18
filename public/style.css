@@ -93,20 +93,37 @@ a:hover { color: #d3ff55; }
 }
 .rep-input:placeholder-shown { border-color: var(--due); }
 
-/* left icon rail */
+/* left side menu — expanded with labels, collapsible to icon rail */
 .shell { display: flex; align-items: stretch; min-height: calc(100vh - 67px); }
 .rail {
-  width: 72px; flex: none; border-right: 1px solid var(--grid);
-  display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px 0;
+  width: 216px; flex: none; border-right: 1px solid var(--grid);
+  display: flex; flex-direction: column; gap: 8px; padding: 18px 12px;
+  transition: width 0.18s ease;
+  position: sticky; top: 67px; align-self: flex-start;
+  height: calc(100vh - 67px); overflow-y: auto;
 }
-.rail a, .rail button {
-  width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+.rail-item {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  border: none; border-radius: 999px; padding: 4px; cursor: pointer;
+  background: transparent; color: var(--ink-2); text-decoration: none;
+  font-family: var(--font); text-align: left;
+}
+.rail-item .ri-icon {
+  width: 44px; height: 44px; flex: none; border-radius: 50%;
   background: var(--surface); color: var(--ink-2); font-size: 14px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center; text-decoration: none;
-  font-family: var(--font);
+  display: flex; align-items: center; justify-content: center;
 }
-.rail a:hover, .rail button:hover { background: #2a2a2a; color: var(--ink); }
-.rail .active { background: var(--accent); color: var(--accent-ink); }
+.rail-item .ri-label {
+  font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden;
+}
+.rail-item:hover { background: var(--panel); color: var(--ink); }
+.rail-item:hover .ri-icon { background: #2a2a2a; color: var(--ink); }
+.rail-item.active { color: var(--ink); }
+.rail-item.active .ri-icon { background: var(--accent); color: var(--accent-ink); }
+.rail-toggle { margin-top: auto; color: var(--muted); }
+.rail.collapsed { width: 68px; padding: 18px 8px; }
+.rail.collapsed .ri-label { display: none; }
+.rail.collapsed .rail-item { justify-content: center; padding: 4px 0; width: auto; align-self: center; }
 .main-col { flex: 1; min-width: 0; padding: 20px 22px; }
 .side-col {
   width: 318px; flex: none; border-left: 1px solid var(--grid);

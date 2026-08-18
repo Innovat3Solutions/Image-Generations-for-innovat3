@@ -29,13 +29,26 @@
   <div id="run-banner" class="run-banner hidden"></div>
 
   <div class="shell">
-    <!-- icon rail -->
-    <nav class="rail">
-      <a href="/" class="active" title="Dashboard">◆</a>
-      <button id="btn-daily" title="Today's 50">50</button>
-      <a href="/offers.html" title="Offers &amp; pricing">$</a>
-      <a href="/practice.html" title="Practice">◎</a>
-      <a href="/settings.html" id="btn-settings" class="hidden" title="Settings">✦</a>
+    <!-- side menu: expanded with labels by default; collapses to icon rail -->
+    <nav class="rail" id="rail">
+      <a href="/" class="rail-item active" title="Dashboard">
+        <span class="ri-icon">◆</span><span class="ri-label">Dashboard</span>
+      </a>
+      <button id="btn-daily" class="rail-item" title="Today's 50 — the tiered daily call sheet">
+        <span class="ri-icon">50</span><span class="ri-label">Today&#39;s 50</span>
+      </button>
+      <a href="/offers.html" class="rail-item" title="Offers &amp; pricing knowledge base">
+        <span class="ri-icon">$</span><span class="ri-label">Offers &amp; pricing</span>
+      </a>
+      <a href="/practice.html" class="rail-item" title="Practice — AI roleplay calls &amp; scoring">
+        <span class="ri-icon">◎</span><span class="ri-label">Practice</span>
+      </a>
+      <a href="/settings.html" id="btn-settings" class="rail-item hidden" title="Settings — team &amp; client accounts">
+        <span class="ri-icon">✦</span><span class="ri-label">Settings</span>
+      </a>
+      <button class="rail-item rail-toggle" id="rail-toggle" title="Collapse menu">
+        <span class="ri-icon">‹</span><span class="ri-label">Collapse</span>
+      </button>
     </nav>
 
     <!-- main column -->
