@@ -488,6 +488,16 @@ app.get('/api/prospects', (req, res) => {
   if (hasEmail === '1') where.push("email IS NOT NULL AND email_status != 'invalid'");
   if (hasPhone === '1') where.push('phone IS NOT NULL');
   if (noWebsite === '1') where.push('website IS NULL');
+  // Prospecting angles — which product conversation this business invites.
+  // Businesses WITH websites are prospects too: weak reviews → LOCAL,
+  // no follow-up system behind the site → CONNECT.
+  const ANGLES = {
+    no_website: 'website IS NULL',
+    has_website: 'website IS NOT NULL',
+    weak_reviews: '((google_rating IS NOT NULL AND google_rating < 4.2) OR (google_reviews IS NOT NULL AND google_reviews < 15))',
+    no_followup: "website IS NOT NULL AND site_signals_json IS NOT NULL AND json_extract(site_signals_json, '$.hasCrm') = 0 AND json_extract(site_signals_json, '$.hasBooking') = 0",
+  };
+  if (ANGLES[String(req.query.angle || '')]) where.push(ANGLES[String(req.query.angle)]);
   if (stage) { where.push('nurture_stage = ?'); params.push(stage); }
   if (stages) {
     const list = String(stages).split(',').map((s) => s.trim()).filter(Boolean).slice(0, 10);
@@ -967,6 +977,7 @@ app.get('/api/stats', (req, res) => {
   const withEmail = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND email IS NOT NULL AND email_status IN ('verified','valid_mx')`).get().c;
   const withPhone = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND phone IS NOT NULL`).get().c;
   const noWebsite = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND website IS NULL`).get().c;
+  const weakReviews = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND ((google_rating IS NOT NULL AND google_rating < 4.2) OR (google_reviews IS NOT NULL AND google_reviews < 15))`).get().c;
   const avgScore = db.prepare(`SELECT ROUND(AVG(score)) a FROM prospects WHERE ${W}`).get().a || 0;
   const parked = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE status = 'no_contact' AND ${acctSql(req)}`).get().c;
   const inHandoff = db.prepare(`SELECT COUNT(*) c FROM prospects WHERE ${W} AND nurture_stage IN ('qualified','handoff_requested','call_scheduled')`).get().c;
@@ -974,7 +985,7 @@ app.get('/api/stats', (req, res) => {
   const touchesToday = db.prepare("SELECT COUNT(*) c FROM prospect_touches WHERE direction = 'out' AND created_at >= date('now')").get().c;
   const byStatus = Object.fromEntries(db.prepare('SELECT status, COUNT(*) c FROM prospects GROUP BY status').all().map((r) => [r.status, r.c]));
   const byIndustry = db.prepare(`SELECT industry, COUNT(*) c FROM prospects WHERE ${W} GROUP BY industry ORDER BY c DESC`).all();
-  res.json({ total, today, withEmail, withPhone, noWebsite, avgScore, parked, inHandoff, callsToday, touchesToday, byStatus, byIndustry });
+  res.json({ total, today, withEmail, withPhone, noWebsite, weakReviews, avgScore, parked, inHandoff, callsToday, touchesToday, byStatus, byIndustry });
 });
 
 // ---------- follow-up calendar (right rail) ----------

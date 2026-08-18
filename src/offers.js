@@ -346,9 +346,20 @@ export function recommendOffer(prospect) {
     why = 'No website found — they need presence first. Classic $99 Launch: conversion page + review link, easiest first yes.';
   } else if (quality < 60) {
     why = `Their site scores ${quality}/100 — pitch Launch as the clean conversion page that replaces what is leaking leads, plus the review link.`;
-  } else if (!signals?.hasCrm && !signals?.hasBooking) {
+  } else if (prospect.google_rating != null && prospect.google_rating < 4.2) {
     entryKey = 'local';
-    why = 'Decent site already in place — enter on reputation: automated review requests + Google optimization. (Launch still works if they balk at $199.)';
+    why = `Site is fine but their Google rating is ${prospect.google_rating}★${prospect.google_reviews != null ? ` over ${prospect.google_reviews} reviews` : ''} — enter on reputation repair: automated review requests + Google optimization.`;
+  } else if (prospect.google_reviews != null && prospect.google_reviews < 15) {
+    entryKey = 'local';
+    why = `Established with a website but only ${prospect.google_reviews} Google review${prospect.google_reviews === 1 ? '' : 's'} — nobody is asking their customers. Enter on the review engine.`;
+  } else if (!signals?.hasCrm && !signals?.hasBooking) {
+    if (prospect.google_rating >= 4.2 && (prospect.google_reviews ?? 0) >= 15) {
+      entryKey = 'connect';
+      why = `Site and reviews are both healthy (${prospect.google_rating}★ over ${prospect.google_reviews}) — the gap is what happens AFTER the lead: CRM, pipeline, missed-call text back.`;
+    } else {
+      entryKey = 'local';
+      why = 'Decent site already in place — enter on reputation: automated review requests + Google optimization. (Launch still works if they balk at $199.)';
+    }
   } else {
     entryKey = 'connect';
     why = 'They already have presence and booking — the gap is capture & follow-up: CRM, pipeline, missed-call text back.';

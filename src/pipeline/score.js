@@ -38,6 +38,9 @@ export function scoreProspect(p) {
   parts.business_quality = Math.min(20, bq);
 
   // ---- Digital Opportunity (25) — their gaps are our pitch ----
+  // A business WITH a website is still a prospect: a weak Google rating, a
+  // thin review base, or no follow-up system behind the site is a different
+  // product conversation (LOCAL / CONNECT), not a smaller one.
   let dig = 0;
   if (!p.website) {
     dig = hasSocial ? 20 : 25; // social-only still means no owned web presence
@@ -52,6 +55,10 @@ export function scoreProspect(p) {
   } else {
     dig = 8; // site exists but unanalyzed — assume moderate opportunity
   }
+  // Reputation gap (counts with or without a site): weak rating = repair,
+  // thin review count = nobody is asking their happy customers
+  if (p.google_rating != null && p.google_rating < 4.2) dig += p.google_rating < 3.8 ? 8 : 5;
+  else if (p.google_reviews != null && p.google_reviews < 15) dig += 4;
   parts.digital_opportunity = Math.min(25, dig);
 
   // ---- Automation Opportunity (25) ----
@@ -112,7 +119,7 @@ function detectOpportunities(p, signals, hasSocial, vertical) {
         'Phone-centric operation with no chat or after-hours intake.');
     }
     if (!signals.hasCrm) {
-      add('crm', 'CRM implementation', 'MEDIUM', 'No CRM/marketing platform detected on their site.');
+      add('crm', 'Client follow-up system', 'MEDIUM', 'No CRM detected behind the site — no systematic client follow-up or automated review requests. Points to CONNECT (or LOCAL for the review side alone).');
     }
     if (!signals.hasAnalytics) {
       add('analytics', 'Tracking & attribution', 'MEDIUM', 'No analytics detected — they can\'t see where leads come from.');
@@ -122,6 +129,17 @@ function detectOpportunities(p, signals, hasSocial, vertical) {
       add('ai_receptionist', 'AI receptionist / missed-call capture', 'HIGH', 'Phone-first business — every missed call is a lost job.');
     }
     add('crm', 'CRM & follow-up automation', 'MEDIUM', 'New business building its lead process from scratch.');
+  }
+
+  // Reputation opportunities — independent of whether they have a website
+  if (p.google_rating != null && p.google_rating < 4.2) {
+    add('reviews', 'Reputation repair — review automation', 'HIGH',
+      `Google rating ${p.google_rating}★${p.google_reviews != null ? ` across ${p.google_reviews} reviews` : ''} — an automated review-request flow lifts this fast. Points to LOCAL.`);
+  } else if (p.google_reviews != null && p.google_reviews < 15) {
+    add('reviews', 'Review generation engine', p.website ? 'HIGH' : 'MEDIUM',
+      `Only ${p.google_reviews} Google review${p.google_reviews === 1 ? '' : 's'} — happy customers aren't being asked. Automate the ask. Points to LOCAL.`);
+  } else if (p.source === 'google' && p.google_rating == null) {
+    add('reviews', 'Google Business presence', 'MEDIUM', 'Their listing has no rating at all — it isn\'t working for them yet.');
   }
 
   const age = daysSince(p.established_date);
@@ -144,10 +162,16 @@ function buildCallReason(p, signals, opportunities, vertical, hasSocial) {
     : `${name} is an established business (${vLabel})`;
 
   const top = opportunities.filter((o) => o.level === 'HIGH' && o.key !== 'ground_floor');
+  const weakRating = p.google_rating != null && p.google_rating < 4.2;
+  const thinReviews = !weakRating && p.google_reviews != null && p.google_reviews < 15;
   if (!p.website) {
     sentences.push(`${opener} and has ${hasSocial ? 'social presence but no website — lead with a site + booking bundle' : 'no digital presence yet — lead with the full digital foundation'}.`);
+  } else if (weakRating) {
+    sentences.push(`${opener}; site's there, but a ${p.google_rating}★ Google rating${p.google_reviews != null ? ` over ${p.google_reviews} reviews` : ''} is costing them jobs — lead with review automation and reputation repair.`);
+  } else if (thinReviews) {
+    sentences.push(`${opener}; established with a website but only ${p.google_reviews} Google review${p.google_reviews === 1 ? '' : 's'} — nobody is asking their customers. Lead with the review engine, then follow-up automation.`);
   } else if (top.length) {
-    const leads = { lead_automation: 'automated lead follow-up', ai_receptionist: 'missed-call capture and AI intake', website: 'a modern mobile site', booking: 'online scheduling' };
+    const leads = { lead_automation: 'automated lead follow-up', ai_receptionist: 'missed-call capture and AI intake', website: 'a modern mobile site', booking: 'online scheduling', reviews: 'review automation' };
     const pitch = top.map((o) => leads[o.key]).filter(Boolean).slice(0, 2).join(' and ');
     sentences.push(pitch
       ? `${opener}; their site exists but conversion infrastructure is weak — lead with ${pitch}.`

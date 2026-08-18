@@ -123,6 +123,7 @@ async function loadStats() {
     <div class="tile"><span class="value">${s.withEmail.toLocaleString()}</span><span class="label">email-reachable</span></div>
     <div class="tile"><span class="value">${s.withPhone.toLocaleString()}</span><span class="label">have phone</span></div>
     <div class="tile hot"><span class="value">${s.noWebsite.toLocaleString()}</span><span class="label">no website yet</span></div>
+    <div class="tile hot"><span class="value">${(s.weakReviews || 0).toLocaleString()}</span><span class="label">weak reviews</span></div>
     <div class="tile"><span class="value">${(s.touchesToday || 0).toLocaleString()}</span><span class="label">touches today</span></div>
     <div class="tile"><span class="value">${(s.inHandoff || 0).toLocaleString()}</span><span class="label">in handoff</span></div>
     <div class="tile"><span class="value">${(s.callsToday || 0).toLocaleString()}</span><span class="label">calls today</span></div>
@@ -143,7 +144,7 @@ function filterParams() {
   if ($('#f-zip').value.trim()) p.set('zip', $('#f-zip').value.trim());
   if ($('#f-hasemail').checked) p.set('hasEmail', '1');
   if ($('#f-hasphone').checked) p.set('hasPhone', '1');
-  if ($('#f-nowebsite').checked) p.set('noWebsite', '1');
+  if ($('#f-angle').value) p.set('angle', $('#f-angle').value);
   if ($('#f-mine').checked && repName()) p.set('owner', repName());
   // Work-queue modes narrow the list to "what needs me right now"
   if (state.queueMode === 'your_move') { p.set('lastDir', 'in'); p.set('sort', 'last_touch'); p.set('dir', 'asc'); }
@@ -1079,7 +1080,7 @@ function bindEvents() {
   const refresh = () => { state.page = 1; loadTable(); };
   $('#f-q').addEventListener('input', debounce(refresh, 300));
   $('#f-zip').addEventListener('input', debounce(refresh, 300));
-  for (const id of ['f-industry', 'f-source', 'f-status', 'f-minscore', 'f-hasemail', 'f-hasphone', 'f-nowebsite', 'f-mine']) {
+  for (const id of ['f-industry', 'f-source', 'f-status', 'f-minscore', 'f-hasemail', 'f-hasphone', 'f-angle', 'f-mine']) {
     $('#' + id).addEventListener('change', refresh);
   }
   $('#prev').onclick = () => { state.page--; loadTable(); };
