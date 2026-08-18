@@ -12,7 +12,9 @@ import { createRun, updateRun } from './db.js';
 import { marketsForVertical, VERTICAL_NAICS } from './market.js';
 import { providerStatus } from './enrich/provider-status.js';
 import { registerTrainingRoutes } from './training/index.js';
-import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, UPGRADE_TRIGGERS, RULES, recommendOffer } from './offers.js';
+import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, UPGRADE_TRIGGERS, RULES, recommendOffer, buildProposal, proposalText } from './offers.js';
+import { enqueueSequence, deliverDue, deliverEvent } from './sequences.js';
+import { emailConfigured, smsConfigured } from './senders.js';
 import { generateOutreach } from './outreach.js';
 import { nurtureState, nextAction, classifyReply, handoffSummary, snoozeDaysFromText, STAGES } from './nurture.js';
 import { VERTICALS } from './verticals.js';
@@ -187,17 +189,30 @@ function autoAssign({ force = false } = {}) {
   return { assigned: rows.length, reps };
 }
 
+const settingsPayload = () => ({
+  assignment_mode: getSetting('assignment_mode', 'claim'),
+  fb_group_url: getSetting('fb_group_url', ''),
+  docs_url: getSetting('docs_url', ''),
+  email_sender: emailConfigured(),
+  sms_sender: smsConfigured(),
+});
 app.get('/api/settings', adminOnly, (req, res) => {
-  res.json({ assignment_mode: getSetting('assignment_mode', 'claim') });
+  res.json(settingsPayload());
 });
 app.patch('/api/settings', adminOnly, (req, res) => {
-  const { assignment_mode } = req.body || {};
+  const { assignment_mode, fb_group_url, docs_url } = req.body || {};
   if (assignment_mode !== undefined) {
     if (!['claim', 'auto'].includes(assignment_mode)) return res.status(400).json({ error: 'bad mode' });
     setSetting('assignment_mode', assignment_mode);
     if (assignment_mode === 'auto') autoAssign();
   }
-  res.json({ assignment_mode: getSetting('assignment_mode', 'claim') });
+  for (const [key, val] of [['fb_group_url', fb_group_url], ['docs_url', docs_url]]) {
+    if (val === undefined) continue;
+    const v = String(val).trim();
+    if (v && !/^https?:\/\//i.test(v)) return res.status(400).json({ error: `${key.replace(/_/g, ' ')} must be a full https:// link` });
+    setSetting(key, v);
+  }
+  res.json(settingsPayload());
 });
 app.post('/api/assign/distribute', adminOnly, (req, res) => {
   res.json(autoAssign({ force: true }));
@@ -550,12 +565,161 @@ app.get('/api/prospects/:id/handoff', (req, res) => {
 
 app.patch('/api/prospects/:id', (req, res) => {
   const id = Number(req.params.id);
-  const row = db.prepare('SELECT id FROM prospects WHERE id = ?').get(id);
+  const row = db.prepare('SELECT id, status FROM prospects WHERE id = ?').get(id);
   if (!row) return res.status(404).json({ error: 'not found' });
   const { status, notes, assigned_to, contact_name, contact_title, email, phone, website, next_touch_at, scheduled_call_at } = req.body;
   if (status && !STATUSES.includes(status)) return res.status(400).json({ error: 'bad status' });
   updateProspect(id, { status, notes, assigned_to, contact_name, contact_title, email, phone, website, next_touch_at, scheduled_call_at });
-  res.json(db.prepare('SELECT * FROM prospects WHERE id = ?').get(id));
+  // Close triggers: WON kicks off onboarding (docs email + team to-dos);
+  // LOST drops them into the reactivation funnel (free value + FB group)
+  let sequence = null;
+  if (status && status !== row.status) {
+    const rep = String(req.body.rep_name || req.user.display_name || '').trim();
+    if (status === 'customer') sequence = enqueueSequence(id, 'onboarding', rep);
+    if (status === 'not_interested') sequence = enqueueSequence(id, 'reactivation', rep);
+    if (sequence?.queued) deliverDue().catch(() => {}); // fire the immediate steps now
+  }
+  res.json({ ...db.prepare('SELECT * FROM prospects WHERE id = ?').get(id), sequence });
+});
+
+// ---------- discovery call: talking points → checklist → live pricing ----------
+// The rep works the QUALIFICATION talking points on the call, checks off what
+// the prospect cares about, and the package + pricing structure assembles
+// itself per the Pricing Standard. GET returns state; PATCH saves and both
+// return the freshly computed proposal.
+const discoveryPayload = (row, rep) => {
+  const d = (() => { try { return JSON.parse(row.discovery_json || '{}'); } catch { return {}; } })();
+  const proposal = buildProposal(row, d);
+  return {
+    items: QUALIFICATION.map((q) => ({ key: q.key, area: q.area, question: q.question, checked: (d.checked || []).includes(q.key) })),
+    extras: ADD_ONS.map((a) => ({ name: a.name, price: a.price, note: a.note, checked: (d.extras || []).includes(a.name) })),
+    notes: d.notes || '',
+    proposal,
+    proposal_text: proposalText(row, proposal, rep),
+  };
+};
+app.get('/api/prospects/:id/discovery', (req, res) => {
+  const row = getProspect(req);
+  if (!row) return res.status(404).json({ error: 'not found' });
+  res.json(discoveryPayload(row, String(req.query.rep || req.user.display_name || '')));
+});
+app.patch('/api/prospects/:id/discovery', (req, res) => {
+  const row = getProspect(req);
+  if (!row) return res.status(404).json({ error: 'not found' });
+  const validKeys = new Set(QUALIFICATION.map((q) => q.key));
+  const validExtras = new Set(ADD_ONS.map((a) => a.name));
+  const d = {
+    checked: (Array.isArray(req.body?.checked) ? req.body.checked : []).filter((k) => validKeys.has(k)),
+    extras: (Array.isArray(req.body?.extras) ? req.body.extras : []).filter((n) => validExtras.has(n)),
+    notes: String(req.body?.notes || '').slice(0, 4000),
+  };
+  updateProspect(row.id, { discovery_json: JSON.stringify(d) });
+  res.json(discoveryPayload({ ...row, discovery_json: JSON.stringify(d) }, String(req.body?.rep_name || req.user.display_name || '')));
+});
+
+// ---------- unified history: every touch, send, and to-do on one timeline ----------
+app.get('/api/prospects/:id/history', (req, res) => {
+  const id = Number(req.params.id);
+  const touches = db.prepare('SELECT id, direction, channel, text, classification, stage_after, rep, created_at FROM prospect_touches WHERE prospect_id = ? ORDER BY id DESC LIMIT 200').all(id);
+  const sends = db.prepare("SELECT id, sequence, step_key, channel, due_at, status, sent_via, sent_at, subject, error FROM sequence_events WHERE prospect_id = ? AND step_key != 'entered' ORDER BY due_at").all(id);
+  const todos = db.prepare('SELECT id, text, assigned_to, done, due_at, created_at FROM todos WHERE prospect_id = ? ORDER BY done, due_at').all(id);
+  res.json({ touches, sends, todos });
+});
+
+// ---------- to-dos: the rep's marching orders ----------
+app.get('/api/todos', (req, res) => {
+  const rep = String(req.query.rep || req.user.display_name || '');
+  const all = req.query.all === '1' && req.user.role === 'admin';
+  const rows = db.prepare(`
+    SELECT todos.*, prospects.business_name, prospects.dba_name
+    FROM todos LEFT JOIN prospects ON prospects.id = todos.prospect_id
+    WHERE todos.done = 0 ${all ? '' : 'AND (todos.assigned_to = ? OR todos.assigned_to IS NULL)'}
+    ORDER BY todos.due_at LIMIT 100
+  `).all(...(all ? [] : [rep]));
+  res.json(rows);
+});
+app.post('/api/todos', (req, res) => {
+  const text = String(req.body?.text || '').trim();
+  if (!text) return res.status(400).json({ error: 'What needs doing?' });
+  const r = db.prepare('INSERT INTO todos (prospect_id, assigned_to, text, due_at) VALUES (?, ?, ?, ?)')
+    .run(req.body?.prospect_id || null, String(req.body?.rep_name || req.user.display_name || '') || null, text, req.body?.due_at || null);
+  res.json(db.prepare('SELECT * FROM todos WHERE id = ?').get(Number(r.lastInsertRowid)));
+});
+app.patch('/api/todos/:id', (req, res) => {
+  const row = db.prepare('SELECT * FROM todos WHERE id = ?').get(Number(req.params.id));
+  if (!row) return res.status(404).json({ error: 'not found' });
+  if (req.body?.done !== undefined) {
+    db.prepare("UPDATE todos SET done = ?, done_at = CASE WHEN ? THEN datetime('now') ELSE NULL END WHERE id = ?")
+      .run(req.body.done ? 1 : 0, req.body.done ? 1 : 0, row.id);
+  }
+  res.json(db.prepare('SELECT * FROM todos WHERE id = ?').get(row.id));
+});
+
+// ---------- outbox: queued sequence sends ----------
+// With Resend/Twilio configured these go out on their own; without, a rep
+// clears them here with one tap (copy → send from their own phone/mail).
+app.get('/api/outbox', (req, res) => {
+  const rows = db.prepare(`
+    SELECT sequence_events.*, prospects.business_name, prospects.dba_name, prospects.assigned_to
+    FROM sequence_events JOIN prospects ON prospects.id = sequence_events.prospect_id
+    WHERE sequence_events.status IN ('pending', 'failed')
+    ORDER BY sequence_events.due_at LIMIT 100
+  `).all();
+  res.json({ rows, email_sender: emailConfigured(), sms_sender: smsConfigured() });
+});
+app.post('/api/outbox/:id/send', async (req, res) => {
+  const ev = db.prepare("SELECT * FROM sequence_events WHERE id = ? AND status IN ('pending', 'failed')").get(Number(req.params.id));
+  if (!ev) return res.status(404).json({ error: 'not found or already sent' });
+  const out = await deliverEvent(ev, { manual: !!req.body?.manual, rep: String(req.body?.rep_name || req.user.display_name || '') });
+  if (!out.delivered) return res.status(502).json({ error: out.reason || 'delivery failed' });
+  res.json(out);
+});
+app.post('/api/outbox/:id/skip', (req, res) => {
+  db.prepare("UPDATE sequence_events SET status = 'skipped' WHERE id = ? AND status IN ('pending', 'failed')").run(Number(req.params.id));
+  res.json({ ok: true });
+});
+
+// ---------- My book: the rep's own dashboard ----------
+// Everything they own in one payload: pipeline grouped by conversation
+// stage, open to-dos, queued sends, and today's numbers.
+app.get('/api/my', (req, res) => {
+  const rep = String(req.query.rep || req.user.display_name || '');
+  if (!rep) return res.status(400).json({ error: 'no rep name' });
+  const prospects = db.prepare(`
+    SELECT prospects.*, ${LAST_TOUCH_COLS} FROM prospects
+    WHERE assigned_to = ? AND status NOT IN ('no_contact', 'disqualified')
+    ORDER BY (next_touch_at IS NOT NULL AND next_touch_at <= datetime('now')) DESC, last_touch_at DESC, score DESC
+    LIMIT 400
+  `).all(rep);
+  const todos = db.prepare(`
+    SELECT todos.*, prospects.business_name, prospects.dba_name
+    FROM todos LEFT JOIN prospects ON prospects.id = todos.prospect_id
+    WHERE todos.done = 0 AND todos.assigned_to = ? ORDER BY todos.due_at LIMIT 50
+  `).all(rep);
+  const outbox = db.prepare(`
+    SELECT sequence_events.*, prospects.business_name, prospects.dba_name
+    FROM sequence_events JOIN prospects ON prospects.id = sequence_events.prospect_id
+    WHERE sequence_events.status IN ('pending', 'failed') AND prospects.assigned_to = ?
+    ORDER BY sequence_events.due_at LIMIT 50
+  `).all(rep);
+  const touchesToday = db.prepare(`
+    SELECT COUNT(*) c FROM prospect_touches WHERE rep = ? AND direction = 'out' AND created_at >= date('now')
+  `).get(rep).c;
+  res.json({
+    rep,
+    prospects,
+    todos,
+    outbox,
+    senders: { email: emailConfigured(), sms: smsConfigured() },
+    counts: {
+      book: prospects.length,
+      due: prospects.filter((p) => p.next_touch_at && p.next_touch_at.replace(' ', 'T') <= new Date().toISOString()).length,
+      your_move: prospects.filter((p) => p.last_touch_dir === 'in').length,
+      customers: prospects.filter((p) => p.status === 'customer').length,
+      todos: todos.length,
+      touches_today: touchesToday,
+    },
+  });
 });
 
 app.post('/api/prospects/:id/enrich', async (req, res) => {
@@ -837,6 +1001,16 @@ app.get('/api/export.csv', (req, res) => {
   res.setHeader('Content-Disposition', 'attachment; filename="prospects.csv"');
   res.send(csv);
 });
+
+// Sequence sender loop: delivers due onboarding/reactivation sends through
+// the configured providers. With none configured it does nothing — those
+// events wait in the Outbox for a manual one-tap send.
+if (emailConfigured() || smsConfigured()) {
+  setInterval(() => deliverDue().catch(() => {}), 60000);
+  log(`sequences: auto-delivery on (email: ${emailConfigured() ? 'Resend' : 'manual'}, sms: ${smsConfigured() ? 'Twilio' : 'manual'})`);
+} else {
+  log('sequences: no email/SMS provider configured — queued sends wait in the Outbox for manual delivery (set RESEND_API_KEY+MAIL_FROM and/or TWILIO_* to automate)');
+}
 
 // Built-in daily scheduler for hosted deployments (no external cron needed).
 // Set DAILY_RUN_HOUR (0-23, America/New_York) to auto-run the pipeline once

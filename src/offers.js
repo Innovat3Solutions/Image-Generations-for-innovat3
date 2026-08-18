@@ -127,14 +127,14 @@ export const PROJECTS = [
 ];
 
 export const QUALIFICATION = [
-  { area: 'Website / presence', question: 'Do you have a simple page that clearly tells people what you do and gives them a way to contact you?', points_to: 'launch' },
-  { area: 'Reviews', question: 'How are you currently asking customers for Google reviews?', points_to: 'local' },
-  { area: 'Lead capture', question: 'Where do new leads go when someone fills out a form, calls or messages you?', points_to: 'connect' },
-  { area: 'Follow-up', question: 'What happens if your team misses a call or does not reach a lead the first time?', points_to: 'connect' },
-  { area: 'Phone coverage', question: 'Who answers after hours, during lunch, or when the team is busy?', points_to: 'ai' },
-  { area: 'Old database', question: 'How many past leads or customers are sitting in your database without active follow-up?', points_to: 'growth' },
-  { area: 'Marketing', question: 'Who currently plans, creates, schedules and publishes your marketing?', points_to: 'marketing_team' },
-  { area: 'Content supply', question: 'Can your team consistently send us photos, raw video, testimonials and business updates each month?', points_to: 'marketing_growth' },
+  { key: 'presence', area: 'Website / presence', question: 'Do you have a simple page that clearly tells people what you do and gives them a way to contact you?', points_to: 'launch' },
+  { key: 'reviews', area: 'Reviews', question: 'How are you currently asking customers for Google reviews?', points_to: 'local' },
+  { key: 'lead_capture', area: 'Lead capture', question: 'Where do new leads go when someone fills out a form, calls or messages you?', points_to: 'connect' },
+  { key: 'follow_up', area: 'Follow-up', question: 'What happens if your team misses a call or does not reach a lead the first time?', points_to: 'connect' },
+  { key: 'phone_coverage', area: 'Phone coverage', question: 'Who answers after hours, during lunch, or when the team is busy?', points_to: 'ai' },
+  { key: 'old_database', area: 'Old database', question: 'How many past leads or customers are sitting in your database without active follow-up?', points_to: 'growth' },
+  { key: 'marketing', area: 'Marketing', question: 'Who currently plans, creates, schedules and publishes your marketing?', points_to: 'marketing_team' },
+  { key: 'content_supply', area: 'Content supply', question: 'Can your team consistently send us photos, raw video, testimonials and business updates each month?', points_to: 'marketing_growth' },
 ];
 
 export const UPGRADE_TRIGGERS = [
@@ -160,6 +160,83 @@ export const RULES = [
 
 export function packageByKey(key) {
   return PACKAGES.find((p) => p.key === key) || PACKAGES[0];
+}
+
+/**
+ * Live package builder for the discovery call. The rep checks off the areas
+ * the prospect cares about (QUALIFICATION keys) plus any add-on extras, and
+ * this assembles the pricing structure per the Standard's rules: ONE package
+ * (the highest rung any checked need points to — "everything in X" absorbs
+ * the rungs below), add-ons only for extras the package doesn't cover,
+ * recurring / one-time / usage separated.
+ */
+export function buildProposal(prospect, discovery = {}) {
+  const checked = Array.isArray(discovery.checked) ? discovery.checked : [];
+  const extras = Array.isArray(discovery.extras) ? discovery.extras : [];
+  const ladder = PACKAGES.map((p) => p.key);
+
+  // Highest rung any checked need points to
+  let pkgKey = 'launch';
+  for (const item of QUALIFICATION) {
+    if (checked.includes(item.key) && ladder.indexOf(item.points_to) > ladder.indexOf(pkgKey)) {
+      pkgKey = item.points_to;
+    }
+  }
+  const pkg = packageByKey(pkgKey);
+
+  const addons = ADD_ONS.filter((a) => extras.includes(a.name));
+  const addonLow = (price) => Number((String(price).match(/\$(\d[\d,]*)/) || [])[1]?.replace(/,/g, '') || 0);
+  const addonMonthly = addons.reduce((sum, a) => sum + (/\/mo/.test(a.price) ? addonLow(a.price) : 0), 0);
+  const oneTime = addons.filter((a) => !/\/mo/.test(a.price));
+
+  // Bundling rule: package + monthly add-ons ≥ next rung → position the upgrade
+  const next = PACKAGES[ladder.indexOf(pkgKey) + 1] || null;
+  const bundleUpgrade = next && addonMonthly > 0 && pkg.monthly + addonMonthly >= next.monthly
+    ? { name: next.name, monthly: next.monthly, saving: pkg.monthly + addonMonthly - next.monthly }
+    : null;
+
+  const needs = QUALIFICATION.filter((q) => checked.includes(q.key)).map((q) => q.area);
+  return {
+    needs,
+    package: {
+      key: pkg.key, name: pkg.name, monthly: pkg.monthly, setup: pkg.setup,
+      usage: pkg.usage, promise: pkg.promise, talk_track: pkg.talk_track, included: pkg.included,
+    },
+    addons: addons.map((a) => ({ name: a.name, price: a.price, note: a.note })),
+    monthly_total: pkg.monthly + addonMonthly,
+    monthly_is_from: addons.some((a) => /–|\+/.test(a.price)),
+    setup_total: pkg.setup,
+    one_time_addons: oneTime.map((a) => a.name),
+    bundle_upgrade: bundleUpgrade,
+  };
+}
+
+/** The copy-ready pricing guide the rep reads from / sends after the call. */
+export function proposalText(prospect, proposal, rep = '') {
+  const biz = prospect.dba_name || prospect.business_name;
+  const p = proposal;
+  const lines = [
+    `INNOVAT3 SOLUTIONS — PROPOSAL FOR ${biz.toUpperCase()}`,
+    rep ? `Prepared by ${rep}` : null,
+    '',
+    p.needs.length ? `WHAT YOU TOLD US YOU NEED\n${p.needs.map((n) => `  • ${n}`).join('\n')}` : null,
+    '',
+    `YOUR PACKAGE: ${p.package.name} — $${p.package.monthly}/mo · $${p.package.setup} one-time setup${p.package.usage ? ' · plus usage per proposal' : ''}`,
+    `${p.package.promise}`,
+    '',
+    `EVERYTHING INCLUDED:`,
+    ...p.package.included.map((i) => `  ✓ ${i}`),
+    p.addons.length ? `\nADD-ONS FOR YOUR EXTRAS:\n${p.addons.map((a) => `  + ${a.name} — ${a.price}${a.note ? ` (${a.note})` : ''}`).join('\n')}` : null,
+    '',
+    `YOUR INVESTMENT`,
+    `  Recurring: ${p.monthly_is_from ? 'from ' : ''}$${p.monthly_total}/mo`,
+    `  One-time setup: $${p.setup_total}${p.one_time_addons.length ? ` (plus ${p.one_time_addons.join(', ')} quoted per scope)` : ''}`,
+    `  Ad spend and usage-based costs are always separate and itemized.`,
+    p.bundle_upgrade ? `\nWORTH KNOWING: your package plus add-ons crosses $${p.bundle_upgrade.monthly} — the ${p.bundle_upgrade.name} plan covers it all natively${p.bundle_upgrade.saving > 0 ? ` and saves you $${p.bundle_upgrade.saving}/mo` : ' for the same money'}. Ask ${rep ? rep.split(' ')[0] : 'us'} to walk you through it.` : null,
+    '',
+    `No long-term contracts. We earn the next month every month.`,
+  ];
+  return lines.filter((l) => l !== null).join('\n');
 }
 
 const j = (s, fb = null) => { try { return s ? JSON.parse(s) : fb; } catch { return fb; } };

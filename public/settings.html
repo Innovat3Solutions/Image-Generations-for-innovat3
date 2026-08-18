@@ -68,6 +68,21 @@
       </div>
     </section>
 
+    <!-- ============ AUTOMATION ============ -->
+    <section class="settings-card">
+      <h2>Automation — what happens when a deal closes</h2>
+      <p class="muted"><strong>Won</strong> (status → Customer): the welcome + onboarding-docs emails queue automatically and the rep gets to-dos
+        (docs, assets, kickoff, route the build to the team). <strong>Lost</strong> (status → Not interested): the reactivation funnel fires —
+        a no-hard-feelings text and email with the free Facebook group invite, then a 90-day resurface.</p>
+      <div class="form-row" style="flex-wrap:wrap">
+        <label style="flex:1;min-width:260px">Facebook group invite link <input id="s-fb" placeholder="https://www.facebook.com/groups/…" /></label>
+        <label style="flex:1;min-width:260px">Onboarding docs link <input id="s-docs" placeholder="https://drive.google.com/… (welcome packet)" /></label>
+        <button class="btn primary" id="s-save" style="align-self:flex-end">Save</button>
+      </div>
+      <div id="s-note" class="muted" style="margin-top:10px;font-size:12px"></div>
+      <div id="s-senders" class="muted" style="margin-top:6px;font-size:11px"></div>
+    </section>
+
     <!-- ============ CLIENT ACCOUNTS ============ -->
     <section class="settings-card">
       <h2>Client accounts</h2>

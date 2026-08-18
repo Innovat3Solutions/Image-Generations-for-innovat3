@@ -195,6 +195,50 @@ try {
 try {
   db.exec('ALTER TABLE users ADD COLUMN cal_token TEXT'); // per-rep calendar feed secret
 } catch { /* column already exists */ }
+try {
+  // Discovery call state: {checked: [area keys], extras: [addon names], notes}
+  db.exec('ALTER TABLE prospects ADD COLUMN discovery_json TEXT');
+} catch { /* column already exists */ }
+
+// Close-triggered automation: when a prospect is WON the onboarding sequence
+// fires (docs email + team to-dos); when they close NOT INTERESTED the
+// reactivation funnel fires (apology + free value + Facebook group invite by
+// email AND text). Events are queued here; the sender loop delivers them —
+// automatically when an email/SMS provider is configured, otherwise they sit
+// in the Outbox for a one-tap manual send.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sequence_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prospect_id INTEGER NOT NULL,
+    sequence TEXT NOT NULL,             -- onboarding | reactivation
+    step_key TEXT NOT NULL,
+    channel TEXT NOT NULL,              -- email | sms
+    due_at TEXT NOT NULL,               -- UTC datetime
+    recipient TEXT,                     -- email address or phone
+    subject TEXT,
+    body TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',      -- pending | sent | skipped | failed
+    sent_via TEXT,                      -- resend | twilio | manual
+    error TEXT,
+    rep TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    sent_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_seq_status_due ON sequence_events(status, due_at);
+  CREATE INDEX IF NOT EXISTS idx_seq_prospect ON sequence_events(prospect_id);
+
+  CREATE TABLE IF NOT EXISTS todos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prospect_id INTEGER,
+    assigned_to TEXT,                   -- rep display name
+    text TEXT NOT NULL,
+    done INTEGER DEFAULT 0,
+    due_at TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    done_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_todos_open ON todos(done, assigned_to);
+`);
 
 // Small key/value store for app-wide admin settings (assignment mode, …)
 db.exec(`
@@ -241,7 +285,7 @@ export function updateProspect(id, fields) {
     'notes', 'enriched_at', 'site_signals_json', 'opportunities_json',
     'call_reason', 'tier', 'dba_name', 'google_rating', 'google_reviews',
     'legal_name', 'established_date', 'officers_json', 'license_type', 'county',
-    'next_touch_at', 'scheduled_call_at',
+    'next_touch_at', 'scheduled_call_at', 'discovery_json',
   ];
   // undefined = leave alone; null = explicitly clear. Without this, a PATCH
   // carrying only {status} would silently null every other patchable field.

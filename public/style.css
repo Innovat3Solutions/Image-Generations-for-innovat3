@@ -609,19 +609,114 @@ textarea { background: var(--input); color: var(--ink); border: 1px solid var(--
 .practice-wrap { max-width: 1160px; margin: 0 auto; padding: 20px 22px 60px; }
 .practice-wrap h2 { font-size: 15px; font-weight: 800; margin: 22px 0 10px; }
 
-/* ---------- responsive ---------- */
+/* ---------- discovery call (drawer) ---------- */
+.disc-list { display: flex; flex-direction: column; gap: 4px; }
+.disc-item {
+  display: flex; gap: 10px; align-items: flex-start; cursor: pointer;
+  background: var(--surface); border-radius: 14px; padding: 9px 13px;
+  font-size: 12.5px; color: var(--ink-2); border: 1px solid transparent;
+}
+.disc-item.on { border-color: var(--accent-dim); color: var(--ink); }
+.disc-item input { accent-color: var(--accent); margin-top: 2px; flex: none; }
+.disc-item b { font-size: 12px; }
+.disc-item .disc-q { display: block; font-size: 11px; font-weight: 500; color: var(--muted); font-style: italic; margin-top: 1px; }
+.disc-item.sm { padding: 6px 11px; font-size: 11.5px; }
+.disc-extras { margin-top: 8px; }
+.disc-extras summary { cursor: pointer; font-size: 11.5px; font-weight: 700; color: var(--muted); padding: 4px 0; }
+.disc-extras .disc-list { margin-top: 6px; }
+#disc-notes { width: 100%; min-height: 52px; margin-top: 8px; }
+
+/* ---------- to-dos, sends, outbox ---------- */
+.h-block { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.todo-row {
+  display: flex; gap: 9px; align-items: flex-start; cursor: pointer;
+  background: var(--surface); border-radius: 12px; padding: 8px 12px;
+  font-size: 12px; color: var(--ink-2); line-height: 1.45;
+}
+.todo-row input { accent-color: var(--accent); margin-top: 2px; flex: none; }
+.todo-row.done { opacity: 0.45; text-decoration: line-through; }
+.todo-row a { font-weight: 700; }
+.send-row {
+  background: var(--surface); border-radius: 12px; padding: 8px 12px;
+  font-size: 11.5px; color: var(--ink-2); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap;
+}
+.send-status {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  border-radius: 999px; padding: 2px 8px; flex: none;
+}
+.send-status.sent { background: var(--accent); color: var(--accent-ink); }
+.send-status.pending { background: var(--white-pill); color: var(--accent-ink); }
+.send-status.failed, .send-status.skipped { background: var(--due-bg); color: var(--due); }
+.send-err { flex-basis: 100%; font-size: 10.5px; color: var(--due); }
+
+/* ---------- My book ---------- */
+.my-head h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+.my-grid { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 26px; margin-top: 18px; }
+.my-sec {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.my-row {
+  display: flex; align-items: center; gap: 11px; cursor: pointer;
+  border-radius: 14px; padding: 8px 10px; margin: 0 -10px;
+}
+.my-row:hover { background: var(--panel); }
+.my-row .my-name { min-width: 0; flex: 1; }
+.my-row .my-name b { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.my-row .my-stage { flex: none; font-size: 10px; font-weight: 800; background: var(--surface); border-radius: 999px; padding: 4px 10px; color: var(--ink-2); }
+.my-row .my-thread { flex: none; font-size: 10.5px; font-weight: 600; color: var(--muted); text-align: right; }
+.outbox-card { background: var(--surface); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; }
+.outbox-card .ob-head { font-size: 12px; color: var(--ink-2); }
+.outbox-card .ob-subj { font-size: 12px; font-weight: 700; margin-top: 4px; }
+.outbox-card .ob-body {
+  font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.outbox-card .ob-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+
+/* ---------- responsive ----------
+   Everything lives within the screen — columns shed by priority, nothing
+   scrolls sideways. */
+.col-score { width: 56px; }
+.col-contact { width: 13%; }
+.col-reach { width: 16%; }
+.col-city { width: 8%; }
+.col-thread { width: 14%; }
+.col-status { width: 132px; }
+.status-select { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.call-line { max-width: none; }
+td, th { overflow: hidden; }
+
+@media (max-width: 1560px) {
+  .col-city, td.col-city { display: none; }
+}
+@media (max-width: 1320px) {
+  .col-contact, td.col-contact { display: none; }
+  .side-col { width: 272px; padding: 20px 16px; }
+  .cal-day { width: 30px; height: 30px; }
+}
 @media (max-width: 1180px) {
   .side-col { display: none; }
+  .my-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 1080px) {
+  /* auto-collapse the side menu to icons — the toggle still works */
+  .rail { width: 68px; padding: 18px 8px; }
+  .rail .ri-label { display: none; }
+  .rail .rail-item { justify-content: center; padding: 4px 0; width: auto; align-self: center; }
+  .col-thread, td.col-thread { display: none; }
 }
 @media (max-width: 900px) {
   .queue-chips { grid-template-columns: 1fr 1fr; }
+  .topbar { flex-wrap: wrap; }
+  .topbar-title { display: none; }
 }
 @media (max-width: 720px) {
   .rail { display: none; }
   .main-col { padding: 14px; }
-  .topbar { flex-wrap: wrap; }
-  .topbar-title { display: none; }
   .drawer { width: 100vw; max-width: 100vw; }
   .queue-chips { grid-template-columns: 1fr; }
   .kv { grid-template-columns: 1fr; }
+  .col-reach, td.col-reach { display: none; }
+  .my-row .my-thread { display: none; }
 }

@@ -196,19 +196,19 @@ function rowHtml(r) {
   const why = [industryLabel(r.industry), r.call_reason].filter(Boolean).join(' · ');
   return `
     <tr data-id="${r.id}">
-      <td><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
+      <td class="col-score"><span class="score-badge tier-${esc(r.tier || 'below')}" title="${esc(r.call_reason || '')}">${r.score}</span></td>
       <td style="overflow: hidden;">
         <div class="biz-name">${esc(r.dba_name || r.business_name)}${r.google_rating ? ` <a class="rev-chip" href="${esc(mapsUrl(r))}" target="_blank" rel="noopener" title="Open their Google reviews">★ ${r.google_rating}</a>` : ''}${brandNew ? ' <span class="new-badge">NEW</span>' : ''}</div>
         <div class="call-line" title="${esc(why)}">${esc(why || (r.legal_name || r.license_type || ''))}</div>
       </td>
-      <td style="overflow: hidden;">${r.contact_name ? `<div style="font-weight: 600; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(r.contact_name)}</div><div class="thread-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
-      <td style="overflow: hidden;">
+      <td class="col-contact" style="overflow: hidden;">${r.contact_name ? `<div style="font-weight: 600; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(r.contact_name)}</div><div class="thread-sub">${esc(r.contact_title || '')}</div>` : '<span class="muted">—</span>'}</td>
+      <td class="col-reach" style="overflow: hidden;">
         ${r.email ? `<div class="reach-mail">${esc(r.email)} <span class="${['verified', 'valid_mx'].includes(r.email_status) ? 'reach-ok' : 'reach-maybe'}">${['verified', 'valid_mx'].includes(r.email_status) ? '✓' : '?'}</span></div>` : '<div class="reach-mail muted">no email</div>'}
         ${r.phone ? `<div class="thread-sub"><a href="${telHref(r.phone)}" class="tel-link" title="Call">${esc(r.phone)}</a></div>` : ''}
       </td>
-      <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2);">${esc(r.city || '—')}</td>
-      <td style="overflow: hidden;">${threadCell(r)}</td>
-      <td><div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+      <td class="col-city" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2);">${esc(r.city || '—')}</td>
+      <td class="col-thread" style="overflow: hidden;">${threadCell(r)}</td>
+      <td class="col-status"><div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
         ${r.assigned_to
           ? `<span class="owner-dot" title="Owned by ${esc(r.assigned_to)}">${esc(initialsOf(r.assigned_to))}</span>`
           : `<button class="claim-btn" data-claim="${r.id}" title="Take ownership of this prospect">Claim</button>`}
@@ -447,6 +447,16 @@ async function openDrawer(id) {
       <div id="n-panel"><span class="muted">Loading…</span></div>
     </section>
 
+    <section>
+      <h3>Discovery call — check off what they care about, the package builds itself</h3>
+      <div id="disc-panel"><span class="muted">Loading…</span></div>
+    </section>
+
+    <section>
+      <h3>To-dos &amp; automated sends</h3>
+      <div id="hist-panel"><span class="muted">Loading…</span></div>
+    </section>
+
     ${opportunities.length ? `<section><h3>Detected opportunities</h3>${opportunities.map((o) => `
       <div class="opp"><div class="opp-head"><span>${esc(o.label)}</span><span class="why">${esc(o.why)}</span></div><span class="lvl ${esc(o.level)}">${esc(o.level.toUpperCase())}</span></div>`).join('')}</section>` : ''}
 
@@ -505,15 +515,17 @@ async function openDrawer(id) {
     b.onclick = () => { navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'copied!'; };
   });
   $('#d-save').onclick = async () => {
-    await api(`/api/prospects/${id}`, {
+    const out = await api(`/api/prospects/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         status: $('#d-status').value,
         assigned_to: $('#d-assigned').value,
         notes: $('#d-notes').value,
+        rep_name: repName(),
       }),
     });
+    notifySequence(out.sequence);
     closeDrawer();
     loadTable();
   };
@@ -521,6 +533,8 @@ async function openDrawer(id) {
   // deep-link into the rep's own Messages/Mail apps
   drawerContact = { phone: r.phone, email: r.email };
   renderNurture(id).catch((e) => { $('#n-panel').innerHTML = `<span class="muted">${esc(e.message)}</span>`; });
+  renderDiscovery(id).catch((e) => { $('#disc-panel').innerHTML = `<span class="muted">${esc(e.message)}</span>`; });
+  renderHistory(id).catch((e) => { $('#hist-panel').innerHTML = `<span class="muted">${esc(e.message)}</span>`; });
 
   $('#d-reenrich').onclick = async () => {
     $('#d-reenrich').disabled = true;
@@ -794,6 +808,215 @@ function paintNurture(id, state, lastReply) {
   };
 }
 
+/* Close-sequence feedback: the status change just queued automated sends */
+function notifySequence(seq) {
+  if (!seq?.queued) return;
+  const label = seq.sequence === 'onboarding'
+    ? 'Won! Onboarding queued — welcome emails + your to-dos are in My book.'
+    : 'Reactivation funnel queued — the free-value text & email (FB group invite) are in My book.';
+  showRunBanner(`✅ ${label}`, false);
+  setTimeout(() => $('#run-banner').classList.add('hidden'), 8000);
+  if (state.myMode) loadMyBook();
+}
+
+/* ---------- discovery call: talking points → live package ---------- */
+async function renderDiscovery(id) {
+  paintDiscovery(id, await api(`/api/prospects/${id}/discovery?rep=${encodeURIComponent(repName())}`));
+}
+
+function paintDiscovery(id, d) {
+  const el = $('#disc-panel');
+  if (!el) return;
+  const p = d.proposal;
+  el.innerHTML = `
+    <div class="disc-list">
+      ${d.items.map((i) => `<label class="disc-item${i.checked ? ' on' : ''}">
+        <input type="checkbox" class="disc-chk" value="${esc(i.key)}" ${i.checked ? 'checked' : ''} />
+        <span><b>${esc(i.area)}</b><span class="disc-q">&ldquo;${esc(i.question)}&rdquo;</span></span></label>`).join('')}
+    </div>
+    <details class="disc-extras"${d.extras.some((e) => e.checked) ? ' open' : ''}>
+      <summary>Add-on extras${d.extras.filter((e) => e.checked).length ? ` (${d.extras.filter((e) => e.checked).length} selected)` : ''}</summary>
+      <div class="disc-list sm">${d.extras.map((e) => `<label class="disc-item sm${e.checked ? ' on' : ''}">
+        <input type="checkbox" class="disc-extra" value="${esc(e.name)}" ${e.checked ? 'checked' : ''} />
+        <span><b>${esc(e.name)}</b> <span class="muted">${esc(e.price)}</span></span></label>`).join('')}</div>
+    </details>
+    <textarea id="disc-notes" placeholder="Call notes — what they said, in their own words">${esc(d.notes)}</textarea>
+    <div class="offer-box" style="margin-top: 10px;">
+      <div class="oh"><span>${esc(p.package.name)} — $${p.package.monthly}/mo <span style="font-weight: 500; font-size: 11.5px; color: #8b8b8b;">· $${p.package.setup} setup${p.package.usage ? ' · + usage' : ''}</span></span>
+        <span style="font-size: 12.5px; font-weight: 800; white-space: nowrap;">${p.monthly_is_from ? 'from ' : ''}$${p.monthly_total}/mo</span></div>
+      <div style="margin-top: 5px; color: #3d3d3d;">${p.needs.length
+        ? `Because they need: ${esc(p.needs.join(' · '))}`
+        : 'Check off what they care about above — the right package assembles itself here, live.'}</div>
+      ${p.addons.length ? `<div style="margin-top: 5px; color: #3d3d3d;">Add-ons: ${p.addons.map((a) => `${esc(a.name)} (${esc(a.price)})`).join(' · ')}</div>` : ''}
+      ${p.bundle_upgrade ? `<div class="talk">Bundling rule: package + add-ons cross $${p.bundle_upgrade.monthly}/mo — pitch ${esc(p.bundle_upgrade.name)} instead${p.bundle_upgrade.saving > 0 ? `; it covers everything and saves them $${p.bundle_upgrade.saving}/mo` : ' — same money, more included'}.</div>` : ''}
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center;">
+      <button class="btn primary" id="disc-copy">Copy pricing guide</button>
+      <span class="muted" style="font-size: 11px;">Auto-saves. The guide reads &ldquo;here's everything included, here's the cost&rdquo; — ready to read out or send.</span>
+    </div>`;
+
+  const saveDiscovery = async (repaint) => {
+    const out = await api(`/api/prospects/${id}/discovery`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        checked: [...el.querySelectorAll('.disc-chk:checked')].map((c) => c.value),
+        extras: [...el.querySelectorAll('.disc-extra:checked')].map((c) => c.value),
+        notes: $('#disc-notes').value,
+        rep_name: repName(),
+      }),
+    });
+    if (repaint) paintDiscovery(id, out);
+    else el.dataset.proposalText = out.proposal_text;
+  };
+  el.dataset.proposalText = d.proposal_text;
+  el.querySelectorAll('.disc-chk, .disc-extra').forEach((c) => { c.onchange = () => saveDiscovery(true); });
+  $('#disc-notes').addEventListener('input', debounce(() => saveDiscovery(false), 600));
+  $('#disc-copy').onclick = () => {
+    navigator.clipboard.writeText(el.dataset.proposalText);
+    $('#disc-copy').textContent = '✓ Copied';
+    setTimeout(() => { $('#disc-copy').textContent = 'Copy pricing guide'; }, 1500);
+  };
+}
+
+/* ---------- to-dos & automated sends (drawer) ---------- */
+const SEQ_NAMES = { onboarding: 'Onboarding (won)', reactivation: 'Reactivation (free value + FB group)' };
+
+async function renderHistory(id) {
+  const h = await api(`/api/prospects/${id}/history`);
+  const el = $('#hist-panel');
+  if (!el) return;
+  el.innerHTML = `
+    ${h.todos.length ? `<div class="h-block">${h.todos.map((t) => `
+      <label class="todo-row${t.done ? ' done' : ''}"><input type="checkbox" class="h-todo" data-id="${t.id}" ${t.done ? 'checked' : ''} />
+        <span>${esc(t.text)}${t.assigned_to ? ` <span class="muted">· ${esc(t.assigned_to)}</span>` : ''}</span></label>`).join('')}</div>` : ''}
+    ${h.sends.length ? `<div class="h-block">${h.sends.map((sv) => `
+      <div class="send-row"><span class="send-status ${esc(sv.status)}">${esc(sv.status)}</span>
+        <span><b>${esc(SEQ_NAMES[sv.sequence] || sv.sequence)}</b> · ${esc(sv.channel)}${sv.subject ? ` · &ldquo;${esc(sv.subject)}&rdquo;` : ''}
+        <span class="muted">${sv.status === 'sent'
+          ? `${sv.sent_via === 'manual' ? 'sent by hand' : `sent via ${esc(sv.sent_via)}`} ${ago(sv.sent_at)}`
+          : `due ${fmtWhen(sv.due_at) || 'now'}`}</span></span>
+        ${sv.error ? `<div class="send-err">${esc(sv.error)}</div>` : ''}</div>`).join('')}</div>` : ''}
+    ${!h.todos.length && !h.sends.length ? '<span class="muted">Nothing yet. When they close — won or not interested — the follow-up sequence and to-dos land here automatically.</span>' : ''}`;
+  el.querySelectorAll('.h-todo').forEach((c) => {
+    c.onchange = async () => {
+      await api(`/api/todos/${c.dataset.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: c.checked }) });
+      c.closest('.todo-row').classList.toggle('done', c.checked);
+      if (state.myMode) loadMyBook();
+    };
+  });
+}
+
+/* ---------- My book: the rep's own dashboard ---------- */
+function myRow(r) {
+  const stage = r.status === 'customer' ? 'Customer' : (STAGE_SHORT[r.nurture_stage] || STATUS_LABELS[r.status] || '');
+  const due = isDue(r);
+  return `
+    <div class="my-row" data-id="${r.id}">
+      <span class="score-badge tier-${esc(r.tier || 'below')}" style="width: 30px; height: 30px; font-size: 11px;">${r.score}</span>
+      <span class="my-name"><b>${esc(r.dba_name || r.business_name)}</b><span class="thread-sub">${esc([r.city, r.contact_name].filter(Boolean).join(' · '))}</span></span>
+      <span class="my-stage">${esc(stage)}</span>
+      <span class="my-thread">${r.last_touch_at ? `${ago(r.last_touch_at)} · ${r.last_touch_dir === 'in' ? '<span class="move yours">your move</span>' : 'waiting on them'}` : '<span class="muted">not started</span>'}${due ? '<span class="due-badge">DUE</span>' : ''}</span>
+    </div>`;
+}
+
+async function loadMyBook() {
+  const el = $('#my-view');
+  if (!repName()) {
+    el.innerHTML = '<div class="empty-state"><p><strong>Set your name first</strong></p><p>Click the avatar in the top bar — your book is everything assigned to you.</p></div>';
+    return;
+  }
+  const my = await api('/api/my?rep=' + encodeURIComponent(repName()));
+  const customers = my.prospects.filter((p) => p.status === 'customer');
+  const working = my.prospects.filter((p) => !['customer', 'not_interested'].includes(p.status));
+  const parked = my.prospects.filter((p) => p.status === 'not_interested');
+  const bizOf = (x) => x.dba_name || x.business_name || '';
+  el.innerHTML = `
+    <div class="my-head">
+      <h2>${esc(my.rep)}'s book</h2>
+      <div class="stats" style="padding: 8px 0 0;">
+        <div class="tile"><span class="value">${my.counts.book}</span><span class="label">in my book</span></div>
+        <div class="tile hot"><span class="value">${my.counts.your_move}</span><span class="label">your move</span></div>
+        <div class="tile"><span class="value">${my.counts.due}</span><span class="label">follow-ups due</span></div>
+        <div class="tile"><span class="value">${my.counts.customers}</span><span class="label">customers</span></div>
+        <div class="tile"><span class="value">${my.counts.todos}</span><span class="label">open to-dos</span></div>
+        <div class="tile"><span class="value">${my.counts.touches_today}</span><span class="label">touches today</span></div>
+      </div>
+    </div>
+    <div class="my-grid">
+      <div>
+        <div class="my-sec">To-dos ${my.todos.length ? `(${my.todos.length})` : ''}</div>
+        ${my.todos.length ? my.todos.map((t) => `
+          <label class="todo-row"><input type="checkbox" class="my-todo" data-id="${t.id}" />
+            <span>${esc(t.text)}${t.prospect_id ? ` <a href="#" class="todo-open" data-open="${t.prospect_id}">${esc(bizOf(t))} ↗</a>` : ''}</span></label>`).join('')
+          : '<div class="nbc-line">Clear. To-dos appear when a deal closes won.</div>'}
+        <div class="my-sec" style="margin-top: 18px;">Queued sends ${my.outbox.length ? `(${my.outbox.length})` : ''}</div>
+        ${my.outbox.length ? my.outbox.map((o) => {
+          const auto = o.channel === 'email' ? my.senders.email : my.senders.sms;
+          return `
+          <div class="outbox-card" data-id="${o.id}">
+            <div class="ob-head"><b>${esc(bizOf(o))}</b> · ${esc(o.channel)} · ${esc(SEQ_NAMES[o.sequence] || o.sequence)}${o.status === 'failed' ? ' <span class="send-status failed">failed</span>' : ''}</div>
+            ${o.subject ? `<div class="ob-subj">${esc(o.subject)}</div>` : ''}
+            <div class="ob-body">${esc(o.body)}</div>
+            <div class="ob-actions">
+              ${auto ? `<button class="btn primary sm ob-send" data-id="${o.id}">Send now</button>` : ''}
+              <button class="btn ghost sm ob-copy" data-id="${o.id}">Copy</button>
+              ${o.channel === 'sms' && o.recipient ? `<a class="btn ghost sm" href="${smsHref(o.recipient, o.body)}">Messages ↗</a>` : ''}
+              ${o.channel === 'email' && o.recipient ? `<a class="btn ghost sm" href="${mailtoHref(o.recipient, `Subject: ${o.subject}\n\n${o.body}`)}">Mail ↗</a>` : ''}
+              <button class="btn ghost sm ob-mark" data-id="${o.id}">✓ Sent it myself</button>
+              <button class="btn ghost sm ob-skip" data-id="${o.id}">Skip</button>
+            </div>
+          </div>`;
+        }).join('') : `<div class="nbc-line">${my.senders.email || my.senders.sms ? 'Empty — close-triggered sends go out automatically.' : 'Empty. Close-triggered messages queue here for a one-tap send (add email/SMS provider keys in Settings to automate).'}</div>`}
+      </div>
+      <div>
+        <div class="my-sec">Working (${working.length})</div>
+        ${working.length ? working.map(myRow).join('') : '<div class="nbc-line">Nothing assigned yet — claim prospects from the Dashboard.</div>'}
+        ${customers.length ? `<div class="my-sec" style="margin-top: 18px;">Customers (${customers.length})</div>${customers.map(myRow).join('')}` : ''}
+        ${parked.length ? `<div class="my-sec" style="margin-top: 18px;">Reactivate later (${parked.length})</div>${parked.map(myRow).join('')}` : ''}
+      </div>
+    </div>`;
+
+  el.querySelectorAll('.my-row, .todo-open').forEach((n) => {
+    n.onclick = (e) => { e.preventDefault(); openDrawer(n.dataset.id || n.dataset.open); };
+  });
+  el.querySelectorAll('.my-todo').forEach((c) => {
+    c.onchange = async () => {
+      await api(`/api/todos/${c.dataset.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: true }) });
+      loadMyBook();
+    };
+  });
+  const obAct = (cls, run) => el.querySelectorAll(cls).forEach((b) => {
+    b.onclick = async () => {
+      b.disabled = true;
+      try { await run(b); loadMyBook(); } catch (e) { alert(e.message); b.disabled = false; }
+    };
+  });
+  obAct('.ob-send', (b) => api(`/api/outbox/${b.dataset.id}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rep_name: repName() }) }));
+  obAct('.ob-mark', (b) => api(`/api/outbox/${b.dataset.id}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ manual: true, rep_name: repName() }) }));
+  obAct('.ob-skip', (b) => api(`/api/outbox/${b.dataset.id}/skip`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }));
+  el.querySelectorAll('.ob-copy').forEach((b) => {
+    b.onclick = () => {
+      const card = b.closest('.outbox-card');
+      const o = my.outbox.find((x) => String(x.id) === b.dataset.id);
+      navigator.clipboard.writeText(o.subject ? `Subject: ${o.subject}\n\n${o.body}` : o.body);
+      b.textContent = '✓ Copied';
+      setTimeout(() => { b.textContent = 'Copy'; }, 1500);
+      void card;
+    };
+  });
+}
+
+function applyMyMode() {
+  const on = !!state.myMode;
+  $('#my-view').classList.toggle('hidden', !on);
+  $('#btn-mybook').classList.toggle('active', on);
+  for (const sel of ['#queue-chips', '#stats', '.section-head', '#daily-bar', '.table-wrap']) {
+    document.querySelector(sel)?.classList.toggle('hidden', on);
+  }
+  if (on) loadMyBook();
+  else { $('#daily-bar').classList.add('hidden'); loadTable(); }
+}
+
 /* ---------- runs ---------- */
 function showRunBanner(text, spinning = true) {
   const b = $('#run-banner');
@@ -881,11 +1104,12 @@ function bindEvents() {
   $('#tbody').addEventListener('change', async (e) => {
     const sel = e.target.closest('.status-select');
     if (!sel) return;
-    await api(`/api/prospects/${sel.dataset.id}`, {
+    const out = await api(`/api/prospects/${sel.dataset.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: sel.value }),
+      body: JSON.stringify({ status: sel.value, rep_name: repName() }),
     });
+    notifySequence(out.sequence);
     loadStats();
   });
 
@@ -907,8 +1131,19 @@ function bindEvents() {
     }
   };
 
+  // My book — the rep's personal dashboard
+  $('#btn-mybook').onclick = () => {
+    state.myMode = !state.myMode;
+    state.dailyMode = false;
+    state.queueMode = null;
+    $('#btn-daily').classList.remove('active');
+    $('#filters').style.display = '';
+    applyMyMode();
+  };
+
   // Daily 50 toggle (icon rail)
   $('#btn-daily').onclick = () => {
+    if (state.myMode) { state.myMode = false; applyMyMode(); }
     state.dailyMode = !state.dailyMode;
     $('#btn-daily').classList.toggle('active', state.dailyMode);
     $('#filters').style.display = state.dailyMode ? 'none' : '';
@@ -1095,6 +1330,7 @@ function applyRail() {
     if (document.hidden) return;
     loadStats();
     loadQueue();
+    if (state.myMode) loadMyBook();
   }, 60000);
 
   // '/' jumps to search from anywhere outside an input

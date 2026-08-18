@@ -34,6 +34,9 @@
       <a href="/" class="rail-item active" title="Dashboard">
         <span class="ri-icon">◆</span><span class="ri-label">Dashboard</span>
       </a>
+      <button id="btn-mybook" class="rail-item" title="My book — your prospects, to-dos, and queued sends">
+        <span class="ri-icon">▣</span><span class="ri-label">My book</span>
+      </button>
       <button id="btn-daily" class="rail-item" title="Today's 50 — the tiered daily call sheet">
         <span class="ri-icon">50</span><span class="ri-label">Today&#39;s 50</span>
       </button>
@@ -56,6 +59,9 @@
 
     <!-- main column -->
     <main class="main-col">
+      <!-- My book — the rep's personal dashboard (hidden until opened) -->
+      <section id="my-view" class="my-view hidden"></section>
+
       <!-- work queue cards -->
       <section class="queue-chips" id="queue-chips"></section>
 
@@ -97,13 +103,13 @@
         <table id="table" style="table-layout: fixed;">
           <thead>
             <tr>
-              <th data-sort="score" class="sortable sorted-desc" style="width: 56px;">Score</th>
+              <th data-sort="score" class="sortable sorted-desc col-score">Score</th>
               <th data-sort="name" class="sortable">Business · why call</th>
-              <th style="width: 128px;">Contact</th>
-              <th style="width: 176px;">Reach</th>
-              <th data-sort="city" class="sortable" style="width: 96px;">City</th>
-              <th data-sort="last_touch" class="sortable" style="width: 150px;">Thread</th>
-              <th style="width: 132px;">Status</th>
+              <th class="col-contact">Contact</th>
+              <th class="col-reach">Reach</th>
+              <th data-sort="city" class="sortable col-city">City</th>
+              <th data-sort="last_touch" class="sortable col-thread">Thread</th>
+              <th class="col-status">Status</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>

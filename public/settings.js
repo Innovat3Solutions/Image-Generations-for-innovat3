@@ -120,13 +120,34 @@ $('#a-add').onclick = async () => {
   } catch (e) { showErr($('#a-error'), e.message); }
 };
 
-/* ---------- assignment mode ---------- */
+/* ---------- assignment mode + automation ---------- */
+function paintSenders(s) {
+  $('#s-senders').innerHTML = [
+    s.email_sender
+      ? '✓ Automatic email delivery is ON (Resend)'
+      : 'Email sends queue for manual one-tap delivery — set RESEND_API_KEY + MAIL_FROM env vars to automate.',
+    s.sms_sender
+      ? '✓ Automatic text delivery is ON (Twilio)'
+      : 'Text sends queue for manual one-tap delivery — set TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM to automate.',
+  ].map(esc).join('<br>');
+}
+
 async function loadAssignment() {
   try {
-    const { assignment_mode } = await api('/api/settings');
-    const radio = document.querySelector(`input[name="amode"][value="${assignment_mode}"]`);
+    const s = await api('/api/settings');
+    const radio = document.querySelector(`input[name="amode"][value="${s.assignment_mode}"]`);
     if (radio) radio.checked = true;
+    $('#s-fb').value = s.fb_group_url || '';
+    $('#s-docs').value = s.docs_url || '';
+    paintSenders(s);
   } catch { /* non-admin */ }
+  $('#s-save').onclick = async () => {
+    try {
+      const out = await patch('/api/settings', { fb_group_url: $('#s-fb').value.trim(), docs_url: $('#s-docs').value.trim() });
+      $('#s-note').textContent = 'Saved. New close-sequences will use these links.';
+      paintSenders(out);
+    } catch (e) { $('#s-note').textContent = e.message; }
+  };
   document.querySelectorAll('input[name="amode"]').forEach((r) => {
     r.onchange = async () => {
       try {
