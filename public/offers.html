@@ -16,7 +16,7 @@
       <span class="brand-mark">📖</span>
       <div>
         <h1>Offers & Pricing</h1>
-        <p class="subtitle">INNOVAT3 Company Pricing Standard v1.1 · sell the outcome, climb the ladder</p>
+        <p class="subtitle">INNOVAT3 Sales &amp; Pricing System v2 · diagnose → recommend → check add-ons → close → expand</p>
       </div>
     </div>
     <div class="topbar-actions">
@@ -38,9 +38,34 @@
     </section>
 
     <section>
-      <h2 class="section-title">Qualify before you quote</h2>
+      <h2 class="section-title">Step 1 — diagnose the primary need</h2>
+      <p class="muted" style="margin-bottom:8px">Recommend <strong>one primary package + one upgrade path</strong> — never the whole menu.</p>
       <div class="result-card">
         <div id="qualification"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Step 3 — essential add-on check</h2>
+      <p class="muted" style="margin-bottom:8px">Ask only <strong>after</strong> the core package is selected. Each yes maps to exactly one add-on.</p>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Ask</th><th>If yes → offer</th><th>Starting price</th><th>When to sell</th></tr></thead>
+          <tbody id="essentials"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Step 4 — close cleanly · Step 5 — expansion rhythm</h2>
+      <div class="pkg-cols" style="align-items:start">
+        <div class="result-card"><ul id="close-list" style="padding-left:18px;font-size:12.5px;display:flex;flex-direction:column;gap:7px"></ul></div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Timing</th><th>Likely expansion</th></tr></thead>
+            <tbody id="expansion"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 

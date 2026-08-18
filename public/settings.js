@@ -169,6 +169,20 @@ async function loadAssignment() {
   };
 }
 
+/* ---------- economics (management only) ---------- */
+async function loadEconomics() {
+  try {
+    const e = await api('/api/economics');
+    $('#econ-summary').innerHTML =
+      `Standard sales commission: <strong>${Math.round(e.standard_commission * 100)}%</strong>` +
+      (e.commission_free.length ? ` &nbsp;·&nbsp; Commission-free: <strong>${e.commission_free.map(esc).join(', ')}</strong>` : '');
+    $('#econ-body').innerHTML = e.packages.map((p) => `
+      <tr><td><strong>${esc(p.name)}</strong></td><td>$${p.monthly}/mo</td><td>$${p.setup}</td>
+      <td>$${p.commission_monthly}/mo</td><td>$${p.commission_setup}</td></tr>`).join('');
+    $('#econ-guardrails').innerHTML = e.guardrails.map((g) => `<li>${esc(g)}</li>`).join('');
+  } catch { /* non-admin never reaches this page anyway */ }
+}
+
 /* ---------- boot ---------- */
 (async function init() {
   try {
@@ -182,4 +196,5 @@ async function loadAssignment() {
   loadUsers();
   loadAccounts();
   loadAssignment();
+  loadEconomics();
 })();

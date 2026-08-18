@@ -1,19 +1,22 @@
 /**
- * INNOVAT3 Company Pricing Standard v1.1 (Aug 2026) as structured data —
- * the single source of truth that powers:
+ * INNOVAT3 Sales & Pricing System v2 (Aug 2026) as structured data — the
+ * single source of truth that powers:
  *   - the Offers knowledge-base page reps work from
  *   - per-prospect package recommendations in the dashboard
- *   - the outreach generator
- *   - the Practice tab's company materials
+ *   - the in-call Sales Call Guide (diagnose → recommend → add-on check → close)
+ *   - the outreach generator and the Practice tab's company materials
  *
  * The ladder: Presence → Reputation → Communication → Automation → Growth
- * → Outsourced Marketing. Lead with the LOWEST package that solves the
- * immediate problem; the $99 Launch plan is the standard foot-in-the-door.
+ * → Outsourced Marketing. Diagnose the PRIMARY need, recommend ONE package
+ * plus ONE upgrade path; the $99 Launch plan is the standard foot-in-the-door.
+ *
+ * ECONOMICS (commission, margins) is management-only — never surfaced in
+ * rep-facing UI or client-facing proposals. See ECONOMICS at the bottom.
  */
 
 export const PACKAGES = [
   {
-    key: 'launch', name: 'LAUNCH', stage: 'Presence',
+    key: 'launch', upgrade_to: 'local', name: 'LAUNCH', stage: 'Presence',
     monthly: 99, setup: 199, usage: false,
     outcome: 'Get the relationship',
     promise: 'Landing page + review access',
@@ -30,7 +33,7 @@ export const PACKAGES = [
     not_included: ['CRM or pipeline', 'Automated review requests', 'Missed-call text back', 'Email/SMS campaigns', 'AI receptionist', 'Google Business Profile management', 'Social media management', 'Retargeting or reactivation'],
   },
   {
-    key: 'local', name: 'LOCAL', stage: 'Reputation',
+    key: 'local', upgrade_to: 'connect', name: 'LOCAL', stage: 'Reputation',
     monthly: 199, setup: 399, usage: false,
     outcome: 'Build reputation',
     promise: 'Review automation + Google optimization',
@@ -39,7 +42,7 @@ export const PACKAGES = [
     not_included: ['Full CRM opportunity pipeline', 'AI receptionist', 'Ongoing social content', 'Monthly reactivation campaigns', 'Paid ad management'],
   },
   {
-    key: 'connect', name: 'CONNECT', stage: 'Communication',
+    key: 'connect', upgrade_to: 'ai', name: 'CONNECT', stage: 'Communication',
     monthly: 399, setup: 750, usage: false,
     outcome: 'Capture & follow up',
     promise: 'CRM + pipeline + messaging',
@@ -48,7 +51,7 @@ export const PACKAGES = [
     not_included: ['AI receptionist', 'Complex custom automations', 'Multi-location architecture', 'Advanced API integrations', 'Marketing content production'],
   },
   {
-    key: 'ai', name: 'AI', stage: 'Automation',
+    key: 'ai', upgrade_to: 'growth', name: 'AI', stage: 'Automation',
     monthly: 699, setup: 1250, usage: true,
     outcome: 'Answer & convert',
     promise: 'AI receptionist + lead automation',
@@ -57,7 +60,7 @@ export const PACKAGES = [
     not_included: ['Unlimited AI voice minutes', 'High-volume outbound voice without approved usage pricing', 'Enterprise integrations', 'Done-for-you social media', 'Paid ad spend'],
   },
   {
-    key: 'growth', name: 'GROWTH', stage: 'Growth',
+    key: 'growth', upgrade_to: 'marketing_team', name: 'GROWTH', stage: 'Growth',
     monthly: 999, setup: 1950, usage: true,
     outcome: 'Create more opportunities',
     promise: 'Reactivation + email + reputation + retargeting',
@@ -66,7 +69,7 @@ export const PACKAGES = [
     not_included: ['Ad spend', 'Full original social content production', 'On-site photo/video production', 'Unlimited campaign volume', 'SEO unless separately contracted'],
   },
   {
-    key: 'marketing_team', name: 'MARKETING TEAM', stage: 'Outsourced Marketing',
+    key: 'marketing_team', upgrade_to: 'marketing_growth', name: 'MARKETING TEAM', stage: 'Outsourced Marketing',
     monthly: 1675, setup: 3150, usage: false,
     outcome: 'Outsource growth',
     promise: '12 monthly content pieces + email marketing + management',
@@ -75,7 +78,7 @@ export const PACKAGES = [
     not_included: ['On-site videography/photography', 'Unlimited content or revisions', 'Paid media spend', 'Long-form video production'],
   },
   {
-    key: 'marketing_growth', name: 'MARKETING GROWTH', stage: 'Outsourced Marketing',
+    key: 'marketing_growth', upgrade_to: 'marketing_pro', name: 'MARKETING GROWTH', stage: 'Outsourced Marketing',
     monthly: 1995, setup: 3150, usage: false,
     outcome: 'Stronger cadence',
     promise: '20 pieces/month + more campaigns',
@@ -84,7 +87,7 @@ export const PACKAGES = [
     not_included: ['On-site filming', 'Unlimited raw video editing', 'Paid media spend', 'Influencer/talent costs'],
   },
   {
-    key: 'marketing_pro', name: 'MARKETING PRO', stage: 'Outsourced Marketing',
+    key: 'marketing_pro', upgrade_to: null, name: 'MARKETING PRO', stage: 'Outsourced Marketing',
     monthly: 2495, setup: 3150, usage: false,
     outcome: 'Near-daily capacity',
     promise: '30 pieces/month + deeper optimization',
@@ -95,46 +98,115 @@ export const PACKAGES = [
 ];
 
 export const ADD_ONS = [
-  { name: 'AI Voice Receptionist', price: '$299–$399/mo + usage', note: 'Add to non-AI plans; scoped minutes apply' },
-  { name: 'Missed-Call Text Back', price: '$49/mo', note: 'Single-location standard workflow' },
-  { name: 'Review Automation', price: '$79/mo', note: 'Automated SMS/email review requests' },
-  { name: 'Google Business Management', price: '$149–$249/mo', note: 'Ongoing optimization + posting cadence' },
-  { name: 'Email Marketing', price: '$199–$399/mo', note: 'Depends on frequency/segmentation' },
-  { name: 'Database Reactivation', price: '$299/campaign or $199/mo', note: 'Usage charges may apply' },
-  { name: 'Additional Landing Page', price: '$99/mo or $299 build', note: 'Complex funnels quoted separately' },
-  { name: 'Additional Location', price: '$99–$199/mo', note: 'Depends on CRM/phone/GBP needs' },
-  { name: 'Retargeting Management', price: '$299–$499/mo + ad spend', note: 'Media spend paid by client' },
-  { name: 'Extra Short-Form Video Editing', price: '$75–$150/video', note: 'From supplied footage' },
-  { name: 'Community Management', price: '$299–$599/mo', note: 'Defined response windows' },
+  { name: 'AI Voice Receptionist', price: '$299–$399/mo + usage', note: 'Add to non-AI plans; scoped minutes apply', category: 'AI & Automation', approval: 'Rep can sell within range', timing: 'Initial or expansion', guardrail: 'Usage is additional; scope minutes in proposal.' },
+  { name: 'Missed-Call Text Back', price: '$49/mo', note: 'Single-location standard workflow', category: 'AI & Automation', approval: 'Rep can sell', timing: 'Initial or expansion', guardrail: 'Standard single-location workflow only.' },
+  { name: 'Review Automation', price: '$79/mo', note: 'Automated SMS/email review requests', category: 'Reputation & Local', approval: 'Rep can sell', timing: 'Initial or expansion', guardrail: 'Standard SMS/email request workflow.' },
+  { name: 'Google Business Management', price: '$149–$249/mo', note: 'Ongoing optimization + posting cadence', category: 'Reputation & Local', approval: 'Rep can sell within range', timing: 'Initial or expansion', guardrail: 'Cadence and locations must be defined.' },
+  { name: 'Email Marketing', price: '$199–$399/mo', note: 'Depends on frequency/segmentation', category: 'AI & Automation', approval: 'Rep can sell within range', timing: 'Initial or expansion', guardrail: 'Price depends on frequency and segmentation.' },
+  { name: 'Database Reactivation', price: '$299/campaign or $199/mo', note: 'Usage charges may apply', category: 'Growth & Nurture', approval: 'Rep can sell', timing: 'Initial or expansion', guardrail: 'Usage charges may apply.' },
+  { name: 'Additional Landing Page', price: '$99/mo or $299 build', note: 'Complex funnels quoted separately', category: 'Websites & Funnels', approval: 'Rep can sell', timing: 'Initial or expansion', guardrail: 'Complex funnels quoted separately.' },
+  { name: 'Additional Location', price: '$99–$199/mo', note: 'Depends on CRM/phone/GBP needs', category: 'Locations', approval: 'Rep can sell within range', timing: 'Initial', guardrail: 'Depends on CRM, phone, and GBP needs.' },
+  { name: 'Retargeting Management', price: '$299–$499/mo + ad spend', note: 'Media spend paid by client', category: 'Advertising', approval: 'Rep can sell within range', timing: '30–90 days', guardrail: 'Ad spend always paid by client.' },
+  { name: 'Extra Short-Form Video Editing', price: '$75–$150/video', note: 'From supplied footage', category: 'Content & Creative', approval: 'Rep can sell within range', timing: 'Expansion', guardrail: 'From usable client-supplied footage; advanced edits scoped separately.' },
+  { name: 'On-Site Videographer / Content Shoot', price: 'from $750 per shoot day', note: 'Paid add-on to Marketing Team / Growth / Pro — not included in the monthly package', category: 'Content & Creative', approval: 'Rep can sell', timing: 'Initial with marketing package or expansion', guardrail: '$750 per shoot day; multi-day campaigns multiply by days. Travel/special production may require scope approval. Capture can include headshots, team photos, brand/service/testimonial footage, B-roll and short-form social footage.', marketing_only: true },
+  { name: 'Community Management', price: '$299–$599/mo', note: 'Defined response windows', category: 'Content & Creative', approval: 'Rep can sell within range', timing: 'Initial or expansion', guardrail: 'Response windows and channels must be defined.' },
 ];
 
+// Custom / project work — quote AFTER scoping. Everything except the
+// standard landing page needs management approval.
 export const PROJECTS = [
-  { name: 'Additional standard landing page', price: '$299' },
-  { name: '5-page website', price: 'from $1,500' },
-  { name: 'Premium website', price: 'from $2,500' },
-  { name: 'E-commerce website', price: 'from $3,500' },
-  { name: 'CRM migration', price: 'from $750' },
-  { name: 'Custom pipeline build', price: '$500+' },
-  { name: 'Custom automation', price: '$500–$2,500+' },
-  { name: 'Advanced AI agent build', price: 'from $1,500' },
-  { name: 'Database cleanup/import', price: '$300–$1,000' },
-  { name: 'Email campaign build', price: '$300+' },
-  { name: 'Reactivation campaign build', price: '$500+' },
-  { name: 'Google Business cleanup', price: '$300+' },
-  { name: 'Tracking/pixel implementation', price: '$300+' },
-  { name: 'Funnel build', price: '$750–$1,500+' },
-  { name: 'Custom API/integration', price: 'from $1,500' },
+  { name: 'Additional standard landing page', price: '$299', approval: 'Rep can quote fixed price' },
+  { name: '5-page website', price: 'from $1,500', approval: 'Management approval' },
+  { name: 'Premium website', price: 'from $2,500', approval: 'Management approval' },
+  { name: 'E-commerce website', price: 'from $3,500', approval: 'Management approval' },
+  { name: 'CRM migration', price: 'from $750', approval: 'Management approval' },
+  { name: 'Custom pipeline build', price: '$500+', approval: 'Management approval' },
+  { name: 'Custom automation', price: '$500–$2,500+', approval: 'Management approval' },
+  { name: 'Advanced AI agent build', price: 'from $1,500', approval: 'Management approval' },
+  { name: 'Database cleanup/import', price: '$300–$1,000', approval: 'Management approval' },
+  { name: 'Email campaign build', price: '$300+', approval: 'Management approval' },
+  { name: 'Reactivation campaign build', price: '$500+', approval: 'Management approval' },
+  { name: 'Google Business cleanup', price: '$300+', approval: 'Management approval' },
+  { name: 'Tracking/pixel implementation', price: '$300+', approval: 'Management approval' },
+  { name: 'Funnel build', price: '$750–$1,500+', approval: 'Management approval' },
+  { name: 'Custom API/integration', price: 'from $1,500', approval: 'Management approval' },
 ];
 
+/**
+ * MANAGEMENT ONLY — never ship to rep-facing UI or client proposals.
+ * Served exclusively through the admin-gated economics endpoint.
+ */
+export const ECONOMICS = {
+  standard_commission: 0.20,
+  commission_free: ['On-Site Videographer / Content Shoot'],
+  guardrails: [
+    'Any custom quote or discount that falls below the company’s approved minimum gross margin requires management approval.',
+    'Do not guess profitability from revenue alone.',
+    'Track labor, software, AI/phone usage, contractors, ad-management burden, account management, and commission against each offer — replace the workbook’s zeros with real delivery costs.',
+  ],
+};
+
+/**
+ * Sales Call Guide STEP 1 — diagnose the PRIMARY need. Six ask/listen-for
+ * questions, each pointing at one primary package. rep_says is the pitch
+ * line for that recommendation; do_not is the guardrail.
+ */
 export const QUALIFICATION = [
-  { key: 'presence', area: 'Website / presence', question: 'Do you have a simple page that clearly tells people what you do and gives them a way to contact you?', points_to: 'launch' },
-  { key: 'reviews', area: 'Reviews', question: 'How are you currently asking customers for Google reviews?', points_to: 'local' },
-  { key: 'lead_capture', area: 'Lead capture', question: 'Where do new leads go when someone fills out a form, calls or messages you?', points_to: 'connect' },
-  { key: 'follow_up', area: 'Follow-up', question: 'What happens if your team misses a call or does not reach a lead the first time?', points_to: 'connect' },
-  { key: 'phone_coverage', area: 'Phone coverage', question: 'Who answers after hours, during lunch, or when the team is busy?', points_to: 'ai' },
-  { key: 'old_database', area: 'Old database', question: 'How many past leads or customers are sitting in your database without active follow-up?', points_to: 'growth' },
-  { key: 'marketing', area: 'Marketing', question: 'Who currently plans, creates, schedules and publishes your marketing?', points_to: 'marketing_team' },
-  { key: 'content_supply', area: 'Content supply', question: 'Can your team consistently send us photos, raw video, testimonials and business updates each month?', points_to: 'marketing_growth' },
+  { key: 'presence', area: 'Presence', question: 'Do they have a professional web presence?', points_to: 'launch',
+    rep_says: 'Get the business online correctly and make it easy for customers to take action.',
+    do_not: 'Do not stack add-ons before solving presence.' },
+  { key: 'reputation', area: 'Reputation', question: 'Are reviews / Google visibility a problem?', points_to: 'local',
+    rep_says: 'Build reviews and visibility, then capture the leads that result.',
+    do_not: 'Do not jump to AI unless call/lead volume justifies it.' },
+  { key: 'crm_follow_up', area: 'CRM / Follow-Up', question: 'Are leads falling through the cracks?', points_to: 'connect',
+    rep_says: 'Centralize leads, automate follow-up, and stop opportunities from being lost.',
+    do_not: 'Avoid custom automation before standard workflows are exhausted.' },
+  { key: 'ai_calls', area: 'AI / Calls', question: 'Are calls missed or staff overloaded?', points_to: 'ai',
+    rep_says: 'Answer, qualify, book, route, and follow up — even after hours.',
+    do_not: 'Never imply unlimited usage.' },
+  { key: 'growth', area: 'Growth', question: 'Do they need more opportunities from their database?', points_to: 'growth',
+    rep_says: 'Create more opportunities from existing leads and ongoing nurture.',
+    do_not: 'Do not promise paid media spend is included.' },
+  { key: 'full_marketing', area: 'Full Marketing', question: 'Do they want INNOVAT3 handling content + marketing?', points_to: 'marketing_team',
+    rep_says: 'We become the execution layer for content, campaigns, and ongoing marketing.',
+    do_not: 'Do not promise unlimited content/revisions.' },
+];
+
+/**
+ * Sales Call Guide STEP 3 — essential add-on check. Asked only AFTER the
+ * core package is selected; each yes maps to one add-on (or scoped work).
+ */
+export const ESSENTIAL_ADDONS = [
+  { key: 'content_shoot', question: 'Marketing package: do they lack enough professional photo/video content?', addon: 'On-Site Videographer / Content Shoot',
+    when: 'Offer on top of Marketing Team / Growth / Pro when the client lacks a usable content library.' },
+  { key: 'extra_page', question: 'Do they need another offer, page, or funnel?', addon: 'Additional Landing Page',
+    when: 'A specific campaign, offer, or location needs its own destination.' },
+  { key: 'locations', question: 'Are there multiple business locations?', addon: 'Additional Location',
+    when: 'Each extra location needs CRM/phone/GBP support.' },
+  { key: 'paid_ads', question: 'Do they need faster lead acquisition with paid ads?', addon: 'Retargeting Management',
+    when: 'Client has a clear offer, tracking, and budget.' },
+  { key: 'custom_work', question: 'Do they need custom workflows or integrations?', addon: null, scoped: 'Custom Automation / API',
+    when: 'Standard workflows cannot solve the requirement — management approval, quoted after scoping.' },
+  { key: 'more_content', question: 'Do they need more content output than the package includes?', addon: 'Extra Short-Form Video Editing',
+    when: 'Demand exceeds included content capacity — or move up a marketing tier.' },
+];
+
+/** Sales Call Guide STEP 4 — close cleanly. */
+export const CLOSE_CHECKLIST = [
+  'Confirm the primary outcome: “The main thing we are solving first is ______.”',
+  'Confirm package + setup — state the monthly price and setup fee separately.',
+  'Confirm essential add-ons — only ones tied directly to a stated need.',
+  'Set boundaries — usage, ad spend, revisions, custom work, travel, and multi-day shoots are separate where applicable.',
+  'Document expansion opportunities — do not force them into the first deal; schedule future account reviews.',
+];
+
+/** Sales Call Guide STEP 5 — expansion rhythm after the close. */
+export const EXPANSION_RHYTHM = [
+  { timing: 'Onboarding', review: 'Missing essentials', expansion: 'Setup add-ons, location, migration', purpose: 'Remove blockers to a successful launch.' },
+  { timing: '30 days', review: 'Content quality + lead handling', expansion: 'Videographer, extra editing, AI/CRM upgrade', purpose: 'For marketing clients, refresh the content library when original footage is the bottleneck.' },
+  { timing: '60–90 days', review: 'Lead flow + campaigns', expansion: 'Retargeting, reactivation, landing pages', purpose: 'Create more opportunities after foundations are working.' },
+  { timing: 'Quarterly', review: 'Performance + seasonality', expansion: 'New shoot, seasonal campaign, higher tier', purpose: 'Grow account value based on actual business needs.' },
+  { timing: '6–12 months', review: 'System maturity', expansion: 'Website refresh, custom automation, additional locations', purpose: 'Expand strategically rather than discounting the core plan.' },
 ];
 
 export const UPGRADE_TRIGGERS = [
@@ -163,28 +235,37 @@ export function packageByKey(key) {
 }
 
 /**
- * Live package builder for the discovery call. The rep checks off the areas
- * the prospect cares about (QUALIFICATION keys) plus any add-on extras, and
- * this assembles the pricing structure per the Standard's rules: ONE package
- * (the highest rung any checked need points to — "everything in X" absorbs
- * the rungs below), add-ons only for extras the package doesn't cover,
- * recurring / one-time / usage separated.
+ * Live package builder for the Sales Call Guide. The rep checks off the
+ * diagnosed needs (QUALIFICATION keys) and the essential add-on answers
+ * (ESSENTIAL_ADDONS keys), and this assembles the recommendation per the
+ * System's rules: ONE primary package (the highest rung any diagnosed need
+ * points to — "everything in X" absorbs the rungs below) + ONE upgrade
+ * path, add-ons only for diagnosed extras, custom work flagged for scoping,
+ * recurring / one-time / usage separated. NO economics — client-safe.
  */
 export function buildProposal(prospect, discovery = {}) {
   const checked = Array.isArray(discovery.checked) ? discovery.checked : [];
   const extras = Array.isArray(discovery.extras) ? discovery.extras : [];
   const ladder = PACKAGES.map((p) => p.key);
 
-  // Highest rung any checked need points to
+  // STEP 1+2: highest rung any diagnosed need points to = the primary
   let pkgKey = 'launch';
+  let primaryNeed = null;
   for (const item of QUALIFICATION) {
-    if (checked.includes(item.key) && ladder.indexOf(item.points_to) > ladder.indexOf(pkgKey)) {
+    if (checked.includes(item.key) && ladder.indexOf(item.points_to) >= ladder.indexOf(pkgKey)) {
       pkgKey = item.points_to;
+      primaryNeed = item;
     }
   }
   const pkg = packageByKey(pkgKey);
+  const upgrade = pkg.upgrade_to ? packageByKey(pkg.upgrade_to) : null;
 
-  const addons = ADD_ONS.filter((a) => extras.includes(a.name));
+  // STEP 3: essential add-on answers → add-ons (or scoped custom work)
+  const essentials = ESSENTIAL_ADDONS.filter((e) => extras.includes(e.key));
+  const addons = essentials.filter((e) => e.addon && !(e.key === 'content_shoot' && !/^marketing/.test(pkgKey)))
+    .map((e) => ADD_ONS.find((a) => a.name === e.addon)).filter(Boolean);
+  const scoped = essentials.filter((e) => e.scoped).map((e) => e.scoped);
+
   const addonLow = (price) => Number((String(price).match(/\$(\d[\d,]*)/) || [])[1]?.replace(/,/g, '') || 0);
   const addonMonthly = addons.reduce((sum, a) => sum + (/\/mo/.test(a.price) ? addonLow(a.price) : 0), 0);
   const oneTime = addons.filter((a) => !/\/mo/.test(a.price));
@@ -196,17 +277,22 @@ export function buildProposal(prospect, discovery = {}) {
     : null;
 
   const needs = QUALIFICATION.filter((q) => checked.includes(q.key)).map((q) => q.area);
+  const guardrails = QUALIFICATION.filter((q) => checked.includes(q.key)).map((q) => q.do_not);
   return {
     needs,
+    guardrails,
     package: {
       key: pkg.key, name: pkg.name, monthly: pkg.monthly, setup: pkg.setup,
       usage: pkg.usage, promise: pkg.promise, talk_track: pkg.talk_track, included: pkg.included,
+      rep_says: primaryNeed?.rep_says || pkg.outcome,
     },
-    addons: addons.map((a) => ({ name: a.name, price: a.price, note: a.note })),
+    upgrade: upgrade ? { key: upgrade.key, name: upgrade.name, monthly: upgrade.monthly, setup: upgrade.setup, promise: upgrade.promise } : null,
+    addons: addons.map((a) => ({ name: a.name, price: a.price, note: a.note, approval: a.approval })),
+    scoped_items: scoped,
     monthly_total: pkg.monthly + addonMonthly,
-    monthly_is_from: addons.some((a) => /–|\+/.test(a.price)),
+    monthly_is_from: addons.some((a) => /–|\+|from/.test(a.price)),
     setup_total: pkg.setup,
-    one_time_addons: oneTime.map((a) => a.name),
+    one_time_addons: oneTime.map((a) => `${a.name} (${a.price})`),
     bundle_upgrade: bundleUpgrade,
   };
 }
@@ -227,12 +313,14 @@ export function proposalText(prospect, proposal, rep = '') {
     `EVERYTHING INCLUDED:`,
     ...p.package.included.map((i) => `  ✓ ${i}`),
     p.addons.length ? `\nADD-ONS FOR YOUR EXTRAS:\n${p.addons.map((a) => `  + ${a.name} — ${a.price}${a.note ? ` (${a.note})` : ''}`).join('\n')}` : null,
+    p.scoped_items.length ? `\nSCOPED SEPARATELY (we'll quote after a quick scoping call):\n${p.scoped_items.map((s) => `  ◦ ${s}`).join('\n')}` : null,
     '',
     `YOUR INVESTMENT`,
     `  Recurring: ${p.monthly_is_from ? 'from ' : ''}$${p.monthly_total}/mo`,
-    `  One-time setup: $${p.setup_total}${p.one_time_addons.length ? ` (plus ${p.one_time_addons.join(', ')} quoted per scope)` : ''}`,
+    `  One-time setup: $${p.setup_total}${p.one_time_addons.length ? ` (plus ${p.one_time_addons.join(', ')})` : ''}`,
     `  Ad spend and usage-based costs are always separate and itemized.`,
     p.bundle_upgrade ? `\nWORTH KNOWING: your package plus add-ons crosses $${p.bundle_upgrade.monthly} — the ${p.bundle_upgrade.name} plan covers it all natively${p.bundle_upgrade.saving > 0 ? ` and saves you $${p.bundle_upgrade.saving}/mo` : ' for the same money'}. Ask ${rep ? rep.split(' ')[0] : 'us'} to walk you through it.` : null,
+    p.upgrade ? `\nWHEN YOU'RE READY FOR MORE: the natural next step is ${p.upgrade.name} — ${p.upgrade.promise} ($${p.upgrade.monthly}/mo + $${p.upgrade.setup} setup). No pressure; we'll review together at your account check-ins.` : null,
     '',
     `No long-term contracts. We earn the next month every month.`,
   ];

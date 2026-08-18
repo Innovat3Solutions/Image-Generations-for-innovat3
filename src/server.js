@@ -12,7 +12,7 @@ import { createRun, updateRun } from './db.js';
 import { marketsForVertical, VERTICAL_NAICS } from './market.js';
 import { providerStatus } from './enrich/provider-status.js';
 import { registerTrainingRoutes } from './training/index.js';
-import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, UPGRADE_TRIGGERS, RULES, recommendOffer, buildProposal, proposalText } from './offers.js';
+import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, ESSENTIAL_ADDONS, CLOSE_CHECKLIST, EXPANSION_RHYTHM, ECONOMICS, UPGRADE_TRIGGERS, RULES, recommendOffer, buildProposal, proposalText } from './offers.js';
 import { enqueueSequence, deliverDue, deliverEvent } from './sequences.js';
 import { emailConfigured, smsConfigured } from './senders.js';
 import { generateOutreach } from './outreach.js';
@@ -428,7 +428,14 @@ app.get('/api/prospects/:id', (req, res) => {
 
 // ---------- offers knowledge base ----------
 app.get('/api/offers', (req, res) => {
-  res.json({ packages: PACKAGES, addOns: ADD_ONS, projects: PROJECTS, qualification: QUALIFICATION, upgradeTriggers: UPGRADE_TRIGGERS, rules: RULES });
+  // Rep-safe knowledge base — economics (commission/margins) deliberately
+  // excluded; that lives behind the admin-only /api/economics.
+  res.json({
+    packages: PACKAGES, addOns: ADD_ONS, projects: PROJECTS,
+    qualification: QUALIFICATION, essentialAddons: ESSENTIAL_ADDONS,
+    closeChecklist: CLOSE_CHECKLIST, expansionRhythm: EXPANSION_RHYTHM,
+    upgradeTriggers: UPGRADE_TRIGGERS, rules: RULES,
+  });
 });
 
 // ---------- outreach generator ----------
@@ -587,12 +594,24 @@ app.patch('/api/prospects/:id', (req, res) => {
 // the prospect cares about, and the package + pricing structure assembles
 // itself per the Pricing Standard. GET returns state; PATCH saves and both
 // return the freshly computed proposal.
+// v1 discovery checklists saved under the old 8-question keys — fold them
+// into the v2 six-need diagnostic so nothing a rep checked is lost.
+const LEGACY_NEED_KEYS = {
+  presence: 'presence', reviews: 'reputation', lead_capture: 'crm_follow_up',
+  follow_up: 'crm_follow_up', phone_coverage: 'ai_calls', old_database: 'growth',
+  marketing: 'full_marketing', content_supply: 'full_marketing',
+};
 const discoveryPayload = (row, rep) => {
   const d = (() => { try { return JSON.parse(row.discovery_json || '{}'); } catch { return {}; } })();
+  d.checked = [...new Set((d.checked || []).map((k) => LEGACY_NEED_KEYS[k] || k))];
   const proposal = buildProposal(row, d);
   return {
-    items: QUALIFICATION.map((q) => ({ key: q.key, area: q.area, question: q.question, checked: (d.checked || []).includes(q.key) })),
-    extras: ADD_ONS.map((a) => ({ name: a.name, price: a.price, note: a.note, checked: (d.extras || []).includes(a.name) })),
+    items: QUALIFICATION.map((q) => ({ key: q.key, area: q.area, question: q.question, rep_says: q.rep_says, do_not: q.do_not, checked: d.checked.includes(q.key) })),
+    essentials: ESSENTIAL_ADDONS.map((e) => {
+      const addon = e.addon ? ADD_ONS.find((a) => a.name === e.addon) : null;
+      return { key: e.key, question: e.question, addon: e.addon, scoped: e.scoped || null, price: addon?.price || 'quoted after scoping', when: e.when, checked: (d.extras || []).includes(e.key) };
+    }),
+    close_checklist: CLOSE_CHECKLIST,
     notes: d.notes || '',
     proposal,
     proposal_text: proposalText(row, proposal, rep),
@@ -607,14 +626,28 @@ app.patch('/api/prospects/:id/discovery', (req, res) => {
   const row = getProspect(req);
   if (!row) return res.status(404).json({ error: 'not found' });
   const validKeys = new Set(QUALIFICATION.map((q) => q.key));
-  const validExtras = new Set(ADD_ONS.map((a) => a.name));
+  const validExtras = new Set(ESSENTIAL_ADDONS.map((e) => e.key));
   const d = {
-    checked: (Array.isArray(req.body?.checked) ? req.body.checked : []).filter((k) => validKeys.has(k)),
+    checked: (Array.isArray(req.body?.checked) ? req.body.checked : [])
+      .map((k) => LEGACY_NEED_KEYS[k] || k).filter((k) => validKeys.has(k)),
     extras: (Array.isArray(req.body?.extras) ? req.body.extras : []).filter((n) => validExtras.has(n)),
     notes: String(req.body?.notes || '').slice(0, 4000),
   };
   updateProspect(row.id, { discovery_json: JSON.stringify(d) });
   res.json(discoveryPayload({ ...row, discovery_json: JSON.stringify(d) }, String(req.body?.rep_name || req.user.display_name || '')));
+});
+
+// ---------- economics: MANAGEMENT ONLY ----------
+// Commission and margin logic never reaches rep-facing UI or proposals.
+app.get('/api/economics', adminOnly, (req, res) => {
+  res.json({
+    ...ECONOMICS,
+    packages: PACKAGES.map((p) => ({
+      name: p.name, monthly: p.monthly, setup: p.setup,
+      commission_monthly: Math.round(p.monthly * ECONOMICS.standard_commission),
+      commission_setup: Math.round(p.setup * ECONOMICS.standard_commission),
+    })),
+  });
 });
 
 // ---------- unified history: every touch, send, and to-do on one timeline ----------

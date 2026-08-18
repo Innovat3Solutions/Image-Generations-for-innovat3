@@ -448,7 +448,7 @@ async function openDrawer(id) {
     </section>
 
     <section>
-      <h3>Discovery call — check off what they care about, the package builds itself</h3>
+      <h3>Sales call guide — diagnose, recommend, check add-ons, close</h3>
       <div id="disc-panel"><span class="muted">Loading…</span></div>
     </section>
 
@@ -828,32 +828,46 @@ function paintDiscovery(id, d) {
   const el = $('#disc-panel');
   if (!el) return;
   const p = d.proposal;
+  const marketingPkg = /^marketing/.test(p.package.key);
   el.innerHTML = `
+    <div class="disc-step">Step 1 — diagnose the primary need</div>
     <div class="disc-list">
       ${d.items.map((i) => `<label class="disc-item${i.checked ? ' on' : ''}">
         <input type="checkbox" class="disc-chk" value="${esc(i.key)}" ${i.checked ? 'checked' : ''} />
-        <span><b>${esc(i.area)}</b><span class="disc-q">&ldquo;${esc(i.question)}&rdquo;</span></span></label>`).join('')}
+        <span><b>${esc(i.area)}</b><span class="disc-q">${esc(i.question)}</span></span></label>`).join('')}
     </div>
-    <details class="disc-extras"${d.extras.some((e) => e.checked) ? ' open' : ''}>
-      <summary>Add-on extras${d.extras.filter((e) => e.checked).length ? ` (${d.extras.filter((e) => e.checked).length} selected)` : ''}</summary>
-      <div class="disc-list sm">${d.extras.map((e) => `<label class="disc-item sm${e.checked ? ' on' : ''}">
-        <input type="checkbox" class="disc-extra" value="${esc(e.name)}" ${e.checked ? 'checked' : ''} />
-        <span><b>${esc(e.name)}</b> <span class="muted">${esc(e.price)}</span></span></label>`).join('')}</div>
-    </details>
-    <textarea id="disc-notes" placeholder="Call notes — what they said, in their own words">${esc(d.notes)}</textarea>
-    <div class="offer-box" style="margin-top: 10px;">
-      <div class="oh"><span>${esc(p.package.name)} — $${p.package.monthly}/mo <span style="font-weight: 500; font-size: 11.5px; color: #8b8b8b;">· $${p.package.setup} setup${p.package.usage ? ' · + usage' : ''}</span></span>
+
+    <div class="disc-step">Step 2 — one package, one upgrade path</div>
+    <div class="offer-box">
+      <div class="oh"><span>${esc(p.package.name)} — $${p.package.monthly}/mo <span style="font-weight: 500; font-size: 11.5px; color: #8b8b8b;">· $${p.package.setup} setup${p.package.usage ? ' · usage billed separately' : ''}</span></span>
         <span style="font-size: 12.5px; font-weight: 800; white-space: nowrap;">${p.monthly_is_from ? 'from ' : ''}$${p.monthly_total}/mo</span></div>
-      <div style="margin-top: 5px; color: #3d3d3d;">${p.needs.length
-        ? `Because they need: ${esc(p.needs.join(' · '))}`
-        : 'Check off what they care about above — the right package assembles itself here, live.'}</div>
+      <div class="talk">${esc(p.package.rep_says)}</div>
+      <div style="margin-top: 6px; color: #3d3d3d;">${p.needs.length
+        ? `Diagnosed: ${esc(p.needs.join(' · '))}`
+        : 'Check the needs above — the recommendation assembles itself here, live.'}</div>
       ${p.addons.length ? `<div style="margin-top: 5px; color: #3d3d3d;">Add-ons: ${p.addons.map((a) => `${esc(a.name)} (${esc(a.price)})`).join(' · ')}</div>` : ''}
+      ${p.scoped_items.length ? `<div style="margin-top: 5px; color: #3d3d3d;">Scoped separately: ${p.scoped_items.map(esc).join(' · ')} — management approval, quote after scoping.</div>` : ''}
+      ${p.upgrade ? `<div class="offer-path" style="margin-top: 9px;"><span class="offer-step entry">▶ ${esc(p.package.name)} $${p.package.monthly}</span><span class="offer-step">upgrade path: ${esc(p.upgrade.name)} $${p.upgrade.monthly}</span></div>` : ''}
       ${p.bundle_upgrade ? `<div class="talk">Bundling rule: package + add-ons cross $${p.bundle_upgrade.monthly}/mo — pitch ${esc(p.bundle_upgrade.name)} instead${p.bundle_upgrade.saving > 0 ? `; it covers everything and saves them $${p.bundle_upgrade.saving}/mo` : ' — same money, more included'}.</div>` : ''}
     </div>
+    ${p.guardrails.length ? `<div class="disc-guard">${p.guardrails.map((g) => `<span>⛬ ${esc(g)}</span>`).join('')}</div>` : ''}
+
+    <div class="disc-step">Step 3 — essential add-on check <span class="muted" style="text-transform: none; letter-spacing: 0;">(only after the package is set)</span></div>
+    <div class="disc-list">
+      ${d.essentials.map((e) => `<label class="disc-item sm${e.checked ? ' on' : ''}${e.key === 'content_shoot' && !marketingPkg ? ' dim' : ''}">
+        <input type="checkbox" class="disc-extra" value="${esc(e.key)}" ${e.checked ? 'checked' : ''} />
+        <span><span class="disc-q" style="margin-top: 0;">${esc(e.question)}</span><b>→ ${esc(e.addon || e.scoped)} <span class="muted" style="font-weight: 600;">${esc(e.price)}</span></b></span></label>`).join('')}
+    </div>
+
+    <textarea id="disc-notes" placeholder="Call notes — what they said, in their own words">${esc(d.notes)}</textarea>
+
     <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center;">
       <button class="btn primary" id="disc-copy">Copy pricing guide</button>
-      <span class="muted" style="font-size: 11px;">Auto-saves. The guide reads &ldquo;here's everything included, here's the cost&rdquo; — ready to read out or send.</span>
-    </div>`;
+      <span class="muted" style="font-size: 11px;">Auto-saves. &ldquo;Here's everything included, here's the cost&rdquo; — ready to read out or send.</span>
+    </div>
+    <details style="margin-top: 10px;"><summary class="muted" style="cursor: pointer; font-size: 11.5px; font-weight: 700;">Step 4 — close cleanly</summary>
+      <ul class="disc-close">${d.close_checklist.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>
+    </details>`;
 
   const saveDiscovery = async (repaint) => {
     const out = await api(`/api/prospects/${id}/discovery`, {
