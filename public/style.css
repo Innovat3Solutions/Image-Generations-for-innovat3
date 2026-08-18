@@ -316,6 +316,19 @@ tbody tr:hover { background: var(--panel); }
 .chip.guessed { color: var(--warning); border-color: var(--warning); }
 .chip.invalid { color: var(--due); border-color: var(--due); }
 
+/* ownership */
+.owner-dot {
+  width: 24px; height: 24px; border-radius: 50%; flex: none;
+  background: var(--purple); color: #fff; font-size: 9.5px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.claim-btn {
+  border: 1px solid var(--accent-dim); background: transparent; color: var(--accent);
+  border-radius: 999px; padding: 4px 10px; font-size: 10px; font-weight: 800;
+  cursor: pointer; font-family: var(--font); letter-spacing: 0.04em;
+}
+.claim-btn:hover { background: var(--accent); color: var(--accent-ink); }
+
 /* ---------- right rail ---------- */
 .side-title {
   font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;

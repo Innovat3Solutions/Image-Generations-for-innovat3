@@ -28,18 +28,26 @@ async function loadUsers() {
         <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
       </select></td>
       <td>${u.active ? '<span class="chip verified">active</span>' : '<span class="chip invalid">disabled</span>'}</td>
+      <td><button class="btn ghost sm u-cal" data-url="${esc(u.calendar_url || '')}">Copy feed URL</button></td>
       <td>
         <button class="btn ghost sm u-toggle" data-id="${u.id}" data-active="${u.active}">${u.active ? 'Disable' : 'Re-enable'}</button>
         <button class="btn ghost sm u-pw" data-id="${u.id}">Reset password</button>
       </td>
     </tr>`).join('')
-    : '<tr><td colspan="5" class="muted">No teammates yet — add the first one above. (Until then, only the master admin login works.)</td></tr>';
+    : '<tr><td colspan="6" class="muted">No teammates yet — add the first one above. (Until then, only the master admin login works.)</td></tr>';
 
   document.querySelectorAll('.u-role-sel').forEach((sel) => {
     sel.onchange = () => patch(`/api/users/${sel.dataset.id}`, { role: sel.value }).catch((e) => alert(e.message));
   });
   document.querySelectorAll('.u-toggle').forEach((b) => {
     b.onclick = () => patch(`/api/users/${b.dataset.id}`, { active: b.dataset.active !== '1' }).then(loadUsers).catch((e) => alert(e.message));
+  });
+  document.querySelectorAll('.u-cal').forEach((b) => {
+    b.onclick = async () => {
+      if (!b.dataset.url) return;
+      try { await navigator.clipboard.writeText(b.dataset.url); } catch { /* blocked */ }
+      alert(`Calendar feed URL copied:\n\n${b.dataset.url}\n\nHand it to that rep — they add it once in Google Calendar (Other calendars → + → From URL) and their follow-ups + sales calls stay in sync.`);
+    };
   });
   document.querySelectorAll('.u-pw').forEach((b) => {
     b.onclick = () => {
@@ -112,6 +120,34 @@ $('#a-add').onclick = async () => {
   } catch (e) { showErr($('#a-error'), e.message); }
 };
 
+/* ---------- assignment mode ---------- */
+async function loadAssignment() {
+  try {
+    const { assignment_mode } = await api('/api/settings');
+    const radio = document.querySelector(`input[name="amode"][value="${assignment_mode}"]`);
+    if (radio) radio.checked = true;
+  } catch { /* non-admin */ }
+  document.querySelectorAll('input[name="amode"]').forEach((r) => {
+    r.onchange = async () => {
+      try {
+        await patch('/api/settings', { assignment_mode: r.value });
+        $('#assign-note').textContent = r.value === 'auto'
+          ? 'Auto-assign is on — new prospects are dealt out after every run.'
+          : 'Claim mode — reps take their own from the board.';
+      } catch (e) { alert(e.message); }
+    };
+  });
+  $('#assign-distribute').onclick = async () => {
+    $('#assign-distribute').disabled = true;
+    try {
+      const out = await api('/api/assign/distribute', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      $('#assign-note').textContent = out.assigned
+        ? `Dealt ${out.assigned} unassigned prospects across ${out.reps.length} teammates.`
+        : (out.reps && !out.reps.length ? 'No active teammates to assign to — add them above first.' : 'Nothing unassigned to distribute.');
+    } catch (e) { alert(e.message); } finally { $('#assign-distribute').disabled = false; }
+  };
+}
+
 /* ---------- boot ---------- */
 (async function init() {
   try {
@@ -124,4 +160,5 @@ $('#a-add').onclick = async () => {
   await loadNicheGrid();
   loadUsers();
   loadAccounts();
+  loadAssignment();
 })();

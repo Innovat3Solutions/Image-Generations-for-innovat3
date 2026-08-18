@@ -3,7 +3,7 @@ import compression from 'compression';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { db, updateProspect } from './db.js';
+import { db, updateProspect, getSetting, setSetting } from './db.js';
 import { config } from './config.js';
 import { executeRun, SOURCE_REGISTRY } from './pipeline/run.js';
 import { enrichProspect } from './enrich/index.js';
@@ -22,9 +22,77 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(compression()); // gzip every response — the prospect list shrinks ~8x
 
+app.set('trust proxy', 1); // Render terminates TLS — keep req.protocol honest
+
 // Health check — must stay ABOVE the auth wall or the host's checker gets
 // 401s, marks the instance unhealthy, and serves 502s.
 app.get('/healthz', (req, res) => res.json({ ok: true }));
+
+// ---------- per-rep calendar feed (ICS) ----------
+// Calendar apps can't do our login, so each rep gets a secret tokenized URL
+// they subscribe to once (Google/Apple/Outlook). It carries THEIR work:
+// follow-ups due and scheduled sales calls on prospects assigned to them.
+// Must live ABOVE the auth wall; the token IS the auth.
+const icsEscape = (s) => String(s || '').replace(/\\/g, '\\\\').replace(/[,;]/g, (c) => '\\' + c).replace(/\r?\n/g, '\\n');
+// Timestamps arrive as SQLite "YYYY-MM-DD HH:MM:SS" (UTC) or as ISO strings
+// with their own zone marker — accept both.
+const parseDbTime = (t) => new Date(/[zZ]$|[+-]\d\d:?\d\d$/.test(t) ? t : t.replace(' ', 'T') + 'Z');
+const icsDate = (dbTime) => parseDbTime(dbTime).toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+const icsDatePlus30 = (dbTime) =>
+  new Date(parseDbTime(dbTime).getTime() + 30 * 60000)
+    .toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+app.get('/calendar/:token.ics', (req, res) => {
+  const user = db.prepare('SELECT * FROM users WHERE cal_token = ? AND active = 1').get(String(req.params.token));
+  if (!user) return res.status(404).send('Unknown calendar');
+  const rows = db.prepare(`
+    SELECT id, business_name, dba_name, phone, city, nurture_stage, call_reason, next_touch_at, scheduled_call_at
+    FROM prospects
+    WHERE assigned_to = ? AND status NOT IN ('not_interested','disqualified','no_contact')
+      AND nurture_stage != 'suppressed'
+      AND (next_touch_at IS NOT NULL OR scheduled_call_at IS NOT NULL)
+  `).all(user.display_name);
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+  const events = [];
+  for (const r of rows) {
+    const name = r.dba_name || r.business_name;
+    const desc = icsEscape([`Stage: ${r.nurture_stage || 'loaded'}`, r.phone ? `Phone: ${r.phone}` : '', r.call_reason || ''].filter(Boolean).join('\n'));
+    if (r.next_touch_at && !Number.isNaN(parseDbTime(r.next_touch_at).getTime())) {
+      events.push([
+        'BEGIN:VEVENT',
+        `UID:innovat3-fu-${r.id}@prospect-engine`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART:${icsDate(r.next_touch_at)}`,
+        `DTEND:${icsDatePlus30(r.next_touch_at)}`,
+        `SUMMARY:${icsEscape(`Follow up: ${name}${r.city ? ` (${r.city})` : ''}`)}`,
+        `DESCRIPTION:${desc}`,
+        'END:VEVENT',
+      ].join('\r\n'));
+    }
+    if (r.scheduled_call_at && !Number.isNaN(parseDbTime(r.scheduled_call_at).getTime())) {
+      events.push([
+        'BEGIN:VEVENT',
+        `UID:innovat3-call-${r.id}@prospect-engine`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART:${icsDate(r.scheduled_call_at)}`,
+        `DTEND:${icsDatePlus30(r.scheduled_call_at)}`,
+        `SUMMARY:${icsEscape(`Sales call: ${name}${r.city ? ` (${r.city})` : ''}`)}`,
+        `DESCRIPTION:${desc}`,
+        'END:VEVENT',
+      ].join('\r\n'));
+    }
+  }
+  res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+  res.send([
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//INNOVAT3//Prospect Engine//EN',
+    'CALSCALE:GREGORIAN',
+    `X-WR-CALNAME:INNOVAT3 — ${icsEscape(user.display_name)}`,
+    'X-WR-TIMEZONE:UTC',
+    ...events,
+    'END:VCALENDAR',
+  ].join('\r\n'));
+});
 
 // ---------- auth: per-user accounts with roles ----------
 // Every teammate signs in with their own username/password (managed in the
@@ -88,14 +156,80 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const STATUSES = ['new', 'contacted', 'interested', 'not_interested', 'customer', 'disqualified', 'no_contact'];
 
+// ---------- ownership: who works which prospect ----------
+// Two modes, set by the admin in Settings:
+//   claim — reps take assignments themselves (Claim button / first touch)
+//   auto  — every new prospect is dealt round-robin across active teammates
+const calTokenFor = (userId) => {
+  const row = db.prepare('SELECT cal_token FROM users WHERE id = ?').get(userId);
+  if (row?.cal_token) return row.cal_token;
+  const token = crypto.randomBytes(18).toString('hex');
+  db.prepare('UPDATE users SET cal_token = ? WHERE id = ?').run(token, userId);
+  return token;
+};
+const calUrlFor = (req, userId) => `${req.protocol}://${req.get('host')}/calendar/${calTokenFor(userId)}.ics`;
+
+function autoAssign({ force = false } = {}) {
+  if (!force && getSetting('assignment_mode', 'claim') !== 'auto') return { assigned: 0 };
+  const reps = db.prepare('SELECT display_name FROM users WHERE active = 1 ORDER BY id').all().map((r) => r.display_name);
+  if (!reps.length) return { assigned: 0, reps };
+  const rows = db.prepare(`
+    SELECT id FROM prospects
+    WHERE assigned_to IS NULL
+      AND status NOT IN ('no_contact','not_interested','disqualified','customer')
+    ORDER BY score DESC, id
+  `).all();
+  const upd = db.prepare("UPDATE prospects SET assigned_to = ?, updated_at = datetime('now') WHERE id = ?");
+  // rotate the deal so the same rep doesn't always get the cream
+  let i = db.prepare('SELECT COUNT(*) c FROM prospects WHERE assigned_to IS NOT NULL').get().c;
+  for (const r of rows) upd.run(reps[i++ % reps.length], r.id);
+  if (rows.length) log(`ownership: dealt ${rows.length} unassigned prospects across ${reps.length} reps`);
+  return { assigned: rows.length, reps };
+}
+
+app.get('/api/settings', adminOnly, (req, res) => {
+  res.json({ assignment_mode: getSetting('assignment_mode', 'claim') });
+});
+app.patch('/api/settings', adminOnly, (req, res) => {
+  const { assignment_mode } = req.body || {};
+  if (assignment_mode !== undefined) {
+    if (!['claim', 'auto'].includes(assignment_mode)) return res.status(400).json({ error: 'bad mode' });
+    setSetting('assignment_mode', assignment_mode);
+    if (assignment_mode === 'auto') autoAssign();
+  }
+  res.json({ assignment_mode: getSetting('assignment_mode', 'claim') });
+});
+app.post('/api/assign/distribute', adminOnly, (req, res) => {
+  res.json(autoAssign({ force: true }));
+});
+
+// A rep takes an unassigned prospect (admins can also reassign)
+app.post('/api/prospects/:id/claim', (req, res) => {
+  const row = db.prepare('SELECT id, assigned_to FROM prospects WHERE id = ?').get(Number(req.params.id));
+  if (!row) return res.status(404).json({ error: 'not found' });
+  const rep = String(req.body?.rep_name || req.user.display_name || '').trim();
+  if (!rep) return res.status(400).json({ error: 'Set your name first (click your avatar).' });
+  if (row.assigned_to && row.assigned_to !== rep && req.user.role !== 'admin') {
+    return res.status(409).json({ error: `Already assigned to ${row.assigned_to}` });
+  }
+  updateProspect(row.id, { assigned_to: rep });
+  res.json(db.prepare('SELECT * FROM prospects WHERE id = ?').get(row.id));
+});
+
 // ---------- who am I ----------
 app.get('/api/me', (req, res) => {
-  res.json({ username: req.user.username, name: req.user.display_name, role: req.user.role });
+  res.json({
+    username: req.user.username,
+    name: req.user.display_name,
+    role: req.user.role,
+    calendar_url: req.user.id ? calUrlFor(req, req.user.id) : null,
+  });
 });
 
 // ---------- team management (Settings tab, admin) ----------
 app.get('/api/users', adminOnly, (req, res) => {
-  res.json(db.prepare('SELECT id, username, display_name, role, active, created_at FROM users ORDER BY id').all());
+  const rows = db.prepare('SELECT id, username, display_name, role, active, created_at FROM users ORDER BY id').all();
+  res.json(rows.map((u) => ({ ...u, calendar_url: calUrlFor(req, u.id) })));
 });
 
 app.post('/api/users', adminOnly, (req, res) => {
@@ -229,6 +363,9 @@ app.get('/api/prospects', (req, res) => {
     if (list.length) { where.push(`nurture_stage IN (${list.map(() => '?').join(',')})`); params.push(...list); }
   }
   if (assigned) { where.push('(assigned_to = ? OR assigned_to IS NULL)'); params.push(assigned); }
+  const owner = String(req.query.owner || '');
+  if (owner === 'unassigned') where.push('assigned_to IS NULL');
+  else if (owner) { where.push('assigned_to = ?'); params.push(owner); }
   if (lastDir === 'in' || lastDir === 'out') {
     where.push(`(SELECT direction FROM prospect_touches t WHERE t.prospect_id = prospects.id ORDER BY t.id DESC LIMIT 1) = ?`);
     params.push(lastDir);
@@ -283,9 +420,9 @@ app.get('/api/offers', (req, res) => {
 app.post('/api/prospects/:id/outreach', async (req, res) => {
   const row = db.prepare('SELECT * FROM prospects WHERE id = ?').get(Number(req.params.id));
   if (!row) return res.status(404).json({ error: 'not found' });
-  const channel = req.body?.channel === 'sms' ? 'sms' : 'email';
+  const channel = ['sms', 'voicemail'].includes(req.body?.channel) ? req.body.channel : 'email';
   try {
-    res.json(await generateOutreach(row, channel, req.body?.rep_name || ''));
+    res.json(await generateOutreach(row, channel, req.body?.rep_name || req.user.display_name || ''));
   } catch (err) {
     res.status(502).json({ error: String(err.message || err) });
   }
@@ -644,6 +781,7 @@ app.post('/api/runs', (req, res) => {
   const runId = createRun({ limit, days, industries, sources, zips: cleanZips, requireContact, accountId });
   activeRuns.add(runId);
   executeRun({ limit, days, industries, sources, zips: cleanZips, categories, requireContact, accountId, runId })
+    .then(() => autoAssign())
     .catch(() => {})
     .finally(() => activeRuns.delete(runId));
   res.status(202).json({ runId });
@@ -718,6 +856,7 @@ if (DAILY_RUN_HOUR !== null && Number.isInteger(DAILY_RUN_HOUR) && DAILY_RUN_HOU
     activeRuns.add(runId);
     try {
       await executeRun({ limit, runId });
+      autoAssign();
     } catch { /* recorded on the run row */ } finally {
       activeRuns.delete(runId);
     }

@@ -47,10 +47,25 @@
       <div id="u-error" class="form-error hidden"></div>
 
       <table class="settings-table" id="users-table">
-        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="users-body"><tr><td colspan="5" class="muted">Loading…</td></tr></tbody>
+        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Calendar feed</th><th>Actions</th></tr></thead>
+        <tbody id="users-body"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
       </table>
       <p class="muted" style="font-size:11px">The DASHBOARD_USER / DASHBOARD_PASSWORD pair from your host's environment variables always works as a master admin — you can't lock yourself out.</p>
+    </section>
+
+    <!-- ============ ASSIGNMENT ============ -->
+    <section class="settings-card">
+      <h2>Assignment — who owns new prospects?</h2>
+      <p class="muted">Ownership drives everything personal: the Mine filter, each rep's queues, and their calendar feed.
+        Pick how prospects get an owner. Either way, an owner's first touch still claims an unowned prospect.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label class="chk"><input type="radio" name="amode" value="claim" /> <b>Reps claim their own</b>&nbsp;— unassigned prospects show a Claim button; taking action on one takes ownership</label>
+        <label class="chk"><input type="radio" name="amode" value="auto" /> <b>Auto-assign</b>&nbsp;— every new prospect is dealt round-robin across active teammates after each pipeline run</label>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <button class="btn" id="assign-distribute">Distribute unassigned now</button>
+        <span class="muted" id="assign-note"></span>
+      </div>
     </section>
 
     <!-- ============ CLIENT ACCOUNTS ============ -->

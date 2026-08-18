@@ -94,6 +94,7 @@ export async function generateOutreach(prospect, channel = 'email', repName = ''
 - If they have no website, do NOT shame them — compliment what they DO have (new license, social presence, being established in their area).
 - Email: subject ≤ 6 words, lowercase-casual is fine; body 60-110 words; sign with the rep's name and "INNOVAT3 Solutions".
 - SMS: subject must be an empty string; body ≤ 300 characters, name who you are.
+- VOICEMAIL: subject must be an empty string; a SPOKEN script of at most 85 words, warm and unhurried, written the way people actually talk. Say the rep's name and "Innovat3 Solutions" in the first sentence, pay the one specific compliment, make clear there's no emergency, invite a callback or text to this number, and say the rep's name again before signing off. No pitch, no prices, no URLs.
 - Comply with CAN-SPAM norms: nothing deceptive in the subject.`,
     messages: [{
       role: 'user',
@@ -105,7 +106,7 @@ ${JSON.stringify(facts, null, 2)}
 
 For your own context (do NOT pitch it): our likely entry offer for them later is ${offer.entry.name} — ${offer.why}
 
-Write the ${channel === 'sms' ? 'text message' : 'email'}.`,
+Write the ${channel === 'sms' ? 'text message' : channel === 'voicemail' ? 'voicemail script' : 'email'}.`,
     }],
   });
   if (response.stop_reason === 'refusal') throw new Error('Generation was declined — try again.');
@@ -131,6 +132,13 @@ export function templateOutreach(f, channel, repName) {
         : `Came across ${theBiz}${f.city ? ` in ${f.city}` : ''} — always good to see a local ${f.vertical} building a name the old-fashioned way.`;
 
   // Playbook cold opener: kudos only — no pitch, no prices, no sales question.
+  if (channel === 'voicemail') {
+    const firstName = rep.split(' ')[0];
+    return {
+      subject: '',
+      body: `Hey${f.contactFirst ? ` ${f.contactFirst}` : ''}, this is ${firstName} with Innovat3 Solutions here in Florida. ${f.isNew ? `I came across ${theBiz}${f.city ? ` in ${f.city}` : ''} — congrats on ${launchRef}, that takes real guts.` : `I came across ${theBiz}${f.city ? ` in ${f.city}` : ''} and really liked what I saw.`} Nothing urgent at all — I just wanted to introduce myself and put a name to the number. When you get a second, feel free to call or text me back right here. Again, it's ${firstName} with Innovat3 Solutions. Have a great one${f.contactFirst ? `, ${f.contactFirst}` : ''}.`,
+    };
+  }
   if (channel === 'sms') {
     return {
       subject: '',

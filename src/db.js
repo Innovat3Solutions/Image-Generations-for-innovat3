@@ -192,6 +192,22 @@ db.exec(`
 try {
   db.exec('ALTER TABLE prospects ADD COLUMN account_id INTEGER'); // NULL = Innovat3's own book
 } catch { /* column already exists */ }
+try {
+  db.exec('ALTER TABLE users ADD COLUMN cal_token TEXT'); // per-rep calendar feed secret
+} catch { /* column already exists */ }
+
+// Small key/value store for app-wide admin settings (assignment mode, …)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS app_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  );
+`);
+export const getSetting = (key, fallback = null) =>
+  db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key)?.value ?? fallback;
+export const setSetting = (key, value) =>
+  db.prepare('INSERT INTO app_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value')
+    .run(key, String(value));
 
 export function insertProspect(p) {
   const stmt = db.prepare(`

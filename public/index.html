@@ -46,6 +46,9 @@
       <a href="/settings.html" id="btn-settings" class="rail-item hidden" title="Settings — team &amp; client accounts">
         <span class="ri-icon">✦</span><span class="ri-label">Settings</span>
       </a>
+      <button id="btn-mycal" class="rail-item" title="My calendar feed — your follow-ups &amp; sales calls, live in Google/Apple/Outlook">
+        <span class="ri-icon">▦</span><span class="ri-label">My calendar</span>
+      </button>
       <button class="rail-item rail-toggle" id="rail-toggle" title="Collapse menu">
         <span class="ri-icon">‹</span><span class="ri-label">Collapse</span>
       </button>
@@ -84,6 +87,7 @@
           <label class="chk"><input type="checkbox" id="f-hasemail" /> Has email</label>
           <label class="chk"><input type="checkbox" id="f-hasphone" /> Has phone</label>
           <label class="chk"><input type="checkbox" id="f-nowebsite" /> No website</label>
+          <label class="chk"><input type="checkbox" id="f-mine" /> Mine</label>
         </div>
       </div>
 
@@ -99,7 +103,7 @@
               <th style="width: 176px;">Reach</th>
               <th data-sort="city" class="sortable" style="width: 96px;">City</th>
               <th data-sort="last_touch" class="sortable" style="width: 150px;">Thread</th>
-              <th style="width: 116px;">Status</th>
+              <th style="width: 132px;">Status</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>

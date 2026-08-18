@@ -144,6 +144,7 @@ function filterParams() {
   if ($('#f-hasemail').checked) p.set('hasEmail', '1');
   if ($('#f-hasphone').checked) p.set('hasPhone', '1');
   if ($('#f-nowebsite').checked) p.set('noWebsite', '1');
+  if ($('#f-mine').checked && repName()) p.set('owner', repName());
   // Work-queue modes narrow the list to "what needs me right now"
   if (state.queueMode === 'your_move') { p.set('lastDir', 'in'); p.set('sort', 'last_touch'); p.set('dir', 'asc'); }
   else if (state.queueMode === 'due') { p.set('due', '1'); p.set('sort', 'last_touch'); p.set('dir', 'asc'); }
@@ -207,9 +208,13 @@ function rowHtml(r) {
       </td>
       <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2);">${esc(r.city || '—')}</td>
       <td style="overflow: hidden;">${threadCell(r)}</td>
-      <td><select class="status-select" data-id="${r.id}">
+      <td><div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+        ${r.assigned_to
+          ? `<span class="owner-dot" title="Owned by ${esc(r.assigned_to)}">${esc(initialsOf(r.assigned_to))}</span>`
+          : `<button class="claim-btn" data-claim="${r.id}" title="Take ownership of this prospect">Claim</button>`}
+        <select class="status-select" data-id="${r.id}">
         ${Object.entries(STATUS_LABELS).map(([k, v]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('')}
-      </select></td>
+      </select></div></td>
     </tr>`;
 }
 
@@ -580,6 +585,7 @@ function paintNurture(id, state, lastReply) {
         ${suppressed ? '' : '<button class="btn" id="n-sent">✓ I sent this</button>'}
         ${!suppressed && drawerContact.phone ? `<a class="btn ghost" id="n-open-sms" href="#">Messages ↗</a>` : ''}
         ${!suppressed && drawerContact.email ? `<a class="btn ghost" id="n-open-mail" href="#">Mail ↗</a>` : ''}
+        ${!suppressed && drawerContact.phone ? '<button class="btn ghost" id="n-vm">Voicemail script</button>' : ''}
         ${state.stage === 'loaded' && sug.alt ? '<button class="btn ghost" id="n-alt">Email version</button><button class="btn ghost" id="n-ai">AI-personalize</button>' : ''}
         <span id="n-msg-note" class="muted" style="font-size:11px"></span>
       </div>` : ''}
@@ -744,6 +750,23 @@ function paintNurture(id, state, lastReply) {
     }
   };
 
+  const vm = $('#n-vm');
+  if (vm) vm.onclick = async () => {
+    vm.disabled = true;
+    vm.textContent = 'Writing…';
+    try {
+      const out = await api(`/api/prospects/${id}/outreach`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel: 'voicemail', rep_name: repName() }),
+      });
+      $('#n-msg').value = out.body;
+      $('#n-msg-note').textContent = 'Voicemail script — read it when you leave the VM, or paste it into your voicemail-drop tool. Then log it with "Left voicemail".';
+    } catch (e) { alert(e.message); } finally {
+      vm.disabled = false;
+      vm.textContent = 'Voicemail script';
+    }
+  };
+
   const logBtn = $('#n-log');
   if (logBtn) logBtn.onclick = async () => {
     const text = $('#n-reply').value.trim();
@@ -819,7 +842,7 @@ function bindEvents() {
   const refresh = () => { state.page = 1; loadTable(); };
   $('#f-q').addEventListener('input', debounce(refresh, 300));
   $('#f-zip').addEventListener('input', debounce(refresh, 300));
-  for (const id of ['f-industry', 'f-source', 'f-status', 'f-minscore', 'f-hasemail', 'f-hasphone', 'f-nowebsite']) {
+  for (const id of ['f-industry', 'f-source', 'f-status', 'f-minscore', 'f-hasemail', 'f-hasphone', 'f-nowebsite', 'f-mine']) {
     $('#' + id).addEventListener('change', refresh);
   }
   $('#prev').onclick = () => { state.page--; loadTable(); };
@@ -836,7 +859,21 @@ function bindEvents() {
     };
   });
 
-  $('#tbody').addEventListener('click', (e) => {
+  $('#tbody').addEventListener('click', async (e) => {
+    const claim = e.target.closest('[data-claim]');
+    if (claim) {
+      e.stopPropagation();
+      claim.disabled = true;
+      try {
+        await api(`/api/prospects/${claim.dataset.claim}/claim`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rep_name: repName() }),
+        });
+        loadTable();
+        loadQueue();
+      } catch (err) { alert(err.message); claim.disabled = false; }
+      return;
+    }
     if (e.target.closest('.status-select') || e.target.closest('a')) return;
     const tr = e.target.closest('tr[data-id]');
     if (tr) openDrawer(tr.dataset.id);
@@ -1016,6 +1053,16 @@ function applyRail() {
 /* ---------- boot ---------- */
 (async function init() {
   applyRail();
+  $('#btn-mycal').onclick = async () => {
+    const me = state.me || await api('/api/me').catch(() => null);
+    if (!me?.calendar_url) {
+      alert('Calendar feeds come with a personal login. Ask your admin to create your teammate account in Settings, then sign in with it.');
+      return;
+    }
+    try { await navigator.clipboard.writeText(me.calendar_url); } catch { /* clipboard blocked */ }
+    alert(`Your calendar feed URL (copied to clipboard):\n\n${me.calendar_url}\n\nGoogle Calendar: Other calendars → + → From URL → paste.\nApple/Outlook: subscribe to calendar → paste.\n\nYour follow-ups and sales calls appear automatically and stay in sync.`);
+  };
+
   $('#rail-toggle').onclick = () => {
     localStorage.setItem('rail_collapsed', localStorage.getItem('rail_collapsed') === '1' ? '0' : '1');
     applyRail();
