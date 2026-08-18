@@ -71,6 +71,53 @@ $('#u-add').onclick = async () => {
   } catch (e) { showErr($('#u-error'), e.message); }
 };
 
+/* ---------- invites ---------- */
+async function loadInvites() {
+  const invites = await api('/api/invites');
+  const label = { ok: '<span class="chip verified">pending</span>', used: '<span class="chip">accepted</span>', expired: '<span class="chip invalid">expired</span>', revoked: '<span class="chip invalid">revoked</span>' };
+  $('#invites-body').innerHTML = invites.length ? invites.map((i) => `
+    <tr class="${['expired', 'revoked'].includes(i.status) ? 'inactive-row' : ''}">
+      <td><strong>${esc(i.display_name || '—')}</strong>${i.email ? `<div class="muted" style="font-size:11px">${esc(i.email)}</div>` : ''}</td>
+      <td>${i.role === 'admin' ? 'Admin' : 'User'}</td>
+      <td>${label[i.status] || esc(i.status)}${i.status === 'used' && i.accepted_at ? `<div class="muted" style="font-size:10.5px">${esc(i.accepted_at)} UTC</div>` : ''}</td>
+      <td class="muted" style="font-size:11.5px">${esc(i.expires_at)} UTC</td>
+      <td>${i.status === 'ok' ? `
+        <button class="btn ghost sm i-copy" data-url="${esc(i.invite_url)}">Copy link</button>
+        <button class="btn ghost sm i-revoke" data-id="${i.id}">Revoke</button>` : ''}</td>
+    </tr>`).join('')
+    : '<tr><td colspan="5" class="muted">No invites yet — create the first one above.</td></tr>';
+
+  document.querySelectorAll('.i-copy').forEach((b) => {
+    b.onclick = async () => {
+      try { await navigator.clipboard.writeText(b.dataset.url); } catch { /* blocked */ }
+      b.textContent = '✓ Copied';
+      setTimeout(() => { b.textContent = 'Copy link'; }, 1500);
+    };
+  });
+  document.querySelectorAll('.i-revoke').forEach((b) => {
+    b.onclick = () => post(`/api/invites/${b.dataset.id}/revoke`, {}).then(loadInvites).catch((e) => alert(e.message));
+  });
+}
+
+$('#i-create').onclick = async () => {
+  $('#i-create').disabled = true;
+  try {
+    const out = await post('/api/invites', {
+      display_name: $('#i-name').value,
+      email: $('#i-email').value,
+      role: $('#i-role').value,
+    });
+    try { await navigator.clipboard.writeText(out.invite_url); } catch { /* blocked */ }
+    $('#i-result').innerHTML = `Invite link created &amp; copied: <span style="font-family:ui-monospace,monospace;font-size:11px;overflow-wrap:anywhere">${esc(out.invite_url)}</span><br>${
+      out.emailed ? `✓ Invitation emailed to ${esc(out.email)}.`
+        : out.email && out.email_error ? `Could not email it (${esc(out.email_error)}) — send them the link yourself.`
+          : out.email && !out.email_possible ? 'Email sending is not configured (set RESEND_API_KEY + MAIL_FROM) — send them the link yourself.'
+            : 'Send them the link however you like — text, Slack, email.'}`;
+    $('#i-name').value = $('#i-email').value = '';
+    loadInvites();
+  } catch (e) { $('#i-result').textContent = e.message; } finally { $('#i-create').disabled = false; }
+};
+
 /* ---------- client accounts ---------- */
 let industries = [];
 
@@ -194,6 +241,7 @@ async function loadEconomics() {
   } catch { /* auth handled by the browser prompt */ }
   await loadNicheGrid();
   loadUsers();
+  loadInvites();
   loadAccounts();
   loadAssignment();
   loadEconomics();

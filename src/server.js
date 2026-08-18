@@ -14,7 +14,7 @@ import { providerStatus } from './enrich/provider-status.js';
 import { registerTrainingRoutes } from './training/index.js';
 import { PACKAGES, ADD_ONS, PROJECTS, QUALIFICATION, ESSENTIAL_ADDONS, CLOSE_CHECKLIST, EXPANSION_RHYTHM, ECONOMICS, UPGRADE_TRIGGERS, RULES, recommendOffer, buildProposal, proposalText } from './offers.js';
 import { enqueueSequence, deliverDue, deliverEvent } from './sequences.js';
-import { emailConfigured, smsConfigured } from './senders.js';
+import { emailConfigured, smsConfigured, sendEmail } from './senders.js';
 import { generateOutreach } from './outreach.js';
 import { nurtureState, nextAction, classifyReply, handoffSummary, snoozeDaysFromText, STAGES } from './nurture.js';
 import { VERTICALS } from './verticals.js';
@@ -96,6 +96,56 @@ app.get('/calendar/:token.ics', (req, res) => {
   ].join('\r\n'));
 });
 
+// ---------- team invites: the public accept flow ----------
+// Lives ABOVE the auth wall — the invite token IS the auth. An invitee has
+// no login yet; the link lets them create one (username + password), then
+// hands them their calendar feed. Single-use, 7-day expiry, revocable.
+const sqlNow = () => new Date().toISOString().slice(0, 19).replace('T', ' ');
+const inviteByToken = (t) => db.prepare('SELECT * FROM invites WHERE token = ?').get(String(t || ''));
+const inviteState = (inv) => {
+  if (!inv) return 'invalid';
+  if (inv.revoked) return 'revoked';
+  if (inv.accepted_at) return 'used';
+  if (inv.expires_at <= sqlNow()) return 'expired';
+  return 'ok';
+};
+
+app.get('/invite/:token', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'invite.html'));
+});
+app.get('/api/invite/:token', (req, res) => {
+  const inv = inviteByToken(req.params.token);
+  const state = inviteState(inv);
+  if (state !== 'ok') return res.status(410).json({ state });
+  res.json({ state, display_name: inv.display_name || '', role: inv.role, expires_at: inv.expires_at });
+});
+app.post('/api/invite/:token/accept', express.json(), (req, res) => {
+  const inv = inviteByToken(req.params.token);
+  const state = inviteState(inv);
+  if (state !== 'ok') return res.status(410).json({ error: { invalid: 'This invite link is not valid.', revoked: 'This invite was revoked — ask your admin for a new one.', used: 'This invite was already used. If that was you, just sign in.', expired: 'This invite expired — ask your admin for a fresh link.' }[state] });
+  const { username, display_name, password } = req.body || {};
+  if (!username || !/^[a-z0-9._-]{2,32}$/i.test(username)) return res.status(400).json({ error: 'Username: 2-32 letters/numbers/._-' });
+  if (!display_name?.trim()) return res.status(400).json({ error: 'Your name is required — it signs your outreach.' });
+  if (!password || String(password).length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  const { salt, hash } = hashPassword(password);
+  let userId;
+  try {
+    const r = db.prepare('INSERT INTO users (username, display_name, pass_salt, pass_hash, role) VALUES (?, ?, ?, ?, ?)')
+      .run(String(username).trim(), String(display_name).trim(), salt, hash, inv.role);
+    userId = Number(r.lastInsertRowid);
+  } catch {
+    return res.status(409).json({ error: 'That username is taken — pick another.' });
+  }
+  db.prepare("UPDATE invites SET accepted_at = datetime('now'), accepted_user_id = ? WHERE id = ?").run(userId, inv.id);
+  log(`invites: ${display_name.trim()} (@${username.trim()}, ${inv.role}) joined via invite from ${inv.created_by || 'admin'}`);
+  res.status(201).json({
+    username: String(username).trim(),
+    display_name: String(display_name).trim(),
+    role: inv.role,
+    calendar_url: calUrlFor(req, userId),
+  });
+});
+
 // ---------- auth: per-user accounts with roles ----------
 // Every teammate signs in with their own username/password (managed in the
 // Settings tab). The env DASHBOARD_USER/PASSWORD pair stays as the master
@@ -116,6 +166,8 @@ const verifyPassword = (password, salt, hash) => {
 const anyUsers = () => db.prepare('SELECT COUNT(*) c FROM users WHERE active = 1').get().c > 0;
 
 app.use((req, res, next) => {
+  // The invite accept page needs its stylesheet + script before login exists
+  if (req.path === '/style.css' || req.path === '/invite.js') return next();
   const header = req.headers.authorization || '';
   const [scheme, encoded] = header.split(' ');
   if (scheme === 'Basic' && encoded) {
@@ -281,6 +333,70 @@ app.patch('/api/users/:id', adminOnly, (req, res) => {
   }
   if (sets.length) db.prepare(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`).run(...params, u.id);
   res.json(db.prepare('SELECT id, username, display_name, role, active, created_at FROM users WHERE id = ?').get(u.id));
+});
+
+// ---------- invites (admin): generate the link, optionally email it ----------
+const inviteUrlFor = (req, token) => `${req.protocol}://${req.get('host')}/invite/${token}`;
+
+app.post('/api/invites', adminOnly, async (req, res) => {
+  const { display_name, email, role } = req.body || {};
+  if (!['admin', 'user'].includes(role)) return res.status(400).json({ error: 'Role must be admin or user' });
+  const cleanEmail = String(email || '').trim();
+  if (cleanEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cleanEmail)) return res.status(400).json({ error: 'That email does not look right' });
+  const token = crypto.randomBytes(21).toString('hex');
+  const r = db.prepare(`
+    INSERT INTO invites (token, display_name, email, role, created_by, expires_at)
+    VALUES (?, ?, ?, ?, ?, datetime('now', '+7 days'))
+  `).run(token, String(display_name || '').trim() || null, cleanEmail || null, role, req.user.display_name || req.user.username);
+  const url = inviteUrlFor(req, token);
+
+  // Notification: email it automatically when a sender is configured;
+  // otherwise the admin copies the link and sends it themselves.
+  let emailed = false;
+  let email_error = null;
+  if (cleanEmail && emailConfigured()) {
+    try {
+      await sendEmail({
+        to: cleanEmail,
+        subject: 'You’re invited to the INNOVAT3 Prospect Engine',
+        body: `${display_name?.trim() ? `Hi ${display_name.trim().split(' ')[0]},\n\n` : 'Hi,\n\n'}${req.user.display_name || 'Your admin'} invited you to the INNOVAT3 Prospect Engine (${role === 'admin' ? 'admin access' : 'sales dashboard access'}).
+
+Create your login here — pick your own username and password, takes a minute:
+${url}
+
+You'll also get your personal calendar feed link, so your follow-ups and sales calls show up in Google/Apple/Outlook automatically.
+
+This link is single-use and expires in 7 days.
+
+— INNOVAT3 Solutions`,
+      });
+      emailed = true;
+    } catch (err) {
+      email_error = String(err.message || err).slice(0, 200);
+    }
+  }
+  res.status(201).json({
+    id: Number(r.lastInsertRowid), invite_url: url, role, display_name: display_name?.trim() || null,
+    email: cleanEmail || null, emailed, email_error,
+    email_possible: emailConfigured(),
+    expires_at: db.prepare('SELECT expires_at FROM invites WHERE id = ?').get(Number(r.lastInsertRowid)).expires_at,
+  });
+});
+
+app.get('/api/invites', adminOnly, (req, res) => {
+  const rows = db.prepare('SELECT * FROM invites ORDER BY id DESC LIMIT 50').all();
+  res.json(rows.map((inv) => ({
+    id: inv.id, display_name: inv.display_name, email: inv.email, role: inv.role,
+    created_by: inv.created_by, created_at: inv.created_at, expires_at: inv.expires_at,
+    status: inviteState(inv),
+    invite_url: inviteState(inv) === 'ok' ? inviteUrlFor(req, inv.token) : null,
+    accepted_at: inv.accepted_at,
+  })));
+});
+
+app.post('/api/invites/:id/revoke', adminOnly, (req, res) => {
+  db.prepare('UPDATE invites SET revoked = 1 WHERE id = ? AND accepted_at IS NULL').run(Number(req.params.id));
+  res.json({ ok: true });
 });
 
 // ---------- client accounts (who are we prospecting FOR) ----------

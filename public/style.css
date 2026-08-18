@@ -525,6 +525,19 @@ tbody tr:hover { background: var(--panel); }
 .prov-key { display: block; font-size: 10px; color: var(--muted); font-family: ui-monospace, monospace; margin-top: 2px; }
 .form-error { color: var(--due); font-size: 12px; margin-top: 8px; display: inline-block; }
 
+/* ---------- invite accept page ---------- */
+.invite-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.invite-card {
+  width: 460px; max-width: 100%; background: var(--panel); border: 1px solid var(--grid);
+  border-radius: 22px; padding: 28px 30px 26px;
+}
+.invite-brand { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; color: var(--accent); margin-bottom: 16px; }
+.invite-label { display: block; margin-top: 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.invite-label input { display: block; width: 100%; margin-top: 5px; padding: 10px 14px; font-size: 13px; }
+.invite-cal { background: var(--accent); color: var(--accent-ink); border-radius: 16px; padding: 14px 16px; margin-top: 6px; }
+.invite-cal-url { font-family: ui-monospace, monospace; font-size: 10.5px; overflow-wrap: anywhere; margin-top: 6px; color: var(--accent-ink); }
+.invite-cal .btn { background: var(--accent-ink); color: var(--accent); }
+
 /* ---------- settings ---------- */
 .settings-wrap { max-width: 1080px; margin: 0 auto; padding: 20px 22px 60px; display: flex; flex-direction: column; gap: 18px; }
 .settings-card { background: var(--panel); border: 1px solid var(--grid); border-radius: 22px; padding: 20px 24px; }

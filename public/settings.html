@@ -50,6 +50,27 @@
         <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Calendar feed</th><th>Actions</th></tr></thead>
         <tbody id="users-body"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
       </table>
+
+      <h2 style="margin-top:26px">Invite with a link</h2>
+      <p class="muted">The easier way in: generate an invite link — they open it, pick their own username and password,
+        and their calendar feed comes attached. Links are single-use and expire in 7 days. With an email address
+        (and email sending configured), the invitation goes out automatically.</p>
+      <div class="form-row" style="flex-wrap:wrap">
+        <label>Name <span class="muted">(optional, prefills)</span> <input id="i-name" placeholder="Jordan Smith" /></label>
+        <label>Email <span class="muted">(optional — to send it)</span> <input id="i-email" placeholder="jordan@example.com" /></label>
+        <label>Access
+          <select id="i-role">
+            <option value="user">User — dashboard access</option>
+            <option value="admin">Admin — full access</option>
+          </select>
+        </label>
+        <button class="btn primary" id="i-create" style="align-self:flex-end">+ Create invite link</button>
+      </div>
+      <div id="i-result" class="muted" style="margin-top:10px;font-size:12px"></div>
+      <table class="settings-table" id="invites-table">
+        <thead><tr><th>Invitee</th><th>Access</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead>
+        <tbody id="invites-body"><tr><td colspan="5" class="muted">Loading…</td></tr></tbody>
+      </table>
       <p class="muted" style="font-size:11px">The DASHBOARD_USER / DASHBOARD_PASSWORD pair from your host's environment variables always works as a master admin — you can't lock yourself out.</p>
     </section>
 

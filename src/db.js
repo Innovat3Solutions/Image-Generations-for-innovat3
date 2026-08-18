@@ -240,6 +240,25 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_todos_open ON todos(done, assigned_to);
 `);
 
+// Team invites: an admin generates a tokenized link (optionally emailed);
+// the invitee opens it, picks their own username + password, and lands
+// with their calendar feed attached. Single-use, expiring, revocable.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS invites (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    token TEXT NOT NULL UNIQUE,
+    display_name TEXT,
+    email TEXT,
+    role TEXT NOT NULL DEFAULT 'user',   -- admin | user
+    created_by TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    expires_at TEXT NOT NULL,
+    accepted_at TEXT,
+    accepted_user_id INTEGER,
+    revoked INTEGER DEFAULT 0
+  );
+`);
+
 // Small key/value store for app-wide admin settings (assignment mode, …)
 db.exec(`
   CREATE TABLE IF NOT EXISTS app_settings (
