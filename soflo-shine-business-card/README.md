@@ -9,6 +9,7 @@ Two-sided business card, front and back, drawn at print size.
 | `canvas.json` | Layout of the two artboards on the design canvas, plus the print-specs note |
 | `soflo-shine-card-front.png` | Front, 1050 × 600 px (300 dpi at trim) |
 | `soflo-shine-card-back.png` | Back, 1050 × 600 px (300 dpi at trim) |
+| `soflo-shine-card-mockup.png` | Presentation mockup — both faces composited on a dark studio surface |
 
 ## Print specs
 
