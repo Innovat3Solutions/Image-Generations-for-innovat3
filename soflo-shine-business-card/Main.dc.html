@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;500;600;700&family=Saira:ital,wght@1,800;1,900&display=swap">
+  <style>
+
+  body { margin:0; background:#08090b; }
+  .card { position:relative; width:1050px; height:600px; overflow:hidden; background:#08090b;
+          font-family:'Barlow Condensed','Oswald','Arial Narrow',sans-serif; }
+  .sheen { position:absolute; inset:0;
+    background:
+      radial-gradient(110% 80% at 80% 4%, rgba(76,150,255,.22), rgba(0,0,0,0) 62%),
+      radial-gradient(80% 60% at 6% 104%, rgba(255,255,255,.07), rgba(0,0,0,0) 60%); }
+  .streak { position:absolute; top:-120px; left:-160px; width:420px; height:900px;
+    transform:rotate(24deg);
+    background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.075) 50%, rgba(255,255,255,0) 100%); }
+  .word { position:absolute; left:0; right:0; top:187px; text-align:center; padding-left:26px;
+    font-family:'Anton','Arial Narrow',sans-serif; font-weight:400; font-size:380px; line-height:1;
+    letter-spacing:.004em;
+    background-image:linear-gradient(180deg,#5cb0ff 0%, #0b84ff 44%, #0052c2 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .car { position:absolute; left:196px; width:844px;
+    filter:drop-shadow(0 30px 46px rgba(0,0,0,.8)); }
+  .byline { position:absolute; left:40px; top:110px; writing-mode:vertical-rl;
+    transform:rotate(180deg); transform-origin:center;
+    font-size:26px; font-weight:600; letter-spacing:.4em; color:#b3bbc5; text-transform:uppercase; }
+  .tick { position:absolute; left:52px; top:52px; width:4px; height:40px;
+    background:linear-gradient(180deg,#0b84ff,rgba(11,132,255,0)); }
+  a { color:#0b84ff; text-decoration:none; }
+  a:hover { color:#4aa5ff; }
+  </style>
+</helmet>
+<div class="card">
+  <div class="sheen"></div>
+  <div class="streak"></div>
+  <div class="word">DETAIL</div>
+  <div class="car" style="top:-4px"><svg viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+  <defs>
+    <linearGradient id="f-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"></stop><stop offset=".30" stop-color="#e3e8ee"></stop>
+      <stop offset=".58" stop-color="#a7afb9"></stop><stop offset="1" stop-color="#4a515a"></stop>
+    </linearGradient>
+    <linearGradient id="f-glass" x1="0" y1="0" x2=".35" y2="1">
+      <stop offset="0" stop-color="#333c47"></stop><stop offset="1" stop-color="#0b0f14"></stop>
+    </linearGradient>
+    <mask id="f-arch">
+      <rect x="0" y="0" width="1000" height="400" fill="#fff"></rect>
+      <circle cx="230" cy="300" r="82" fill="#000"></circle>
+      <circle cx="778" cy="300" r="82" fill="#000"></circle>
+    </mask>
+  </defs>
+  <g mask="url(#f-arch)">
+    <path fill="url(#f-body)" d="M 26 280 C 32 250, 66 230, 118 220 C 168 211, 214 206, 256 202 C 294 198, 320 194, 340 186 C 366 148, 412 114, 478 102 C 542 90, 598 98, 640 116 C 700 142, 768 182, 822 206 C 868 226, 916 240, 938 254 C 958 267, 966 282, 962 296 C 958 312, 948 344, 934 344 L 50 344 C 34 344, 20 300, 26 280 Z"></path>
+    <path fill="url(#f-glass)" d="M 382 182 C 406 146, 448 118, 494 110 C 540 102, 584 108, 618 122 L 676 152 L 542 186 Z"></path>
+    <path fill="rgba(255,255,255,.5)" d="M 250 236 C 380 224, 620 234, 806 274 L 806 282 C 620 246, 380 236, 250 244 Z"></path>
+  </g>
+  <circle cx="230" cy="300" r="72" fill="#08090b"></circle>
+  <circle cx="230" cy="300" r="45" fill="none" stroke="#bcc4ce" stroke-width="16"></circle>
+  <circle cx="778" cy="300" r="72" fill="#08090b"></circle>
+  <circle cx="778" cy="300" r="45" fill="none" stroke="#bcc4ce" stroke-width="16"></circle>
+  <path fill="#0b84ff" d="M 50 268 C 62 248, 88 234, 124 228 L 206 224 L 66 282 Z"></path>
+</svg>
+</div>
+  <div class="tick"></div>
+  <div class="byline">By SoFlo Shine</div>
+</div>
+</x-dc>
+</body>
+</html>

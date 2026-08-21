@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;500;600;700&family=Saira:ital,wght@1,800;1,900&display=swap">
+  <style>
+
+  body { margin:0; background:#08090b; }
+  .card { position:relative; width:1050px; height:600px; overflow:hidden; background:#08090b;
+          font-family:'Barlow Condensed','Oswald','Arial Narrow',sans-serif; color:#e8ecf1; }
+  .sheen { position:absolute; inset:0;
+    background:
+      radial-gradient(85% 70% at 2% 0%, rgba(76,150,255,.17), rgba(0,0,0,0) 60%),
+      radial-gradient(80% 70% at 100% 100%, rgba(255,255,255,.055), rgba(0,0,0,0) 62%); }
+  .edge { position:absolute; left:0; top:0; bottom:0; width:11px;
+    background:linear-gradient(180deg,#3ba0ff,#0b84ff 40%,#003f9e); }
+  .inner { position:absolute; inset:0; padding:52px 62px 48px 80px;
+    display:flex; flex-direction:column; box-sizing:border-box; }
+  .row { display:flex; justify-content:space-between; gap:40px; }
+  .spacer { flex:1; min-height:44px; }
+  .lockup { display:flex; flex-direction:column; align-items:center; gap:9px; width:468px; flex:none; }
+  .lockup .mark { width:96%; }
+  .wordmark { font-family:'Saira','Arial',sans-serif; font-style:italic; font-weight:900;
+    font-size:66px; line-height:.92; letter-spacing:.004em; white-space:nowrap; color:#d3d8de; }
+  .wordmark .hi { color:#0b84ff; }
+  .sub { display:flex; align-items:center; gap:15px; width:100%; }
+  .sub span { font-size:27px; font-weight:600; letter-spacing:.44em; color:#8b939d; padding-left:.44em; }
+  .sub i { flex:1; height:3px; background:#454b53; }
+  .qrwrap { display:flex; flex-direction:column; align-items:center; gap:11px; flex:none; }
+  .qr { width:180px; height:180px; background:#f5f7fa; border-radius:10px; padding:12px;
+    box-sizing:border-box; }
+  .scan { font-size:25px; font-weight:600; letter-spacing:.28em; color:#8b939d; padding-left:.28em; }
+  .divider { height:2px; flex:none; margin-bottom:30px;
+    background:linear-gradient(90deg,rgba(11,132,255,.9),rgba(255,255,255,.10) 42%,rgba(255,255,255,0)); }
+  .name { font-size:60px; font-weight:700; letter-spacing:.075em; line-height:1; color:#f2f5f8;
+    white-space:nowrap; }
+  .role { margin-top:11px; font-size:27px; font-weight:600; letter-spacing:.3em; color:#0b84ff;
+    padding-left:.3em; text-transform:uppercase; }
+  .contacts { display:flex; flex-direction:column; gap:13px; align-items:flex-start;
+    width:max-content; margin-left:auto; flex:none; }
+  .contact { display:flex; align-items:center; gap:14px; font-size:33px; font-weight:500;
+    letter-spacing:.05em; line-height:1.06; color:#dfe4ea; white-space:nowrap; }
+  .contact svg { width:29px; height:29px; flex:none; }
+  a { color:#0b84ff; text-decoration:none; }
+  a:hover { color:#4aa5ff; }
+  </style>
+</helmet>
+<div class="card">
+  <div class="sheen"></div>
+  <div class="edge"></div>
+  <div class="inner">
+    <div class="row">
+      <div class="lockup">
+        <div class="mark"><svg viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+  <defs>
+    <linearGradient id="b-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"></stop><stop offset=".30" stop-color="#e3e8ee"></stop>
+      <stop offset=".58" stop-color="#a7afb9"></stop><stop offset="1" stop-color="#4a515a"></stop>
+    </linearGradient>
+    <linearGradient id="b-glass" x1="0" y1="0" x2=".35" y2="1">
+      <stop offset="0" stop-color="#333c47"></stop><stop offset="1" stop-color="#0b0f14"></stop>
+    </linearGradient>
+    <mask id="b-arch">
+      <rect x="0" y="0" width="1000" height="400" fill="#fff"></rect>
+      <circle cx="230" cy="300" r="82" fill="#000"></circle>
+      <circle cx="778" cy="300" r="82" fill="#000"></circle>
+    </mask>
+  </defs>
+  <g mask="url(#b-arch)">
+    <path fill="url(#b-body)" d="M 26 280 C 32 250, 66 230, 118 220 C 168 211, 214 206, 256 202 C 294 198, 320 194, 340 186 C 366 148, 412 114, 478 102 C 542 90, 598 98, 640 116 C 700 142, 768 182, 822 206 C 868 226, 916 240, 938 254 C 958 267, 966 282, 962 296 C 958 312, 948 344, 934 344 L 50 344 C 34 344, 20 300, 26 280 Z"></path>
+    <path fill="url(#b-glass)" d="M 382 182 C 406 146, 448 118, 494 110 C 540 102, 584 108, 618 122 L 676 152 L 542 186 Z"></path>
+    <path fill="rgba(255,255,255,.5)" d="M 250 236 C 380 224, 620 234, 806 274 L 806 282 C 620 246, 380 236, 250 244 Z"></path>
+  </g>
+  <circle cx="230" cy="300" r="72" fill="#08090b"></circle>
+  <circle cx="230" cy="300" r="45" fill="none" stroke="#bcc4ce" stroke-width="16"></circle>
+  <circle cx="778" cy="300" r="72" fill="#08090b"></circle>
+  <circle cx="778" cy="300" r="45" fill="none" stroke="#bcc4ce" stroke-width="16"></circle>
+  <path fill="#0b84ff" d="M 50 268 C 62 248, 88 234, 124 228 L 206 224 L 66 282 Z"></path>
+</svg>
+</div>
+        <div class="wordmark">SOFLO <span class="hi">SHINE</span></div>
+        <div class="sub"><i></i><span>DETAILING</span><i></i></div>
+      </div>
+      <div class="qrwrap">
+        <div class="qr"><svg viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:100%" shape-rendering="crispEdges"><path fill="#08090b" d="M0 0h7v1h-7zM9 0h2v1h-2zM12 0h1v1h-1zM18 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM18 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM13 2h4v1h-4zM19 2h2v1h-2zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM14 3h2v1h-2zM17 3h1v1h-1zM19 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM12 4h1v1h-1zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h1v1h-1zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h2v1h-2zM15 5h2v1h-2zM19 5h2v1h-2zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM8 7h1v1h-1zM10 7h1v1h-1zM14 7h1v1h-1zM17 7h1v1h-1zM19 7h1v1h-1zM2 8h2v1h-2zM6 8h3v1h-3zM12 8h1v1h-1zM15 8h1v1h-1zM21 8h2v1h-2zM24 8h1v1h-1zM0 9h1v1h-1zM2 9h4v1h-4zM7 9h2v1h-2zM10 9h1v1h-1zM14 9h1v1h-1zM16 9h10v1h-10zM28 9h1v1h-1zM0 10h1v1h-1zM3 10h7v1h-7zM12 10h1v1h-1zM15 10h1v1h-1zM22 10h1v1h-1zM26 10h2v1h-2zM0 11h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM9 11h2v1h-2zM15 11h1v1h-1zM17 11h2v1h-2zM20 11h1v1h-1zM24 11h1v1h-1zM28 11h1v1h-1zM4 12h4v1h-4zM10 12h1v1h-1zM13 12h1v1h-1zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM21 12h1v1h-1zM23 12h1v1h-1zM26 12h3v1h-3zM0 13h2v1h-2zM5 13h1v1h-1zM9 13h2v1h-2zM13 13h2v1h-2zM17 13h3v1h-3zM22 13h2v1h-2zM25 13h2v1h-2zM28 13h1v1h-1zM2 14h1v1h-1zM5 14h4v1h-4zM12 14h1v1h-1zM15 14h3v1h-3zM19 14h3v1h-3zM23 14h3v1h-3zM27 14h2v1h-2zM1 15h1v1h-1zM4 15h2v1h-2zM7 15h1v1h-1zM9 15h1v1h-1zM12 15h1v1h-1zM15 15h1v1h-1zM17 15h1v1h-1zM19 15h1v1h-1zM21 15h1v1h-1zM24 15h2v1h-2zM28 15h1v1h-1zM1 16h1v1h-1zM3 16h5v1h-5zM10 16h1v1h-1zM12 16h2v1h-2zM15 16h2v1h-2zM18 16h1v1h-1zM20 16h1v1h-1zM23 16h3v1h-3zM27 16h2v1h-2zM1 17h3v1h-3zM8 17h2v1h-2zM11 17h1v1h-1zM13 17h3v1h-3zM17 17h1v1h-1zM20 17h1v1h-1zM23 17h1v1h-1zM0 18h1v1h-1zM2 18h2v1h-2zM5 18h3v1h-3zM9 18h4v1h-4zM14 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h4v1h-4zM4 19h1v1h-1zM7 19h1v1h-1zM9 19h2v1h-2zM16 19h1v1h-1zM19 19h5v1h-5zM25 19h4v1h-4zM1 20h4v1h-4zM6 20h1v1h-1zM8 20h3v1h-3zM12 20h1v1h-1zM15 20h3v1h-3zM19 20h6v1h-6zM26 20h3v1h-3zM8 21h1v1h-1zM13 21h5v1h-5zM19 21h2v1h-2zM24 21h2v1h-2zM27 21h2v1h-2zM0 22h7v1h-7zM8 22h4v1h-4zM13 22h1v1h-1zM15 22h6v1h-6zM22 22h1v1h-1zM24 22h1v1h-1zM26 22h2v1h-2zM0 23h1v1h-1zM6 23h1v1h-1zM10 23h1v1h-1zM14 23h5v1h-5zM20 23h1v1h-1zM24 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM15 24h2v1h-2zM20 24h7v1h-7zM28 24h1v1h-1zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h2v1h-2zM11 25h3v1h-3zM16 25h2v1h-2zM19 25h1v1h-1zM24 25h4v1h-4zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM8 26h1v1h-1zM10 26h2v1h-2zM14 26h3v1h-3zM20 26h1v1h-1zM23 26h1v1h-1zM25 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM9 27h1v1h-1zM12 27h3v1h-3zM17 27h1v1h-1zM20 27h1v1h-1zM22 27h1v1h-1zM24 27h2v1h-2zM27 27h1v1h-1zM0 28h7v1h-7zM9 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM18 28h3v1h-3zM22 28h2v1h-2zM27 28h1v1h-1z"></path></svg></div>
+        <div class="scan">SCAN TO BOOK</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="divider"></div>
+    <div class="row" style="align-items:flex-end">
+      <div>
+        <div class="name">MIKE RODRIGUEZ</div>
+        <div class="role">Owner</div>
+      </div>
+      <div class="contacts">
+        <div class="contact"><svg viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5h-2A1.6 1.6 0 0 0 3 5.2C3 13 11 21 18.8 21a1.6 1.6 0 0 0 1.7-1.6v-2a1.1 1.1 0 0 0-.8-1.1l-3.3-.9a1.1 1.1 0 0 0-1.1.3l-1.3 1.3a13.6 13.6 0 0 1-5.9-5.9l1.3-1.3a1.1 1.1 0 0 0 .3-1.1l-.9-3.3a1.1 1.1 0 0 0-1.1-.8Z"></path></svg> 786-321-3719</div>
+        <div class="contact"><svg viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3c2.6 2.7 3.9 5.7 3.9 9s-1.3 6.3-3.9 9c-2.6-2.7-3.9-5.7-3.9-9S9.4 5.7 12 3Z"></path></svg> soflodetail.com</div>
+        <div class="contact"><svg viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="#0b84ff" stroke="none"></circle></svg> [@HANDLE]</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

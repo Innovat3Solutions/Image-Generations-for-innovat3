@@ -1,0 +1,34 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1050,
+      "h": 600,
+      "title": "Front",
+      "print": "fixed"
+    },
+    {
+      "file": "Back.dc.html",
+      "x": 1170,
+      "y": 0,
+      "w": 1050,
+      "h": 600,
+      "title": "Back",
+      "print": "fixed"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "print-specs",
+      "x": 0,
+      "y": 720,
+      "w": 520,
+      "text": "PRINT SPECS\nTrim 3.5 x 2 in (US standard). Artboards are 1050 x 600 px, which is 300 dpi at trim size, so a PNG export of each face is press-ready.\n\nSend to the printer with 0.125 in bleed (3.75 x 2.25 in) - the black background and the blue left bar run to the edge, so the printer can pull them out. Nothing important sits closer than 0.125 in to the trim.\n\nFinish: matte or soft-touch black stock, with the blue in spot gloss or foil, gets closest to the reference card.\n\nPLACEHOLDERS TO REPLACE\n- [@HANDLE] on the back: the real Instagram handle.\n- The QR code encodes https://soflodetail.com. It scans, but swap it for whatever booking URL you want on the card.\n- The car mark is a rebuild, not the original logo file. Drop the real SoFlo Shine artwork in before printing."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}
