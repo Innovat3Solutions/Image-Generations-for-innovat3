@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/nano-banana-pro/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 06b (clean, production substitute) \u2014 Nano Banana Pro edit, 3 refs. Over-the-shoulder consultation, forest-green blazer, bright refined sitting room, 4:5 2K. Replaces Luma Photon likeness failure for website use.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.15,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:27:34.071599Z"
+}
