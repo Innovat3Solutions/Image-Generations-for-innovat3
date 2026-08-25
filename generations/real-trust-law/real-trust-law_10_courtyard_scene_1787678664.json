@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/minimax/image-01/subject-reference",
+ "provider": "fal.ai",
+ "prompt": "Scene 10 (clean) \u2014 MiniMax Image-01 subject-reference, closeup ref. Limestone courtyard, royal palms, Mediterranean arches, warm sun, Natalie standing naturally, 9:16.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "9:16",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.01,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:24:24.546272Z"
+}

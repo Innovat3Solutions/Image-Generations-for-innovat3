@@ -34,7 +34,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Forest-green REAL TRUST LAW wordmark bottom-left; antique-gold hairline rule above CTA.
 13. **Recommended ad format:** 4:5 (1080×1350) Meta/Instagram feed; crops safely to 1:1.
 14. **Compliance:** Pure identity/service ad; no claims. Add required "Attorney Advertising" line in caption where applicable.
-15. **Model used:** `fal-ai/nano-banana-pro/edit` (Google Nano Banana Pro) — file `real-trust-law_01_founder_portrait_*.jpg`
+15. **Model used:** `fal-ai/nano-banana-pro/edit` (Google Nano Banana Pro) — files `*_01_founder_scene_*.jpg` (clean) / `*_01_founder_portrait_ad_*.jpg` (ad)
 
 ## Concept 02 — Generational Legacy
 1. **Concept name:** Generational Legacy
@@ -51,7 +51,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Green wordmark block lower-left; gold caption CTA.
 13. **Recommended ad format:** 4:5 feed + email hero crop.
 14. **Compliance:** Family members are clearly campaign talent; no testimonial implication.
-15. **Model used:** `fal-ai/ideogram/character` (Ideogram V3 Character) — file `real-trust-law_02_generational_legacy_*.jpg`. *Bake-off note: strong likeness, but typography garbled across two attempts — text must be set in post if this model is chosen.*
+15. **Model used:** `fal-ai/ideogram/character` (Ideogram V3 Character) — files `*_02_legacy_scene_*.jpg` (clean) / `*_02_generational_legacy_ad_*.jpg` (ad). *Bake-off note: strong likeness, but typography garbled across two attempts — text must be set in post if this model is chosen.*
 
 ## Concept 03 — The Home
 1. **Concept name:** The Home
@@ -68,7 +68,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Ivory type on architecture; gold rule + wordmark lower-left.
 13. **Recommended ad format:** 16:9 (1920×1080) website hero / Google Display; center-safe for 1:1 crop.
 14. **Compliance:** No ownership or transaction claims; aspirational but factual.
-15. **Model used:** `bytedance/seedream/v5/pro/edit` (Seedream 5.0 Pro) — file `real-trust-law_03_the_home_*.jpg`
+15. **Model used:** `bytedance/seedream/v5/pro/edit` (Seedream 5.0 Pro) — files `*_03_home_scene_*.jpg` (clean) / `*_03_the_home_ad_*.jpg` (ad)
 
 ## Concept 04 — The Will
 1. **Concept name:** The Will
@@ -85,7 +85,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Embossed RTL monogram on folio; wordmark in margin.
 13. **Recommended ad format:** 1:1 (1080×1080) feed + print collateral.
 14. **Compliance:** Document text intentionally illegible; no legal language reproduced.
-15. **Model used:** `fal-ai/hunyuan-image/v3/instruct/edit` (Tencent Hunyuan Image 3.0) — file `real-trust-law_04_the_will_*.jpg`
+15. **Model used:** `fal-ai/hunyuan-image/v3/instruct/edit` (Tencent Hunyuan Image 3.0) — files `*_04_will_scene_*.jpg` (clean) / `*_04_the_will_ad_*.jpg` (ad)
 
 ## Concept 05 — Real Estate Counsel
 1. **Concept name:** Real Estate Counsel
@@ -102,7 +102,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Charcoal headline; green wordmark; gold rule.
 13. **Recommended ad format:** 4:5 Meta + LinkedIn feed.
 14. **Compliance:** "Legal guidance" language only; no brokerage implication.
-15. **Model used:** `fal-ai/flux-pro/kontext/max/multi` (FLUX.1 Kontext Max) — file `real-trust-law_05_real_estate_counsel_*.jpg`
+15. **Model used:** `fal-ai/flux-pro/kontext/max/multi` (FLUX.1 Kontext Max) — file `real-trust-law_05_realestate_scene_*.jpg` (clean scene) / `*_05_real_estate_counsel_ad_*.jpg` (ad draft)
 
 ## Concept 06 — The Conversation
 1. **Concept name:** The Conversation
@@ -119,7 +119,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Type stack in upper ivory wall space; wordmark lower edge.
 13. **Recommended ad format:** 4:5 feed + retargeting creative.
 14. **Compliance:** Clients are talent; no testimonial claim.
-15. **Model used:** `microsoft/mai-image-2.5-pro/edit` (Microsoft MAI Image 2.5 Pro) — file `real-trust-law_06_the_conversation_*.jpg`
+15. **Model used:** `fal-ai/luma-photon/modify` for the clean scene (MAI 2.5 Pro repeatedly refused identity edits; its one successful ad-style render is kept as `*_06_the_conversation_ad_*.jpg`). *Bake-off note: Luma Photon lost the likeness — regenerate this scene on Nano Banana Pro for production.*
 
 ## Concept 07 — Protect What Matters
 1. **Concept name:** Protect What Matters
@@ -136,7 +136,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Largest brand presence of the campaign: REAL TRUST LAW + platform line.
 13. **Recommended ad format:** 16:9 display/web hero; 9:16 crop for story with type re-set.
 14. **Compliance:** Pure brand emotion; zero claims.
-15. **Model used:** `fal-ai/nano-banana-2/edit` (Google Nano Banana 2) — file `real-trust-law_07_protect_what_matters_*.jpg`
+15. **Model used:** `fal-ai/nano-banana-2/edit` (Google Nano Banana 2) — file `*_07_waterfront_scene_*.jpg` (clean)
 
 ## Concept 08 — The Real Trust Statement
 1. **Concept name:** The Real Trust Statement
@@ -153,7 +153,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** The name IS the layout; small green wordmark + practice line at base.
 13. **Recommended ad format:** 4:5 feed + printed one-pager cover.
 14. **Compliance:** "Real trust is built before it's needed" is aspirational, non-comparative — compliant.
-15. **Model used:** `openai/gpt-image-2/edit` (GPT Image 2) — file `real-trust-law_08_real_trust_statement_*.jpg`
+15. **Model used:** `openai/gpt-image-2/edit` (GPT Image 2) — file `*_08_studio_scene_*.jpg` (clean)
 
 ## Concept 09 — Private Client Experience
 1. **Concept name:** Private Client Experience
@@ -170,7 +170,7 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Gold hairline + green wordmark; smallest, quietest branding of the set.
 13. **Recommended ad format:** 4:5 LinkedIn/Meta; 16:9 crop for site "About the firm."
 14. **Compliance:** "Thoughtful counsel" is descriptive, not comparative.
-15. **Model used:** `alibaba/qwen-image-3/edit` (Qwen Image 3) — file `real-trust-law_09_private_client_*.jpg`
+15. **Model used:** `alibaba/qwen-image-3/edit` (Qwen Image 3) — file `*_09_meeting_scene_*.jpg` (clean)
 
 ## Concept 10 — South Florida
 1. **Concept name:** South Florida
@@ -187,4 +187,4 @@ This campaign was also run as a **10-model identity-consistency bake-off**: each
 12. **Branding treatment:** Full brand block bottom-center above safe margin.
 13. **Recommended ad format:** 9:16 (1080×1920) Stories/Reels + Google Display vertical.
 14. **Compliance:** "Trusted…counsel" describes the service relationship, not a ranking; acceptable — swap to "Estate planning…for South Florida families" for the most conservative posture.
-15. **Model used:** `fal-ai/minimax/image-01/subject-reference` (MiniMax Image-01) — file `real-trust-law_10_south_florida_*.jpg`
+15. **Model used:** `fal-ai/minimax/image-01/subject-reference` (MiniMax Image-01) — file `*_10_courtyard_scene_*.jpg` (clean)
