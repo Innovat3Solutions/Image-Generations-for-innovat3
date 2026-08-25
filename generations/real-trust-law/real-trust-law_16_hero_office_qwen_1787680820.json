@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Hero 16 \u2014 Qwen Image 3 edit, 3 refs, 2048x1152 16:9. No smile. Walnut desk office, charcoal suit, right-third placement, ivory wall negative space left for headline. 50mm f/2.8 window light.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "16:9",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.06,
+ "project": "real-trust-law",
+ "created": "2026-08-25T18:00:21.523835Z"
+}

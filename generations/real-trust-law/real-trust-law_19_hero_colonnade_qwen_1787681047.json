@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Hero 19 \u2014 Qwen Image 3 edit, 3 refs, 2048x1152 16:9. No smile. Limestone colonnade, black suit, standing between arches, left-third, receding arches negative space right. 35mm f/4.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "16:9",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.06,
+ "project": "real-trust-law",
+ "created": "2026-08-25T18:04:08.784775Z"
+}

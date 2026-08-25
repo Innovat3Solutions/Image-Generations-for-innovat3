@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Hero 17 \u2014 Qwen Image 3 edit, 3 refs, 2048x1152 16:9. No smile. Biscayne Bay balcony golden hour, white linen suit, left-third placement, bay bokeh negative space right. 35mm f/2.8.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "16:9",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.06,
+ "project": "real-trust-law",
+ "created": "2026-08-25T18:00:22.541869Z"
+}
