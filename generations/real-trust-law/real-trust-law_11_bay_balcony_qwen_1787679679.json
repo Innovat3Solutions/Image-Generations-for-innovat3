@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 11 \u2014 Qwen Image 3 edit, 3 refs. Photographer-directed: Biscayne Bay limestone balcony, golden morning, white linen suit, 85mm f/2, side light. Editor: sharp eyes, natural texture, neutral-warm grade.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.04,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:41:20.086450Z"
+}

@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 14 \u2014 Qwen Image 3 edit, 3 refs. Photographer-directed: window-light professional headshot at desk, ivory silk blouse, 85mm f/1.8, soft key + fill. Editor: sharp eyes/catchlights, true tones, no smoothing.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.04,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:45:38.868559Z"
+}

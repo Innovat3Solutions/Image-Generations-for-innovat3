@@ -31,3 +31,6 @@ Likeness: 1–5 (5 = instantly the same person — freckles, brows, eye shape, j
 
 ## Earlier ad-style pass (kept for reference, `*_ad_*.jpg`)
 Before the direction changed to clean scenes, six concepts were generated as full ad layouts with typography. Finding: **only Nano Banana Pro and Seedream 5.0 Pro rendered ad copy correctly**; Ideogram (character mode) and FLUX Kontext garbled long text. If ads are needed later: generate the clean plate with Nano Banana Pro and set type in Figma/Canva rather than baking copy in.
+
+## Production series (post-bake-off)
+Per client decision, **Qwen Image 3** (`alibaba/qwen-image-3/edit`) is the standing model for all Natalie imagery. Scenes 11–15 (`*_qwen_*.jpg`) are the first production batch: every generation references the same photos in `refs/` (close-up first), is directed with explicit photographer language (lens, aperture, lighting plan), and finished to an editor spec (critical sharpness on the eyes, natural skin texture and freckles preserved, no plastic smoothing, clean color grade).

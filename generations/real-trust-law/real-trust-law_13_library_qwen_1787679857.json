@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 13 \u2014 Qwen Image 3 edit, 3 refs. Photographer-directed: private walnut library, brass lamp, sliding a book back, camel knit, 50mm f/1.8. Editor: warm amber grade, natural texture.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.04,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:44:18.367880Z"
+}

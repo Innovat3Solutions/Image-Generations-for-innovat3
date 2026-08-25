@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 12 \u2014 Qwen Image 3 edit, 3 refs. Photographer-directed: arched limestone hallway, palm shadows, walking candid, black suit, 35mm f/4. Editor: frozen motion, sharp face, warm limestone grade.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.04,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:41:43.434129Z"
+}
