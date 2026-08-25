@@ -1,0 +1,16 @@
+{
+ "model": "alibaba/qwen-image-3/edit",
+ "provider": "fal.ai",
+ "prompt": "Service 25 Probate & Legacy \u2014 Qwen Image 3, 3 refs, 1152x1440. Natalie in living room with elderly mother and adult daughter, gentle guidance over family documents. No smile.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.04,
+ "project": "real-trust-law",
+ "created": "2026-08-25T18:25:33.310831Z"
+}
