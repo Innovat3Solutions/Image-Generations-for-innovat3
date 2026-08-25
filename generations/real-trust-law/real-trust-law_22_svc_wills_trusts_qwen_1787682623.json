@@ -1,7 +1,7 @@
 {
  "model": "alibaba/qwen-image-3/edit",
  "provider": "fal.ai",
- "prompt": "Service 21 Estate Planning \u2014 Qwen Image 3, 3 refs, 1152x1440. Natalie at desk consulting couple in 60s over estate binder, ivory blazer, 50mm f/2.8. No smile.\n",
+ "prompt": "Service 22 (candid reshoot) \u2014 Qwen Image 3, 3 refs, 1152x1440. Same scene as before but fully candid: eyes on client/documents, never at the lens. No smile.\n",
  "refs": [
   "refs/natalie_ruiz_portrait.jpg",
   "refs/natalie_ruiz_office.jpg"
@@ -12,5 +12,5 @@
  },
  "cost_usd": 0.04,
  "project": "real-trust-law",
- "created": "2026-08-25T18:18:54.821403Z"
+ "created": "2026-08-25T18:30:24.296994Z"
 }

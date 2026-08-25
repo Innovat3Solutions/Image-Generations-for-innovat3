@@ -1,7 +1,7 @@
 {
  "model": "alibaba/qwen-image-3/edit",
  "provider": "fal.ai",
- "prompt": "Service 24 Commercial Real Estate \u2014 Qwen Image 3, 3 refs, 1152x1440. Natalie with business owner reviewing contract near window over commercial building/space, plans on table. No smile.\n",
+ "prompt": "Service 21 (candid reshoot) \u2014 Qwen Image 3, 3 refs, 1152x1440. Same scene as before but fully candid: eyes on client/documents, never at the lens. No smile.\n",
  "refs": [
   "refs/natalie_ruiz_portrait.jpg",
   "refs/natalie_ruiz_office.jpg"
@@ -12,5 +12,5 @@
  },
  "cost_usd": 0.04,
  "project": "real-trust-law",
- "created": "2026-08-25T18:25:32.667974Z"
+ "created": "2026-08-25T18:30:23.484068Z"
 }
