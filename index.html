@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FLN — Clickable Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f0eee9;font-family:system-ui,sans-serif}
+a{color:#1f6f66}a:hover{color:#16544d}
+.wf{font-family:'Patrick Hand',cursive;color:#3f3d39;font-size:13px;line-height:1.35}
+.wf *{box-sizing:border-box}
+.p{padding:14px 16px}
+.wnav{display:flex;align-items:center;gap:13px;padding:9px 16px;border-bottom:1.5px solid #3f3d39;font-size:12px}
+.wnav .sp{flex:1}
+.brand{font-weight:700;letter-spacing:.5px;border:1.5px solid #3f3d39;padding:0 7px;border-radius:4px}
+.act{color:#1f6f66;border-bottom:2px solid #1f6f66}
+.srch{display:flex;align-items:center;gap:8px;border:1.5px solid #3f3d39;border-radius:22px;padding:7px 14px;color:#8a867e;background:#fff}
+.chip{display:inline-block;border:1.3px solid #3f3d39;border-radius:14px;padding:1px 10px;font-size:11.5px;background:#fff}
+.chip.on{background:#1f6f66;border-color:#1f6f66;color:#fff}
+.tag{display:inline-block;border:1px solid #b5b1a8;border-radius:10px;padding:0 8px;font-size:10.5px;color:#6b675f;background:#fff}
+.bt{display:inline-block;border:1.5px solid #3f3d39;border-radius:6px;padding:3px 12px;font-size:11.5px;background:#fff;text-align:center}
+.bt.p{background:#1f6f66;border-color:#1f6f66;color:#fff}
+.ln{height:7px;background:#ddd9d2;border-radius:4px;margin:5px 0}
+.im{background:repeating-linear-gradient(45deg,#f4f2ed,#f4f2ed 7px,#e7e4dd 7px,#e7e4dd 14px);border:1.5px dashed #b5b1a8;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8a867e;font:10.5px ui-monospace,Menlo,monospace}
+.av{width:34px;height:34px;border-radius:50%;border:1.5px solid #3f3d39;display:flex;align-items:center;justify-content:center;flex:none;font-size:10.5px;background:#fff}
+.bx{border:1.5px solid #3f3d39;border-radius:8px;background:#fff}
+.bx2{border:1.3px solid #c9c5bc;border-radius:8px;background:#fff}
+.mut{color:#8a867e}.tl{color:#1f6f66}.sm{font-size:11px}.xs{font-size:10px}
+.hd{font-size:17px;font-weight:700}
+.r{display:flex;gap:8px;align-items:center}
+.rw{display:flex;gap:6px;flex-wrap:wrap}
+.c{display:flex;flex-direction:column;gap:6px}
+.sect{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:#8a867e}
+.bub{border:1.5px solid #3f3d39;border-radius:12px;padding:8px 12px;background:#fff;max-width:78%}
+.bub.me{background:#e9f1ef;border-color:#1f6f66;align-self:flex-end}
+.ck{cursor:pointer}.ck:hover{opacity:.72}
+.mapc{display:inline-block;border:1.3px solid #b5b1a8;border-radius:14px;padding:1px 11px;font-size:11px;background:#fff;color:#8a867e;cursor:pointer}
+.mapc.on{background:#3f3d39;border-color:#3f3d39;color:#fff}
+.ov{position:absolute;inset:0;background:rgba(63,61,57,.35);display:flex;align-items:center;justify-content:center;border-radius:8px;z-index:5}
+</style>
+</head>
+<body>
+<div class="wf" style="min-height:100vh;padding:24px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:12px">
+
+<div class="r" style="flex-wrap:wrap;justify-content:center;max-width:880px;gap:5px">
+<span class="sect" style="margin-right:4px">Flow map</span>
+<span class="mapc" data-map="home" data-go="home">Home</span><span class="mut xs">→</span>
+<span class="mapc" data-map="search" data-go="search">Search results</span><span class="mut xs">→</span>
+<span class="mapc" data-map="attorney" data-go="attorney">Attorney profile</span><span class="mut xs">→</span>
+<span class="mapc" data-map="firm" data-go="firm">Firm profile</span>
+<span class="mut xs" style="margin:0 4px">·</span>
+<span class="mapc" data-map="help" data-go="help">Find Legal Help (chat)</span>
+<span class="mut xs" style="margin:0 4px">·</span>
+<span class="mapc" data-map="discover" data-go="discover">Discover</span>
+<span class="mapc" data-map="resources" data-go="resources">Resources</span>
+<span class="mut xs" style="margin:0 4px">·</span>
+<span class="mapc" data-map="unclaimed" data-go="unclaimed">Unclaimed firm</span><span class="mut xs">→</span>
+<span class="mapc" data-map="claim" data-act="goClaim">Claim flow</span><span class="mut xs">→</span>
+<span class="mapc" data-map="dash" data-go="dash">Dashboard</span>
+</div>
+
+<div class="dv-card wf" style="width:860px;max-width:100%;position:relative;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+<div class="wnav"><span class="brand ck" data-go="home">FLN</span><span class="ck" data-nav="home" data-go="home">Home</span><span class="ck" data-nav="discover" data-go="discover">Discover</span><span class="ck" data-nav="help" data-go="help">Find Legal Help</span><span class="ck" data-nav="resources" data-go="resources">Resources</span><span class="sp"></span><span class="mut sm ck" data-go="unclaimed">For Professionals</span><span class="av">S</span></div>
+
+<div data-screen-label="Home feed" data-show="isHome" class="c" style="gap:0">
+<div class="p c" style="align-items:center;gap:9px;padding:22px 90px 14px">
+<div class="hd" style="font-size:20px">Good morning, Sarah.</div>
+<div class="mut sm">What can we help you with today?</div>
+<div class="srch ck" data-go="search" style="width:100%;padding:10px 16px">⌕ &nbsp;Search legal questions, attorneys, firms or topics...</div>
+<div class="rw" style="justify-content:center"><span class="chip ck" data-go="search">Estate Planning</span><span class="chip ck" data-go="search">Real Estate</span><span class="chip ck" data-go="help">Family</span><span class="chip ck" data-go="search">Business</span><span class="chip ck" data-go="help">Immigration</span><span class="chip ck" data-go="search">Personal Injury</span><span class="chip ck" data-go="search">Probate</span></div>
+<div class="xs mut">Not sure where to start? <span class="tl ck" data-go="help">Ask us — Find Legal Help →</span></div>
+</div>
+<div class="p r" style="gap:14px;align-items:flex-start;padding-top:6px">
+<div class="c" style="width:170px">
+<div class="sect">Following</div>
+<div class="bx2 c" style="padding:8px;gap:7px">
+<div class="r ck" data-go="firm"><span class="av" style="width:22px;height:22px">RT</span><span class="sm">Real Trust Law <span class="tl">✓</span></span></div>
+<div class="r ck" data-go="attorney"><span class="av" style="width:22px;height:22px">NR</span><span class="sm">Natalie Ruiz</span></div>
+<div class="r ck" data-go="search"><span class="av" style="width:22px;height:22px;border-radius:5px">§</span><span class="sm">Estate Planning</span></div></div>
+<div class="sect" style="margin-top:6px">Saved</div>
+<div class="bx2 c" style="padding:8px"><div class="ln" style="width:80%;margin:2px 0"></div><div class="ln" style="width:58%;margin:2px 0"></div></div>
+</div>
+<div class="c" style="flex:1">
+<div class="sect">From your legal community</div>
+<div class="bx c" style="padding:10px;gap:6px">
+<div class="r"><span class="av ck" data-go="firm" style="width:24px;height:24px">RT</span><b class="sm ck tl" data-go="firm">Real Trust Law ✓</b><span class="mut xs">Estate Planning · 2h</span><span style="flex:1"></span><span class="chip xs">Follow</span></div>
+<b class="ck" data-go="firm">What happens to your home if you die without a will in Florida?</b>
+<div class="ln" style="width:92%"></div><div class="ln" style="width:68%"></div>
+<div class="im" style="height:66px">article image</div>
+<div class="r mut sm" style="gap:14px">♡ Like&nbsp; 💬 Comment&nbsp; ⌂ Save&nbsp; ↗ Share<span style="flex:1"></span><span class="bt sm ck" data-go="firm">View Firm</span></div></div>
+<div class="bx c" style="padding:10px;gap:6px">
+<div class="r"><span class="av ck" data-go="attorney" style="width:24px;height:24px">NR</span><b class="sm ck tl" data-go="attorney">Natalie Ruiz</b><span class="mut xs">Probate · 1d</span></div>
+<div class="ln" style="width:88%"></div><div class="ln" style="width:50%"></div></div>
+</div>
+<div class="c" style="width:170px">
+<div class="sect">Suggested</div>
+<div class="bx2 c" style="padding:8px;gap:6px"><div class="r ck" data-go="attorney"><span class="av" style="width:22px;height:22px">NR</span><div><div class="sm">Natalie Ruiz, Esq.</div><div class="xs mut">Estate · Miami</div></div></div><span class="bt sm">Follow</span></div>
+<div class="sect" style="margin-top:6px">Resources</div>
+<div class="bx2 c ck" data-go="resources" style="padding:8px;gap:3px"><b class="sm">Florida Legal Resources</b><div class="xs mut">Courts · forms · records →</div></div>
+</div></div></div>
+
+<div data-screen-label="Search results" data-show="isSearch">
+<div class="r p" style="padding:8px 16px;border-bottom:1.5px solid #ddd9d2;gap:6px">
+<span class="chip ck" data-tabchip="a" data-act="setTabA">Attorneys</span><span class="chip ck" data-tabchip="f" data-act="setTabF">Firms</span><span style="width:8px"></span>
+<span class="chip">Distance ▾</span><span class="chip">Practice ▾</span><span class="chip">Language ▾</span><span class="chip">Experience ▾</span><span class="chip">Verified ✓</span></div>
+<div class="r" style="align-items:stretch;gap:0">
+<div class="c p" style="flex:1.25;gap:8px">
+<div class="sm"><b>127 Estate Planning results</b> <span class="mut">near Miami</span></div>
+<div data-show="isTabA" class="c" style="gap:8px">
+<div class="bx r" style="padding:9px;gap:10px"><span class="av ck" data-go="attorney" style="width:42px;height:42px">NR</span>
+<div class="c" style="gap:2px;flex:1"><div class="ck tl" data-go="attorney"><b>Natalie Ruiz, Esq.</b> ✓</div><div class="xs mut">Real Trust Law · Miami · 12 yrs · EN/ES</div><div class="rw"><span class="tag">Estate Planning</span><span class="tag">Wills</span><span class="tag">Probate</span></div></div>
+<div class="c" style="gap:4px"><span class="bt p sm ck" data-go="attorney">View Profile</span><span class="bt sm ck" data-act="openInq">Contact</span></div></div>
+<div class="bx r" style="padding:9px;gap:10px"><span class="av" style="width:42px;height:42px"></span>
+<div class="c" style="gap:2px;flex:1"><div><b>D. Okafor, Esq.</b></div><div class="xs mut">Okafor Legal · Coral Gables · 8 yrs</div><div class="rw"><span class="tag">Estate Planning</span><span class="tag">Trusts</span></div></div>
+<div class="c" style="gap:4px"><span class="bt sm">View Profile</span><span class="bt sm">Contact</span></div></div>
+<div class="bx r" style="padding:9px;gap:10px"><span class="av" style="width:42px;height:42px"></span><div class="c" style="flex:1;gap:4px"><div class="ln" style="width:42%"></div><div class="ln" style="width:66%"></div></div></div>
+</div>
+<div data-show="isTabF" class="c" style="gap:8px">
+<div class="bx r" style="padding:9px;gap:10px"><span class="av ck" data-go="firm" style="border-radius:8px">RT</span>
+<div class="c" style="gap:2px;flex:1"><div class="ck tl" data-go="firm"><b>Real Trust Law</b> ✓</div><div class="xs mut">Coral Gables · 3 attorneys · EN/ES</div><div class="rw"><span class="tag">Estate Planning</span><span class="tag">Real Estate</span></div></div>
+<span class="bt p sm ck" data-go="firm">View Firm</span></div>
+<div class="bx r" style="padding:9px;gap:10px"><span class="av ck" data-go="unclaimed" style="border-radius:8px">SJ</span>
+<div class="c" style="gap:2px;flex:1"><div class="ck" data-go="unclaimed"><b>Smith &amp; Jones, P.A.</b> <span class="tag">Unclaimed</span></div><div class="xs mut">Miami · Business · Real Estate</div></div>
+<span class="bt sm ck" data-go="unclaimed">View Firm</span></div>
+</div>
+</div>
+<div class="im" style="flex:1;border-radius:0;border:0;border-left:1.5px dashed #b5b1a8;min-height:260px">map — result pins</div>
+</div></div>
+
+<div data-screen-label="Attorney profile" data-show="isAttorney">
+<div class="p r" style="gap:14px;border-bottom:1.5px solid #ddd9d2">
+<span class="av" style="width:62px;height:62px">photo</span>
+<div class="c" style="gap:2px;flex:1">
+<div class="hd">Natalie Ruiz, Esq.</div>
+<div class="sm">Founding Attorney · <span class="tl ck" data-go="firm">Real Trust Law ✓</span> · Miami, Florida</div>
+<div class="rw" style="margin-top:2px"><span class="tag ck" data-go="search">Estate Planning</span><span class="tag ck" data-go="search">Probate</span><span class="tag ck" data-go="search">Real Estate</span><span class="tag mut">EN · ES</span></div></div>
+<div class="c" style="gap:5px"><span class="bt p ck" data-act="openInq">Contact Attorney</span><span class="bt">Visit Website ↗</span><div class="r" style="gap:5px"><span class="bt sm" style="flex:1">Follow</span><span class="bt sm" style="flex:1">⌂ Save</span></div></div>
+</div>
+<div class="p r" style="gap:14px;align-items:flex-start">
+<div class="c" style="flex:1.5;gap:9px">
+<div><div class="sect">About</div><div class="ln" style="width:96%"></div><div class="ln" style="width:88%"></div><div class="ln" style="width:52%"></div></div>
+<div><div class="sect">Practice areas — click to search</div><div class="rw"><span class="chip ck" data-go="search">Estate Planning</span><span class="chip ck" data-go="search">Wills</span><span class="chip ck" data-go="search">Trusts</span><span class="chip ck" data-go="search">Probate</span><span class="chip ck" data-go="search">Real Estate</span></div></div>
+<div><div class="sect">Experience</div>
+<div class="r sm"><b class="ck tl" data-go="firm">Real Trust Law</b><span class="mut xs">Founding Attorney · 2022–Present</span></div>
+<div class="r sm mut"><span>Prior Firm LLP</span><span class="xs">Associate · 2016–2022</span></div></div>
+<div><div class="sect">Content</div>
+<div class="r sm" style="gap:12px;border-bottom:1.3px solid #ddd9d2;padding-bottom:3px"><b class="tl">Articles</b><span class="mut">Videos</span><span class="mut">Posts</span><span class="mut">Guides</span><span class="mut">FAQs</span></div>
+<div class="r"><div class="bx2 c" style="flex:1;padding:7px;gap:4px"><div class="im" style="height:40px">img</div><div class="ln" style="width:85%"></div></div><div class="bx2 c" style="flex:1;padding:7px;gap:4px"><div class="im" style="height:40px">img</div><div class="ln" style="width:70%"></div></div></div></div>
+</div>
+<div class="c" style="flex:1;gap:8px">
+<div class="bx2 c" style="gap:4px;padding:10px"><div class="sect">Credentials</div>
+<div class="sm r">FL Bar #123456 <span class="tl xs">Active ✓</span></div>
+<div class="xs mut">Admitted 2016 · Board Certified: Wills, Trusts &amp; Estates</div></div>
+<div class="bx2 c" style="gap:3px;padding:10px"><div class="sect">Education</div><div class="sm">UM School of Law — JD</div><div class="sm mut">FSU — BA</div></div>
+<div class="bx c" style="gap:5px;padding:10px"><div class="sect">Affiliated firm</div>
+<div class="r ck" data-go="firm"><span class="av" style="border-radius:6px">RT</span><div><div class="sm"><b>Real Trust Law</b> <span class="tl">✓</span></div><div class="xs mut">Coral Gables · 3 attorneys</div></div></div>
+<span class="bt sm ck" data-go="firm">View Firm</span></div>
+</div></div></div>
+
+<div data-screen-label="Firm profile" data-show="isFirm">
+<div class="im" style="height:58px;border-radius:0;border:0;border-bottom:1.5px dashed #b5b1a8">cover image</div>
+<div class="p r" style="gap:12px;border-bottom:1.5px solid #ddd9d2;margin-top:-16px">
+<span class="av" style="width:52px;height:52px;border-radius:8px;background:#fff">logo</span>
+<div class="c" style="gap:2px;flex:1;padding-top:13px">
+<div class="hd">REAL TRUST LAW <span class="tl" style="font-size:13px">✓ Claimed</span></div>
+<div class="sm mut">Estate Planning · Wills &amp; Trusts · Real Estate — Coral Gables, Florida · Est. 2022</div></div>
+<div class="r" style="gap:5px;padding-top:13px"><span class="bt p ck" data-act="openInq">Contact Firm</span><span class="bt">Visit Website ↗</span><span class="bt">Follow</span></div>
+</div>
+<div class="p r" style="gap:14px;align-items:flex-start">
+<div class="c" style="flex:1.5;gap:9px">
+<div><div class="sect">About the firm</div><div class="ln" style="width:94%"></div><div class="ln" style="width:86%"></div><div class="ln" style="width:44%"></div></div>
+<div><div class="sect">Attorneys — click one</div>
+<div class="r"><div class="bx2 c ck" data-go="attorney" style="flex:1;padding:8px;gap:3px;align-items:center"><span class="av">NR</span><b class="sm tl">Natalie Ruiz</b><span class="xs mut">Founding Attorney</span></div>
+<div class="bx2 c" style="flex:1;padding:8px;gap:3px;align-items:center"><span class="av">JS</span><b class="sm">John Smith</b><span class="xs mut">Associate</span></div>
+<div class="bx2 c" style="flex:1;padding:8px;gap:3px;align-items:center"><span class="av">JD</span><b class="sm">Jane Doe</b><span class="xs mut">Of Counsel</span></div></div></div>
+<div><div class="sect">Recent content</div><div class="bx2 r" style="padding:7px 9px;gap:8px"><div class="im" style="width:52px;height:36px">img</div><div class="c" style="gap:3px;flex:1"><div class="ln" style="width:78%"></div><div class="ln" style="width:44%"></div></div></div></div>
+</div>
+<div class="c" style="flex:1;gap:8px">
+<div class="bx2 c" style="gap:4px;padding:10px"><div class="sect">Practice areas</div><div class="rw"><span class="chip ck" data-go="search">Estate Planning</span><span class="chip ck" data-go="search">Wills &amp; Trusts</span><span class="chip ck" data-go="search">Real Estate</span></div></div>
+<div class="bx2 c" style="gap:5px;padding:10px"><div class="sect">Locations</div><div class="im" style="height:52px">map</div><div class="xs">2020 Ponce de Leon Blvd, Coral Gables · Mon–Fri 9–5</div></div>
+<div class="bx2 c" style="gap:3px;padding:10px"><div class="sect">Details</div><div class="xs">3 attorneys · EN/ES · realtrustlaw.com</div></div>
+</div></div></div>
+
+<div data-screen-label="Find Legal Help — chat" data-show="isHelp" class="r" style="align-items:stretch;gap:0">
+<div class="c p" style="flex:1.1;gap:9px;border-right:1.5px solid #ddd9d2;min-height:330px">
+<div class="bub"><b>What do you need help with?</b> <span class="sm mut">Describe it, or tap a topic below.</span></div>
+<div data-show="chat0" class="rw"><span class="chip ck" data-act="chatPick1">Landlord/Tenant</span><span class="chip ck" data-act="chatPick1">Family</span><span class="chip ck" data-act="chatPick1">Estate Planning</span><span class="chip ck" data-act="chatPick1">Real Estate</span><span class="chip ck" data-act="chatPick1">Immigration</span><span class="chip ck" data-act="chatPick1">Other</span></div>
+<div data-show="chat0" class="srch sm ck" data-act="chatPick1" style="margin-top:2px">e.g. "My landlord hasn't returned my security deposit." <span style="flex:1"></span>➤</div>
+<div data-show="chat1" class="bub me sm">My landlord hasn't returned my security deposit.</div>
+<div data-show="chat1" class="bub sm">This sounds like a <b>Landlord/Tenant</b> issue — likely <b>tenant representation</b>. How long since you moved out?</div>
+<div data-show="chat1only" class="rw"><span class="chip ck" data-act="chatPick2">Under 15 days</span><span class="chip ck" data-act="chatPick2">15–30 days</span><span class="chip ck" data-act="chatPick2">Over 30 days</span><span class="chip ck" data-act="chatPick2">Not sure</span></div>
+<div data-show="chat2" class="bub me sm">About 3 weeks.</div>
+<div data-show="chat2" class="bub sm">Got it. Which county are you in?</div>
+<div data-show="chat2only" class="rw"><span class="chip ck" data-act="chatPick3">Use current location</span><span class="chip ck" data-act="chatPick3">Miami-Dade</span><span class="chip ck" data-act="chatPick3">Broward</span></div>
+<div data-show="chat3" class="bub me sm">Miami-Dade</div>
+<div data-show="chat3" class="bub sm">Here's what we found — information first, then official resources and attorneys who handle this. <span class="tl ck" data-act="chatReset">Start over</span></div>
+<div class="srch sm" style="margin-top:auto">Type your answer... <span style="flex:1"></span>➤</div>
+<div class="xs mut">We help you understand what type of legal issue this may involve and find relevant information and professionals. Not legal advice.</div>
+</div>
+<div class="c p" style="flex:1;gap:8px;background:#faf9f6">
+<div class="sect">What we're understanding</div>
+<div data-show="chat0" class="xs mut">Answers appear here as you chat...</div>
+<div data-show="chat1" class="rw"><span class="chip on">Landlord/Tenant</span><span class="chip on">Tenant representation</span><span data-show="chat3" class="chip on">Miami-Dade</span></div>
+<div data-show="chat2" class="sect" style="margin-top:4px">Helpful information</div>
+<div data-show="chat2" class="bx2 sm" style="padding:7px 9px">FL security deposit rules — the 15/30-day timelines</div>
+<div data-show="chat2" class="bx2 sm" style="padding:7px 9px">How to send a written demand letter</div>
+<div data-show="chat3" class="sect" style="margin-top:4px">Official resources</div>
+<div data-show="chat3" class="bx2 sm r ck" data-go="resources" style="padding:7px 9px">FL Statute §83.49 <span class="tag" style="margin-left:auto">Official Govt Resource ↗</span></div>
+<div data-show="chat3" class="sect" style="margin-top:4px">Attorneys who handle this</div>
+<div data-show="chat3" class="bx2 r" style="padding:7px 9px"><span class="av" style="width:24px;height:24px">NR</span><div><div class="sm"><b>Natalie Ruiz</b> <span class="tl">✓</span></div><div class="xs mut">Tenant matters · Miami</div></div><span class="bt p sm ck" data-go="attorney" style="margin-left:auto">View</span></div>
+<div data-show="chat3" class="bx2 r" style="padding:7px 9px"><span class="av" style="width:24px;height:24px"></span><div><div class="sm"><b>A. Chen</b></div><div class="xs mut">Landlord/Tenant · Coral Gables</div></div><span class="bt sm" style="margin-left:auto">View</span></div>
+<span data-show="chat3" class="bt ck" data-go="search">See all results →</span>
+</div></div>
+
+<div data-screen-label="Discover" data-show="isDiscover" class="p c" style="gap:10px">
+<div><div class="sect">Trending legal topics</div><div class="rw"><span class="chip ck" data-go="search">Homestead exemption</span><span class="chip ck" data-go="search">New FL condo law</span><span class="chip ck" data-go="search">Living trusts</span><span class="chip ck" data-go="search">Eviction timelines</span></div></div>
+<div><div class="sect">Popular near you — Miami</div>
+<div class="r"><div class="bx2 c ck" data-go="firm" style="flex:1;padding:8px;gap:4px"><div class="im" style="height:44px">img</div><div class="ln" style="width:80%"></div><div class="xs mut">Real Trust Law ✓</div></div>
+<div class="bx2 c ck" data-go="attorney" style="flex:1;padding:8px;gap:4px"><div class="im" style="height:44px">▶</div><div class="ln" style="width:66%"></div><div class="xs mut">N. Ruiz</div></div>
+<div class="bx2 c" style="flex:1;padding:8px;gap:4px"><div class="im" style="height:44px">img</div><div class="ln" style="width:74%"></div><div class="xs mut">Keys Title ✓</div></div></div></div>
+<div class="r" style="gap:14px;align-items:flex-start">
+<div class="c" style="flex:1"><div class="sect">Recommended attorneys</div>
+<div class="bx2 r ck" data-go="attorney" style="padding:7px 9px"><span class="av" style="width:24px;height:24px">NR</span><div class="c" style="gap:1px;flex:1"><b class="sm">Natalie Ruiz ✓</b><span class="xs mut">Estate · Miami</span></div><span class="bt sm">Follow</span></div>
+<div class="bx2 r" style="padding:7px 9px"><span class="av" style="width:24px;height:24px"></span><div class="c" style="gap:1px;flex:1"><b class="sm">A. Chen</b><span class="xs mut">Real estate · Doral</span></div><span class="bt sm">Follow</span></div></div>
+<div class="c" style="flex:1"><div class="sect">Florida legal updates</div>
+<div class="sm">· New homestead filing deadline <span class="xs mut">3d</span></div>
+<div class="sm">· Condo safety recertification rules <span class="xs mut">1w</span></div>
+<div class="sect" style="margin-top:6px">Upcoming events</div>
+<div class="sm">· Estate planning webinar — Feb 12</div></div>
+</div></div>
+
+<div data-screen-label="Resources" data-show="isResources" class="p c" style="gap:10px">
+<div><div class="hd">Florida Legal Resources</div><div class="sm mut">A clear map of official courts, records and forms — so you know where to start.</div></div>
+<div class="srch">⌕ &nbsp;Search resources — "divorce forms", "property appraiser"...</div>
+<div class="r" style="align-items:stretch">
+<div class="bx2 c" style="flex:1;padding:9px;gap:4px"><b class="sm">⚖ Courts</b><div class="xs">Florida Courts · County Clerks · Self-Help Centers · Court Forms</div></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:4px"><b class="sm">⌂ Property</b><div class="xs">Property Appraisers · Tax Collectors · Official Records</div></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:4px"><b class="sm">▤ Business</b><div class="xs">Sunbiz · Dept of Revenue · Licensing</div></div></div>
+<div class="r" style="align-items:stretch">
+<div class="bx2 c ck" data-go="search" style="flex:1;padding:9px;gap:4px"><b class="sm">✓ Lawyers</b><div class="xs">Attorney lookup · Disciplinary info · Consumer resources</div></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:4px"><b class="sm">♥ Family</b><div class="xs">Family-law forms · Child support · DV resources</div></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:4px"><b class="sm">§ Estates</b><div class="xs">Probate · Guardianship · Estate administration</div></div></div>
+<div><div class="sect">Most used</div>
+<div class="bx2 r sm" style="padding:7px 9px">Miami-Dade Clerk of Courts <span class="tag" style="margin-left:auto">Official Govt Resource ↗</span></div>
+<div class="bx2 r sm" style="padding:7px 9px;margin-top:5px">Florida Courts Self-Help Forms <span class="tag" style="margin-left:auto">Official Govt Resource ↗</span></div></div>
+</div>
+
+<div data-screen-label="Unclaimed firm" data-show="isUnclaimed" class="p c" style="gap:10px">
+<div class="r" style="gap:12px"><span class="av" style="width:52px;height:52px;border-radius:8px">SJ</span>
+<div class="c" style="gap:2px;flex:1"><div class="hd">SMITH &amp; JONES, P.A. <span class="tag">Unclaimed</span></div><div class="sm mut">Miami, Florida</div>
+<div class="rw"><span class="tag">Business Law</span><span class="tag">Real Estate</span><span class="tag">Litigation</span></div></div>
+<div class="c" style="gap:5px"><span class="bt">Phone</span><span class="bt">Website ↗</span></div></div>
+<div class="r" style="gap:14px;align-items:flex-start">
+<div class="c" style="flex:1.4;gap:8px">
+<div><div class="sect">Attorneys</div>
+<div class="bx2 r" style="padding:7px 9px"><span class="av" style="width:24px;height:24px"></span><span class="sm">R. Smith</span></div>
+<div class="bx2 r" style="padding:7px 9px;margin-top:5px"><span class="av" style="width:24px;height:24px"></span><span class="sm">T. Jones</span></div></div>
+<div><div class="sect">About</div><div class="ln" style="width:90%"></div><div class="ln" style="width:64%"></div></div></div>
+<div class="bx c" style="flex:1;padding:12px;gap:6px;background:#faf9f6">
+<div class="sm">○ This profile has not been claimed.</div>
+<div class="xs mut">Information may have been compiled from publicly available or licensed professional sources.</div>
+<div class="sm"><b>Are you authorized to represent this firm?</b></div>
+<span class="bt p ck" data-act="goClaim">CLAIM THIS PROFILE</span>
+</div></div></div>
+
+<div data-screen-label="Claim flow" data-show="isClaim" class="p c" style="gap:12px;align-items:center;padding:22px 120px">
+<div class="r xs mut" style="gap:6px"><span data-ks="1">1 Identify</span>→<span data-ks="2">2 Verify</span>→<span data-ks="3">3 Review</span>→<span data-ks="4">4 Claimed</span></div>
+<div data-show="claim1" class="bx c" style="width:100%;padding:14px;gap:7px">
+<div class="hd" style="font-size:14px">Claiming: Smith &amp; Jones, P.A.</div>
+<div class="sect">Who are you?</div>
+<div class="bx2 sm mut" style="padding:6px 9px">Full name</div>
+<div class="bx2 sm mut" style="padding:6px 9px">Title at the firm</div>
+<div class="bx2 sm mut" style="padding:6px 9px">Work email — business domain preferred</div>
+<div class="bx2 sm mut" style="padding:6px 9px">Phone</div>
+<span class="bt p ck" data-act="claimTo2">Continue</span></div>
+<div data-show="claim2" class="bx c" style="width:100%;padding:14px;gap:7px">
+<div class="sect">Professional verification</div>
+<div class="sm">✓ Business-domain email &nbsp;<span class="xs mut">natalie@smithjones.com</span></div>
+<div class="sm">✓ Florida Bar lookup &nbsp;<span class="xs mut">Bar #123456 · Active</span></div>
+<div class="sm">○ Firm authorization &nbsp;<span class="xs mut">upload letter or docs if requested</span></div>
+<div class="bx2 im" style="height:40px">drop documentation here (optional)</div>
+<span class="bt p ck" data-act="claimTo3">Submit for review</span></div>
+<div data-show="claim3" class="bx c" style="width:100%;padding:20px;gap:6px;align-items:center">
+<span class="av" style="border-radius:8px">⏳</span><b>Claim Under Review</b>
+<div class="xs mut" style="text-align:center">Our team verifies your email, Bar record and authorization. You'll hear back within 2 business days.</div>
+<span class="bt sm ck" data-act="claimApprove">(simulate admin approval →)</span></div>
+<div data-show="claim4" class="bx c" style="width:100%;padding:16px;gap:7px">
+<div class="hd" style="font-size:15px">SMITH &amp; JONES, P.A. <span class="tl">✓ Claimed</span></div>
+<div class="xs mut">"Claimed" means profile control — it is not an endorsement. Attorney verification is separate.</div>
+<div class="sect">Firm Professional — $99/mo</div>
+<div class="xs">✓ Manage profile &nbsp;✓ Manage attorneys &nbsp;✓ Publish posts &amp; articles<br>✓ Build followers &nbsp;✓ Receive inquiries &nbsp;✓ Analytics</div>
+<span class="bt p ck" data-go="dash">Subscribe &amp; go to dashboard →</span></div>
+</div>
+
+<div data-screen-label="Firm dashboard" data-show="isDash" class="r" style="align-items:stretch;gap:0">
+<div class="c" style="width:150px;border-right:1.5px solid #ddd9d2;padding:12px;gap:7px">
+<b class="sm">Smith &amp; Jones ✓</b>
+<span class="sm tl">Overview</span><span class="sm mut">Firm Profile</span><span class="sm mut">Attorneys</span><span class="sm mut">Content</span><span class="sm mut">Inquiries</span><span class="sm mut">Followers</span><span class="sm mut">Analytics</span><span class="sm mut">Locations</span><span class="sm mut">Subscription</span><span class="sm mut">Settings</span></div>
+<div class="c p" style="flex:1;gap:10px">
+<div class="r"><b>Overview</b><span style="flex:1"></span><span class="bt p sm">+ Create</span></div>
+<div class="r">
+<div class="bx2 c" style="flex:1;padding:9px;gap:1px"><span class="xs mut">Profile views</span><b>12,481</b><span class="xs tl">+18%</span></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:1px"><span class="xs mut">Followers</span><b>3,281</b><span class="xs tl">+12%</span></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:1px"><span class="xs mut">Content views</span><b>41,822</b><span class="xs tl">+31%</span></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:1px"><span class="xs mut">Inquiries</span><b>97</b><span class="xs tl">+9%</span></div></div>
+<div class="bx2 c" style="padding:9px;gap:4px"><div class="r"><span class="sect">Profile performance</span><span style="flex:1"></span><span class="chip xs on">30d</span><span class="chip xs">90d</span><span class="chip xs">12m</span></div>
+<div class="im" style="height:64px">line graph</div></div>
+<div class="r" style="align-items:flex-start">
+<div class="bx2 c" style="flex:1;padding:9px;gap:4px"><span class="sect">Top content</span><div class="ln" style="width:84%"></div><div class="ln" style="width:66%"></div></div>
+<div class="bx2 c" style="flex:1;padding:9px;gap:4px"><span class="sect">Audience</span><div class="xs">Miami-Dade ▮▮▮▮▮</div><div class="xs">Broward ▮▮▮</div><div class="xs">Palm Beach ▮▮</div></div></div>
+</div></div>
+
+<div data-show="inqOpen" class="ov" data-act="closeInq">
+<div class="bx c" style="width:380px;padding:14px;gap:7px;background:#fff" data-stop>
+<div data-show="inqForm" class="r"><b>How can this firm help?</b><span style="flex:1"></span><span class="ck mut" data-act="closeInq">✕</span></div>
+<div data-show="inqForm" class="bx2 sm mut" style="padding:6px 9px">Practice area ▾</div>
+<div data-show="inqForm" class="bx2 sm mut" style="padding:6px 9px;height:52px">Tell us briefly what is happening...</div>
+<div data-show="inqForm" class="r"><div class="bx2 sm mut" style="padding:6px 9px;flex:1">County ▾</div><div class="bx2 sm mut" style="padding:6px 9px;flex:1">Urgency ▾</div></div>
+<div data-show="inqForm" class="r sm"><span class="mut">Contact by:</span><span class="chip on">Phone</span><span class="chip">Email</span></div>
+<div data-show="inqForm" class="xs mut">☐ I consent to being contacted about this inquiry. Your inquiry is private — never shown publicly.</div>
+<span data-show="inqForm" class="bt p ck" data-act="sendInq">Submit inquiry</span>
+<div data-show="inqSent" class="c" style="align-items:center;gap:6px;padding:8px">
+<span class="av" style="border-color:#1f6f66;color:#1f6f66">✓</span><b>Inquiry sent</b>
+<div class="xs mut" style="text-align:center">Real Trust Law typically responds within 1 business day. Track it under Saved → Inquiries.</div>
+<span class="bt ck" data-act="closeInq">Done</span></div>
+</div></div>
+
+</div>
+<div class="xs mut">Clickable wireframe — outlined elements navigate. Grey bars are placeholder text.</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var SCREENS = ['home', 'search', 'attorney', 'firm', 'help', 'discover', 'resources', 'unclaimed', 'claim', 'dash'];
+  var param = new URLSearchParams(location.search).get('screen');
+  var state = {
+    screen: SCREENS.indexOf(param) !== -1 ? param : 'home',
+    chat: 0,
+    claim: 1,
+    tab: 'a',
+    inq: false,
+    sent: false
+  };
+
+  function setState(patch) {
+    Object.assign(state, patch);
+    render();
+  }
+
+  function go(s) {
+    setState({ screen: s, inq: false, sent: false });
+  }
+
+  var actions = {
+    goClaim: function () { state.claim = 1; go('claim'); },
+    chatPick1: function () { setState({ chat: 1 }); },
+    chatPick2: function () { setState({ chat: 2 }); },
+    chatPick3: function () { setState({ chat: 3 }); },
+    chatReset: function () { setState({ chat: 0 }); },
+    claimTo2: function () { setState({ claim: 2 }); },
+    claimTo3: function () { setState({ claim: 3 }); },
+    claimApprove: function () { setState({ claim: 4 }); },
+    setTabA: function () { setState({ tab: 'a' }); },
+    setTabF: function () { setState({ tab: 'f' }); },
+    openInq: function () { setState({ inq: true, sent: false }); },
+    closeInq: function () { setState({ inq: false }); },
+    sendInq: function () { setState({ sent: true }); }
+  };
+
+  function vals() {
+    var s = state.screen, ch = state.chat, k = state.claim;
+    return {
+      isHome: s === 'home', isSearch: s === 'search', isAttorney: s === 'attorney', isFirm: s === 'firm',
+      isHelp: s === 'help', isDiscover: s === 'discover', isResources: s === 'resources',
+      isUnclaimed: s === 'unclaimed', isClaim: s === 'claim', isDash: s === 'dash',
+      chat0: ch === 0, chat1: ch >= 1, chat1only: ch === 1, chat2: ch >= 2, chat2only: ch === 2, chat3: ch >= 3,
+      claim1: k === 1, claim2: k === 2, claim3: k === 3, claim4: k === 4,
+      isTabA: state.tab === 'a', isTabF: state.tab === 'f',
+      inqOpen: state.inq, inqForm: !state.sent, inqSent: state.sent
+    };
+  }
+
+  function render() {
+    var v = vals();
+    document.querySelectorAll('[data-show]').forEach(function (el) {
+      el.style.display = v[el.dataset.show] ? '' : 'none';
+    });
+    document.querySelectorAll('[data-map]').forEach(function (el) {
+      el.classList.toggle('on', state.screen === el.dataset.map);
+    });
+    document.querySelectorAll('[data-nav]').forEach(function (el) {
+      el.classList.toggle('act', state.screen === el.dataset.nav);
+    });
+    document.querySelectorAll('[data-tabchip]').forEach(function (el) {
+      el.classList.toggle('on', state.tab === el.dataset.tabchip);
+    });
+    document.querySelectorAll('[data-ks]').forEach(function (el) {
+      el.classList.toggle('tl', state.claim === Number(el.dataset.ks));
+    });
+  }
+
+  document.querySelectorAll('[data-go]').forEach(function (el) {
+    el.addEventListener('click', function () { go(el.dataset.go); });
+  });
+  document.querySelectorAll('[data-act]').forEach(function (el) {
+    el.addEventListener('click', function () { actions[el.dataset.act](); });
+  });
+  document.querySelectorAll('[data-stop]').forEach(function (el) {
+    el.addEventListener('click', function (e) { e.stopPropagation(); });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

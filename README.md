@@ -1,5 +1,11 @@
 # Image Generations for innovat3
 
+## FLN clickable prototype
+
+`index.html` is a self-contained, dependency-free implementation of the FLN legal-network wireframe prototype (imported from the Claude Design project `Prototype.dc.html`). Open it directly in a browser — no build step or server required.
+
+It covers the full flow: Home feed → Search results (Attorneys/Firms tabs) → Attorney profile → Firm profile, the Find Legal Help guided chat, Discover, Resources, and the Unclaimed firm → Claim flow → Firm dashboard journey, plus the contact-inquiry modal. The flow map at the top jumps to any screen, and `?screen=<name>` (e.g. `index.html?screen=dash`) deep-links to a screen — names: `home`, `search`, `attorney`, `firm`, `help`, `discover`, `resources`, `unclaimed`, `claim`, `dash`.
+
 ## fal MCP server
 
 This repo is configured with the [fal MCP server](https://fal.ai/docs) via `.mcp.json`, giving Claude Code access to fal's 1,000+ models (search, schemas, pricing, inference, file uploads, and docs search).
