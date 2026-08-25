@@ -1,0 +1,16 @@
+{
+ "model": "microsoft/mai-image-2.5-pro/edit",
+ "provider": "fal.ai",
+ "prompt": "Concept 06 The Conversation \u2014 MAI Image 2.5 Pro edit (3:4). Over-the-shoulder shot of clients facing Natalie listening, forest-green blazer, bright residence office. Headline \"Before we create a plan, we listen.\" / \"SCHEDULE A CONSULTATION\" / REAL TRUST LAW.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "3:4",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.14,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:04:33.620460Z"
+}

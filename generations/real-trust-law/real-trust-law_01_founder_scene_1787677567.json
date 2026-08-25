@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/nano-banana-pro/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 01 (clean, no text) \u2014 Nano Banana Pro edit, 4 refs (closeup primary). Private office, ivory blazer, seated, window light, 4:5 2K. Website hero/about scene.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.15,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:06:08.156564Z"
+}

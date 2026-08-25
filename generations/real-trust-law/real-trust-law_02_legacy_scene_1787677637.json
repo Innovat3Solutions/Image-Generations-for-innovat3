@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/ideogram/character",
+ "provider": "fal.ai",
+ "prompt": "Scene 02 (clean) \u2014 Ideogram V3 Character, closeup ref, QUALITY/REALISTIC, no-text negative prompt. Limestone loggia, cream blouse, candid family behind, golden hour, 1024x1280.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.05,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:07:18.217145Z"
+}

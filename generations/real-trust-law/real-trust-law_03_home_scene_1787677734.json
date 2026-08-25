@@ -1,0 +1,16 @@
+{
+ "model": "bytedance/seedream/v5/pro/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 03 (clean) \u2014 Seedream 5.0 Pro edit, 3 refs. Coral Gables Mediterranean residence, Natalie walking toward entry, stone-beige blazer, golden hour, 2048x1152.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "16:9",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.0675,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:08:55.656305Z"
+}

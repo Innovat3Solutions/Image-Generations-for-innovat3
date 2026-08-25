@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/hunyuan-image/v3/instruct/edit",
+ "provider": "fal.ai",
+ "prompt": "Concept 04 The Will \u2014 Hunyuan Image 3.0 Instruct edit (1:1). Top-down flat lay: ivory legal papers, fountain pen, forest-green leather folio with gold RTL monogram, brass hourglass, Natalie's hands reviewing document. Headline \"Clarity begins with a plan.\" / \"EXPLORE WILLS & TRUSTS\" / REAL TRUST LAW.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "1:1",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.05,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:00:32.771888Z"
+}

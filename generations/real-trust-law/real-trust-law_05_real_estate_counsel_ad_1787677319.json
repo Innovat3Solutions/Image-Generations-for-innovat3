@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/flux-pro/kontext/max/multi",
+ "provider": "fal.ai",
+ "prompt": "Concept 05 Real Estate Counsel \u2014 FLUX.1 Kontext [max] multi (4:5). Natalie in charcoal suit reviewing slim folder in a modern refined Miami residence. Retry with reduced text: headline \"Before the keys change hands.\" only / \"REAL ESTATE COUNSEL\" / REAL TRUST LAW.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "3:4",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.16,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:02:00.600945Z"
+}

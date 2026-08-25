@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/hunyuan-image/v3/instruct/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 04 (clean) \u2014 Hunyuan Image 3.0 Instruct edit, 3 refs. Natalie at oak desk reviewing estate documents, forest-green leather folio, fountain pen, brass, face visible, soft sunlight, 4:5.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.05,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:10:07.170609Z"
+}
