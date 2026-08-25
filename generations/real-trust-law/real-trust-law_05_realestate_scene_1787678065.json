@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/flux-pro/kontext/max/multi",
+ "provider": "fal.ai",
+ "prompt": "Scene 05 (clean) \u2014 FLUX Kontext Max multi, refs closeup+office. Charcoal suit, reviewing slim folder in modern Miami residence by floor-to-ceiling window, 3:4.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "3:4",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.08,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:14:26.092908Z"
+}

@@ -1,0 +1,16 @@
+{
+ "model": "openai/gpt-image-2/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 08 (clean) \u2014 GPT Image 2 edit, refs. Minimalist warm-ivory studio editorial portrait, black tailored suit, ~40% of frame, generous negative space, 4:5.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "2:3",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.25,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:20:27.162964Z"
+}

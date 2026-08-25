@@ -3,7 +3,9 @@
 **Practice anchors:** Estate Planning · Wills & Trusts · Probate/Legacy Planning · Residential & Commercial Real Estate
 **Campaign platform:** *Protect what you've built. Preserve what comes next.*
 
-This campaign was also run as a **10-model identity-consistency bake-off**: each of the ten concepts was generated on a *different* image-generation model (10 models, 9 vendors), all fed the same two reference photographs of Natalie, so the client can judge which model holds her likeness best. See `MODEL-BAKEOFF.md` for the scorecard.
+This campaign was also run as a **10-model identity-consistency bake-off**: each of the ten concepts was generated on a *different* image-generation model (10 models, 9 vendors), all fed the same reference photographs of Natalie, so the client can judge which model holds her likeness best. See `MODEL-BAKEOFF.md` for the scorecard.
+
+> **Direction update (mid-project, per client):** the deliverables are clean photographic **website scenes with no baked-in typography** — files named `*_scene_*.jpg`. The concept sheets below still document the full campaign thinking (headlines, CTAs, formats) so the copy can be applied in the website build or in Figma; the earlier generated ad-style layouts are kept as `*_ad_*.jpg` for reference.
 
 **Visual identity system (applies to all concepts)**
 - Palette: Warm Ivory `#F7F1E7` (dominant), Soft White `#FCFBF8`, Warm Stone `#D9D0C4`, Charcoal `#252521`, Forest Green `#07392C` (accent only), Muted Antique Gold `#B59A65` (jewelry-level accents: thin rules, small caps labels).

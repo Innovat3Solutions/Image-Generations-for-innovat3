@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/nano-banana-2/edit",
+ "provider": "fal.ai",
+ "prompt": "Scene 07 (clean) \u2014 Nano Banana 2 edit, 4 refs. Golden-hour waterfront garden path, Natalie walking candid with family strolling behind, wide cinematic 16:9.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "16:9",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.04,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:15:28.809794Z"
+}

@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/luma-photon/modify",
+ "provider": "fal.ai",
+ "prompt": "Scene 06 (clean) \u2014 Luma Photon modify (strength 0.55, office ref) \u2014 MAI 2.5 Pro refused identity edits 3x. Over-the-shoulder consultation: Natalie in forest-green blazer listening to two clients, bright refined room, 3:4.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "3:4",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.03,
+ "project": "real-trust-law",
+ "created": "2026-08-25T17:19:05.406595Z"
+}
