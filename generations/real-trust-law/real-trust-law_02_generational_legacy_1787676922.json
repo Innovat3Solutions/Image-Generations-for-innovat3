@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/ideogram/character",
+ "provider": "fal.ai",
+ "prompt": "Concept 02 Generational Legacy \u2014 Ideogram V3 Character (QUALITY, REALISTIC, expand_prompt=false, 1024x1280, retry with simplified 3-element copy). Natalie foreground, cream silk blouse + black blazer; candid multigenerational family on limestone terrace. Headline \"What you've built deserves a plan.\" / \"START PLANNING\" / \"REAL TRUST LAW\".\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.18,
+ "project": "real-trust-law",
+ "created": "2026-08-25T16:55:23.067648Z"
+}

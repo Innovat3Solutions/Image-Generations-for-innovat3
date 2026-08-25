@@ -1,0 +1,16 @@
+{
+ "model": "fal-ai/nano-banana-pro/edit",
+ "provider": "fal.ai",
+ "prompt": "Concept 01 The Founder \u2014 editorial portrait, private office, ivory blazer, headline \"Legal counsel should feel personal.\" CTA \"Meet Natalie Ruiz\", 4:5. Full prompt in campaign doc.\n",
+ "refs": [
+  "refs/natalie_ruiz_portrait.jpg",
+  "refs/natalie_ruiz_office.jpg"
+ ],
+ "params": {
+  "aspect": "4:5",
+  "resolution": "2K"
+ },
+ "cost_usd": 0.15,
+ "project": "real-trust-law",
+ "created": "2026-08-25T16:51:35.459059Z"
+}
