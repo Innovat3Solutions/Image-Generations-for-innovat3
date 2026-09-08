@@ -1,0 +1,11 @@
+{
+  "type": "video reel 1080x1920 21.4s",
+  "models": {"keyframes": "bytedance/seedream/v5/pro/text-to-image x4", "video": "fal-ai/veo3.1/fast/image-to-video x2 (8s, 1080p, $0.15/s), fal-ai/kling-video/v3/pro/image-to-video x2 (5s, $0.14/s)", "music": "cassetteai/music-generator 24s (lyria2 completed but result fetch failed, downstream unavailable)"},
+  "provider": "fal.ai",
+  "campaign": "FRAM3 hard-launch sneak peek teaser, B2B angle",
+  "structure": "cold open REC/brackets/timecode 2.5s | skyline + YOUR BUSINESS HAS A story 4.5s | film set + WE CREATE THE content 3.5s | edit bay b-roll 2s | kinetic sub-brand type montage 3s | crowd + right audience 3s | lockup reveal COMING SOON 3s",
+  "deterministic_segments": "cold open, type montage, reveal, and all beat text rendered in code (PIL + ffmpeg) with exact FRAM3 lockup file",
+  "cost_usd_estimate": 4.1,
+  "project": "innovat3",
+  "created": "2026-09-08T21:13:21Z"
+}
