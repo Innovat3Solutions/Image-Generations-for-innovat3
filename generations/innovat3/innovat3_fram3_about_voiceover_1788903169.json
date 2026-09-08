@@ -1,0 +1,9 @@
+{
+  "type": "40s informative FRAM3 overview reel with conversational voiceover, 1080x1920",
+  "vo": "fal-ai/minimax/speech-2.8-hd, voice Friendly_Person, 36.6s script walking through all four sub-brands, ends with 'we'd love to help you get started'",
+  "music": "cassetteai/music-generator 42s warm corporate bed mixed at 20 percent under VO",
+  "visuals": "all ten existing clips reused, no new video generation; gentle lockup open, small lower-third labels per sub-brand, let's talk / GET STARTED end card, all type rendered in code",
+  "cost_usd_estimate": 0.15,
+  "project": "innovat3",
+  "created": "2026-09-08T21:33:25Z"
+}
