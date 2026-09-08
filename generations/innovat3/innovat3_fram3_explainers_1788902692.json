@@ -1,0 +1,14 @@
+{
+  "type": "4 sub-brand explainer reels, 1080x1920, WE'RE LIVE / GET STARTED end cards",
+  "videos": {
+    "studios": "16s: open card We Shoot It | film set (reused Veo clip) COMMERCIALS EVENTS BRAND FILMS | new Kling drone shot DRONE PHOTO full post production | edit bay (reused) edited in house | live end card",
+    "social": "14s: open We Run It | new Kling ring-light creator CONTENT PLANNED SHOT POSTED | new Kling feed scroll COMMUNITY MANAGED growth reported | live end card",
+    "ads": "14s: open We Amplify It | crowd (reused Kling clip) META INSTAGRAM TIKTOK YOUTUBE | new Kling analytics dashboard TESTED OPTIMIZED reported | live end card",
+    "creative": "14s: open We Dream It | new Kling moodboard hands CONCEPTS BRANDING DESIGN | new Kling designer at screen strategy that sells | live end card"
+  },
+  "models": {"keyframes": "bytedance/seedream/v5/pro/text-to-image x6", "video": "fal-ai/kling-video/v3/pro/image-to-video x6 new + 3 reused clips from teaser", "music": "shared CassetteAI score from teaser"},
+  "deterministic_segments": "open cards, end card, all beat text rendered in code with exact FRAM3 lockup",
+  "cost_usd_estimate": 4.65,
+  "project": "innovat3",
+  "created": "2026-09-08T21:24:52Z"
+}
