@@ -14,5 +14,9 @@
   "post_fix": {
     "action": "fixed garbled Missed Calls tag",
     "cost_usd_estimate": 0.07
+  },
+  "post_fix2": {
+    "action": "made tag stream fall in front of the IG caption band with shadows, per user feedback",
+    "cost_usd_estimate": 0.07
   }
 }
