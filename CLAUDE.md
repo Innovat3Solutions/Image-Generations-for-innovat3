@@ -16,6 +16,14 @@ Standing rules for all ad creative generated in this repo.
 ## Services to represent (not just voice AI)
 Websites (offer: as low as $99/mo), Voice AI agents, Workflow Automation, Custom Apps, CRM / client tracking, Review Management, Lead Capture, Data Intelligence, Growth Consulting, Private AI Infrastructure.
 
+## FRAM3 (media & creative division)
+FRAM3 is the media and creative division of Innovat3, built to be marketed independently and feed clients into the Innovat3 ecosystem (websites, CRM, AI, automation).
+
+- Sub-brands, always written with the slash system: FRAM3 / STUDIOS (videography, photography, commercial production, event coverage, drone, editing, post), FRAM3 / SOCIAL (full social media management, planning, posting, community, reporting), FRAM3 / ADS (Meta, Instagram, TikTok, YouTube paid campaigns, creative testing, optimization, reporting), FRAM3 / CREATIVE (creative direction, campaign concepts, branding, graphic design, content strategy).
+- Brand story: "We frame the story. We create the content. We put it in front of the right audience."
+- Lockup: FRAM3 large, "by INNOVAT3" small beneath. Same palette as Innovat3 (lime #B9D93C, black, white, grey) but a more cinematic and editorial personality: lime viewfinder corner brackets as the signature motif, cinema letterbox bars, film-set imagery (cinema cameras, softboxes, monitors, slates), film grain, wide-tracked caps, slate-style micro labels, restrained single lime accents. Premium means quiet: less copy, more atmosphere than the Innovat3 ad system.
+- FRAM3 logo: no approved logo file exists yet. Until a chosen wordmark is saved in `generations/refs/`, do NOT generate FRAM3 ads that require a logo; build the identity first, then treat the lockup file with the same exact-geometry rules as the Innovat3 logo.
+
 ## Generation workflow
 - All media is filed in `generations/innovat3/` as `innovat3_{description}_{unix_ts}.jpg` with a sidecar `.json` log (model, prompt, refs, params, cost) beside it.
 - Provider: fal.ai via the fal MCP server (this repo's `.mcp.json`).
