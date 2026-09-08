@@ -113,3 +113,11 @@ the mailbox, toddler-vs-retriever tug of war, peephole crowd (carrier + cat + ra
 pigeon), pool-float grandpa, raccoon night fridge raid, and the pet parade. Carrier
 uniforms were edit-passed to plain navy (no USPS-style insignia). Cards in scene stay
 plain navy.
+
+## Fold-concept pair (ads 61-62, portrait 1080x1350)
+
+Surreal single-metaphor posters in the folded-map style: a plain-uniform carrier folding a
+grayscale neighborhood map toward a homeowner's door ("Your ZIP code? Folded.") and a
+golden retriever dragging the map fold to a navy mailbox ("The neighborhood? Delivered.").
+Off-white studio world, green pins as the only color pop, logo top right, headline
+top left in navy plus green. Scenes are text-free with a clean upper third.

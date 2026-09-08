@@ -1,0 +1,15 @@
+{
+  "model": "html-template (fold concept, portrait 1080x1350) + chromium screenshot",
+  "provider": "local render (playwright); scene: fal-ai/nano-banana-2 @2K 3:4, surreal CGI, text-free",
+  "prompt": "Rendered from ad-templates/ad62_fold_dog.html. Edit HTML/CSS and re-run ad-templates/render.js.",
+  "refs": [
+    "ad-templates/assets/logo-mark.png"
+  ],
+  "params": {
+    "width": 1080,
+    "height": 1350
+  },
+  "cost_usd": 0,
+  "project": "zippilot",
+  "created": "2026-09-08T22:20:03Z"
+}

@@ -49,6 +49,8 @@ const ADS = [
   { file: 'ad58_sc_poolman.html', w: 1080, h: 1080 },
   { file: 'ad59_sc_raccoon.html', w: 1080, h: 1080 },
   { file: 'ad60_sc_parade.html', w: 1080, h: 1080 },
+  { file: 'ad61_fold_carrier.html', w: 1080, h: 1350 },
+  { file: 'ad62_fold_dog.html', w: 1080, h: 1350 },
 ];
 
 (async () => {
