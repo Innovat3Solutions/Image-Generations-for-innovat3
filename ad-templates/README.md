@@ -121,3 +121,9 @@ grayscale neighborhood map toward a homeowner's door ("Your ZIP code? Folded.") 
 golden retriever dragging the map fold to a navy mailbox ("The neighborhood? Delivered.").
 Off-white studio world, green pins as the only color pop, logo top right, headline
 top left in navy plus green. Scenes are text-free with a clean upper third.
+
+## Busted (ad 63, portrait 1080x1350)
+
+Wien Energie homage: a poodle caught paws-up in a motion-sensor spotlight at night, the
+navy card dropped at its feet, open mailbox behind. "Caught red-pawed. 16 local deals on
+one card. People get protective." Tiny copy bottom left in the dark zone, logo bottom right.
