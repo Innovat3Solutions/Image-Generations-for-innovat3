@@ -1,0 +1,18 @@
+{
+  "model": "bytedance/seedream/v5/pro/edit",
+  "provider": "fal.ai",
+  "campaign": "IG-embed conceptual style: chaos_pour (fal request 01a08312-06d4-7c30-9f26-783b9f12cac8)",
+  "refs": [
+    "fal CDN: innovat3-logo-black-transparent.png"
+  ],
+  "params": {
+    "image_size": "1440x1800"
+  },
+  "cost_usd_estimate": 0.07,
+  "project": "innovat3",
+  "created": "2026-09-08T22:11:15Z",
+  "post_fix": {
+    "action": "fixed garbled Missed Calls tag",
+    "cost_usd_estimate": 0.07
+  }
+}
