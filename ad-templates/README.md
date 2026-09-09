@@ -125,5 +125,5 @@ top left in navy plus green. Scenes are text-free with a clean upper third.
 ## Busted (ad 63, portrait 1080x1350)
 
 Wien Energie homage: a poodle caught paws-up in a motion-sensor spotlight at night, the
-navy card dropped at its feet, open mailbox behind. "Caught red-pawed. 16 local deals on
+actual printed card (card_front design) composited at its feet at true postcard size via nano-banana-2/edit, open mailbox behind. "Caught red-pawed. 16 local deals on
 one card. People get protective." Tiny copy bottom left in the dark zone, logo bottom right.

@@ -1,0 +1,16 @@
+{
+  "model": "html-template (busted v2, real card composited) + chromium screenshot",
+  "provider": "local render (playwright); scene: nano-banana-2; card_front.png composited into scene via nano-banana-2/edit at true postcard size",
+  "prompt": "Rendered from ad-templates/ad63_busted.html (scene asset busted_dog_card.png). Edit HTML/CSS and re-run ad-templates/render.js.",
+  "refs": [
+    "ad-templates/assets/card_front.png",
+    "ad-templates/assets/logo-mark.png"
+  ],
+  "params": {
+    "width": 1080,
+    "height": 1350
+  },
+  "cost_usd": 0,
+  "project": "zippilot",
+  "created": "2026-09-09T15:11:12Z"
+}
