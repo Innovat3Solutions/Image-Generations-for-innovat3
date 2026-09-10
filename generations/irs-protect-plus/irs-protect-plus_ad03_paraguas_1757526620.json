@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 03 — Que lluevan los avisos: woman under navy umbrella in rain of IRS letters",
+  "prompt": "Hispanic woman under deep-navy umbrella, IRS notice letters raining, sky-blue studio bg. Headline: 'Que lluevan los avisos.' / 'Tú estás cubierto.' body: 'Hasta $10,000 en representación profesional ante el IRS por solo $19.99 al mes.' White footer with both exact logos, legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c71-59ae-77c1-b62d-9a3aa351c3ae",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:50:00Z"
+}

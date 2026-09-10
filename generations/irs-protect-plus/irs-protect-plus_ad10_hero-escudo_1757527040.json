@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 10 — Brand hero: IRS Protect Plus shield centered on navy gradient, site tagline",
+  "prompt": "IRS Protect Plus shield logo (exact ref) hero-centered on deep navy gradient with orbit ring. Headline: 'El IRS es complicado.' / 'Tu protección no debería serlo.' + 'Hasta $10,000 en representación profesional' + gold button 'Obtén protección · $19.99/mes'. White footer with Best Vision Accounting logo (exact ref) centered + 'Respaldado por Best Vision Accounting', legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c74-5b84-7653-8b80-6c93025a9ebd",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:57:00Z"
+}

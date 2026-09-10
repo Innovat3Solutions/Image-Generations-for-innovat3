@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 01 v3 — La carga del IRS (regen: v2 cropped the PROTECT PLUS wordmark off the product logo)",
+  "prompt": "Same as ad01 v2 with explicit instruction to reproduce the ENTIRE IRS Protect Plus reference image including the PROTECT PLUS wordmark, nothing cropped.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c76-d1bb-7c91-82f7-a953fe222252",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T18:06:00Z"
+}

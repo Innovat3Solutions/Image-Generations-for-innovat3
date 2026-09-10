@@ -1,0 +1,20 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 11 (bonus) — Tu negocio es tu enfoque: small-business owner at bakery counter",
+  "prompt": "Hispanic small-business owner at bakery counter. Headline: 'Tu negocio es tu enfoque.' sub: 'El IRS es el nuestro.' body: 'Protección fiscal profesional para quienes trabajan por su cuenta, lista antes del primer aviso.' White footer with both exact logos + '$19.99/mes · Hasta $10,000 en representación', legal membership line.",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "png"
+  },
+  "request_id": "01a08c74-c396-76a2-9a42-053036594362",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:58:00Z",
+  "status": "rejected — superseded by later version (text/logo defect)"
+}

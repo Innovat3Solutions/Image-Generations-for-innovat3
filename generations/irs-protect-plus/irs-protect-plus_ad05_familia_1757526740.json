@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 05 — Tú disfruta a tu familia: warm family lifestyle photo, we deal with the IRS",
+  "prompt": "Happy Hispanic family on couch, cozy evening. Headline: 'Tú disfruta a tu familia.' accent: 'Nosotros hablamos con el IRS.' body: 'Representación profesional para asuntos elegibles del IRS, lista antes de que sean tu problema.' White footer with both exact logos + '$19.99/mes · Cancela cuando quieras', legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c72-1ada-7b30-841d-dbc2acfe0668",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:52:00Z"
+}

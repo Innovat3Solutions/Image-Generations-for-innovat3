@@ -1,0 +1,20 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 01 — La carga del IRS (homage to inspiration ad): man carrying giant IRS concrete block",
+  "prompt": "Design a premium 4:5 portrait social media ad... photorealistic Hispanic man in gray suit carrying giant concrete block engraved 'IRS' on light sky-blue background. Headline: '¿UN AVISO O UNA AUDITORÍA DEL IRS?'; highlight: 'No tienes que cargarlo solo.'; body: 'Te representamos profesionalmente ante el IRS.'; white footer with Best Vision Accounting logo (ref 2, exact) left and IRS Protect Plus shield logo (ref 1, exact) right, '$19.99/mes · Hasta $10,000 en representación profesional'; legal: 'IRS Protect Plus es un programa de membresía y no es un seguro.'",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "png"
+  },
+  "request_id": "01a08c70-454b-7c81-8aa1-267bcf1d35b4",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:48:00Z",
+  "status": "rejected — superseded by later version (text/logo defect)"
+}

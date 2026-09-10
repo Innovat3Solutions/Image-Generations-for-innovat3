@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 04 — No esperes la carta: suburban mailbox at golden hour, non-retroactive coverage message",
+  "prompt": "Suburban mailbox golden hour, navy top panel. Headline: 'No esperes la carta del IRS.' gold: 'Protégete antes de que llegue.' body: 'La cobertura no es retroactiva: la protección empieza antes que el problema.' White footer with both exact logos + '$19.99/mes', legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c71-b696-76b2-9a07-b0ad124fcd1f",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:51:00Z"
+}

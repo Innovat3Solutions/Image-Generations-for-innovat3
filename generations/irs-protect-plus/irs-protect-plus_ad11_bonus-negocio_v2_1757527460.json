@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 11 v2 (bonus) — Tu negocio es tu enfoque (regen: v1 footer dropped '$10,000' mid-sentence)",
+  "prompt": "Same as ad11 but footer center text simplified to '$19.99/mes' only, each string written exactly once.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c76-2b7e-76d1-8194-4d72889912ad",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T18:03:00Z"
+}

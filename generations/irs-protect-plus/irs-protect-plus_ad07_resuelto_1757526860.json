@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 07 — Caso cerrado: relieved woman holding letter stamped RESUELTO",
+  "prompt": "Joyful Hispanic woman holding letter stamped 'RESUELTO'. Headline: 'Caso cerrado.' sub: 'Así se siente tener a Best Vision Accounting de tu lado.' body: 'Revisamos, respondemos y resolvemos tu asunto con el IRS.' White footer with both exact logos + '$19.99/mes', legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c72-e8da-73b0-b3aa-40a6073606be",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:54:00Z"
+}

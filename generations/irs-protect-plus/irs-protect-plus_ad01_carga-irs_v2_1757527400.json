@@ -1,0 +1,20 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 01 v2 — La carga del IRS (regen: v1 had duplicated garbled price line)",
+  "prompt": "Same as ad01 but price moved into body copy ('Hasta $10,000 en representación · $19.99/mes'), footer restricted to the two exact logos plus single legal line, instruction to write each string exactly once.",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png"
+  ],
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "1K",
+    "output_format": "png"
+  },
+  "request_id": "01a08c75-c464-7b70-adbb-4ee87ded38a9",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T18:02:00Z",
+  "status": "rejected — superseded by later version (text/logo defect)"
+}

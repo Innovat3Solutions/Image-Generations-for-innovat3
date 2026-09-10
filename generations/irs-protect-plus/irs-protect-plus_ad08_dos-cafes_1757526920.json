@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 08 — Menos que dos cafés al mes: minimalist flat-lay price-anchor ad",
+  "prompt": "Flat-lay two coffee cups + navy '$19.99' price tag on sky-blue bg. Headline: 'Menos que dos cafés al mes.' body: 'Hasta $10,000 en representación profesional ante el IRS.' + 'Protección fiscal real, sin sorpresas. Cancela cuando quieras.' White footer with both exact logos, legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c73-65a4-74f2-844a-6eb8d491137f",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:55:00Z"
+}

@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 02 — ¿Llegó una carta del IRS?: close-up of hands holding sealed IRS envelope, kitchen table",
+  "prompt": "Photorealistic close-up of anxious hands holding sealed IRS envelope over kitchen table, morning light. Headline: '¿Llegó una carta del IRS?' bold: 'Respira. Envíanosla.' body: 'Nuestro equipo la revisa, prepara la respuesta y habla con el IRS por ti.' White footer with both logos (exact refs), '$19.99/mes · Cancela cuando quieras', legal: 'IRS Protect Plus es un programa de membresía y no es un seguro.'",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c70-ed22-7792-950b-ce70a8d55c60",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:49:00Z"
+}

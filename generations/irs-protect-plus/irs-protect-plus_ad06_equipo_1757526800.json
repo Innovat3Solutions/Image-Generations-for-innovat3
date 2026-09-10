@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 06 — Conoce al equipo: professional tax team in modern office, credibility play",
+  "prompt": "Team of three tax professionals in modern office. Headline: 'Conoce al equipo detrás de tu protección.' body: 'Agentes Inscritos, CPAs y abogados autorizados que revisan tu aviso, preparan la respuesta y te representan ante el IRS.' White footer with both exact logos + 'Respaldado por Best Vision Accounting', legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c72-81a8-7293-9ad9-a743cc39bce0",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:53:00Z"
+}

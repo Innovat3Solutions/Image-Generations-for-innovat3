@@ -1,0 +1,12 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "concept": "Ad 09 — ¿CP2000? ¿Auditoría? ¿Cobro?: confused man with IRS letter, jargon tags",
+  "prompt": "Confused Hispanic man with letter at night, floating tags 'CP2000', 'AUDITORÍA', 'COBRO'. Headline: '¿CP2000? ¿Auditoría? ¿Cobro?' sub: 'Tú no tienes que descifrarlo. Nosotros sí.' body: 'Envíanos el aviso y el equipo de Best Vision determina qué pide el IRS y qué sigue.' White footer with both exact logos + '$19.99/mes', legal membership line.",
+  "refs": ["refs/irs-protect-plus-plan-logo.png", "refs/best-vision-accounting-logo.png"],
+  "params": {"aspect_ratio": "4:5", "resolution": "1K", "output_format": "png"},
+  "request_id": "01a08c73-cf58-7973-8128-a5e5d135912f",
+  "cost_usd": 0.08,
+  "project": "irs-protect-plus",
+  "created": "2026-09-10T17:56:00Z"
+}
