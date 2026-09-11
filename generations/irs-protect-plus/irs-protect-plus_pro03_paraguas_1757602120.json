@@ -1,0 +1,20 @@
+{
+  "model": "imagen-nano-banana-2 (Google Nano Banana Pro)",
+  "provider": "magnific/freepik",
+  "concept": "Pro 03 — Que lluevan los avisos: woman under navy umbrella, drifting letters, fine-art studio",
+  "prompt": "Pro series v2: full-bleed premium editorial 4:5 ad, no banner bars or boxed footers, type integrated in negative space, both brand logos reproduced from references, legal membership line; team-photo concepts use the real Best Vision team reference.",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png",
+    "refs/best-vision-accounting-team.png (pro06/pro10/pro11 only)"
+  ],
+  "params": {
+    "aspectRatio": "4:5",
+    "resolution": "2k",
+    "mode": "imagen-nano-banana-2"
+  },
+  "magnific_identifier": "LwieWvXswO",
+  "cost_credits": 75,
+  "project": "irs-protect-plus",
+  "created": "2026-09-11T14:45:00Z"
+}
