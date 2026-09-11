@@ -1,0 +1,20 @@
+{
+  "model": "imagen-nano-banana-2 (Google Nano Banana Pro)",
+  "provider": "magnific/freepik",
+  "concept": "Story 07 — '$20 vs enfrentarlo solo': $20 bill beside IRS letter, minimal price anchor",
+  "prompt": "Story series: pain-point narrative — the IRS letter arrives, stress, not knowing who to call, then Best Vision steps in. Full-bleed 4:5 editorial, tagline-led conversational Spanish, both brand logos from references, price line 'Desde $19.99 al mes · Hasta $10,000 en representación', legal membership line. Story06 uses the real team photo reference.",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png",
+    "refs/best-vision-accounting-team.png (story06 only)"
+  ],
+  "params": {
+    "aspectRatio": "4:5",
+    "resolution": "2k",
+    "mode": "imagen-nano-banana-2"
+  },
+  "magnific_identifier": "9ZTCfKSNYZ",
+  "cost_credits": 75,
+  "project": "irs-protect-plus",
+  "created": "2026-09-11T20:55:00Z"
+}
