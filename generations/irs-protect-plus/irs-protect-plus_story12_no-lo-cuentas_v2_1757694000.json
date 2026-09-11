@@ -1,0 +1,20 @@
+{
+  "model": "imagen-nano-banana-2 (Google Nano Banana Pro)",
+  "provider": "magnific/freepik",
+  "concept": "Story 12 v2 — 'Todavía no se lo cuentas a nadie.' (regen: v1 had broken word + invented logo)",
+  "prompt": "Re-roll with stricter fidelity instructions (unbroken words, pixel-faithful complete product logo, exactly nine team members).",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png",
+    "refs/best-vision-accounting-team.png (story18 only)"
+  ],
+  "params": {
+    "aspectRatio": "4:5",
+    "resolution": "2k",
+    "mode": "imagen-nano-banana-2"
+  },
+  "magnific_identifier": "79ztLZfJAL",
+  "cost_credits": 75,
+  "project": "irs-protect-plus",
+  "created": "2026-09-11T23:20:00Z"
+}

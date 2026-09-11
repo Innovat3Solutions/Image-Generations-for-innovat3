@@ -1,0 +1,20 @@
+{
+  "model": "imagen-nano-banana-2 (Google Nano Banana Pro)",
+  "provider": "magnific/freepik",
+  "concept": "Story 18 v2 — 'Que la próxima carta la reciba tu equipo.' (regen: v1 duplicated a team member, exactly nine enforced)",
+  "prompt": "Re-roll with stricter fidelity instructions (unbroken words, pixel-faithful complete product logo, exactly nine team members).",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png",
+    "refs/best-vision-accounting-team.png (story18 only)"
+  ],
+  "params": {
+    "aspectRatio": "4:5",
+    "resolution": "2k",
+    "mode": "imagen-nano-banana-2"
+  },
+  "magnific_identifier": "dtF70PnXSL",
+  "cost_credits": 75,
+  "project": "irs-protect-plus",
+  "created": "2026-09-11T23:20:00Z"
+}

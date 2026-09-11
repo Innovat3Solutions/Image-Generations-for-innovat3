@@ -1,0 +1,20 @@
+{
+  "model": "imagen-nano-banana-2 (Google Nano Banana Pro)",
+  "provider": "magnific/freepik",
+  "concept": "Story 10 — 'Llevas 47 minutos en espera con el IRS.': man exhausted on speakerphone hold",
+  "prompt": "Story series round 2: new pain-point angles (English-language letter, IRS hold time, hiding the letter, family secrecy, cost fear, tax jargon, envelope recognition, 30-day deadline, ruined weekend, team closer). Full-bleed 4:5 editorial, tagline-led Spanish, both brand logos from references, price line, legal membership line. Story18 uses the real team photo reference.",
+  "refs": [
+    "refs/irs-protect-plus-plan-logo.png",
+    "refs/best-vision-accounting-logo.png",
+    "refs/best-vision-accounting-team.png (story18 only)"
+  ],
+  "params": {
+    "aspectRatio": "4:5",
+    "resolution": "2k",
+    "mode": "imagen-nano-banana-2"
+  },
+  "magnific_identifier": "VXflZR6MMU",
+  "cost_credits": 75,
+  "project": "irs-protect-plus",
+  "created": "2026-09-11T22:40:00Z"
+}
