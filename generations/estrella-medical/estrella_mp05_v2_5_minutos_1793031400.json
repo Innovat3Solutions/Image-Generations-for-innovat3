@@ -1,0 +1,17 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "MP5 v2 — Inscríbete en 5 minutos. (mother enrolling at kitchen counter)",
+  "prompt": "V2 minimalist system: one headline, one CTA pill, one footer line, logo centered top, Miami Hispanic photography. Full prompts in fal.ai request history.",
+  "refs": [
+    "../refs/estrella_logo.png"
+  ],
+  "params": {
+    "aspect": "4:5",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-10-26T16:20:00Z"
+}

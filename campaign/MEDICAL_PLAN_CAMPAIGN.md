@@ -27,3 +27,18 @@
 **Funnel:** awareness 2, consideration 3 & 4, conversion 1 & 5.
 
 **Status:** prompts staged; generation paused — fal account out of credits (balance_exhausted at 2026-10-26). Resume = 5 images on nano-banana-2/edit ≈ $0.40 plus any QC rerolls.
+
+---
+
+## V2 — Professional-grade revision (Oct 26)
+
+**Audit of v1 (rejected):** each ad carried 4–6 competing elements (benefit checklists, badges, dual footers), three of five had no people, logo placement was inconsistent corner boxes, and object-hero layouts (glucometer-style) read as template clip-art rather than brand advertising.
+
+**V2 creative standards (now the house rules for all Estrella paid social):**
+1. One headline, max ~6 words. One CTA pill. One tiny legal/URL line. Nothing else on canvas.
+2. Photography-led: authentic Miami Hispanic subjects (Little Havana, Wynwood, backyard mango tree, clinic with royal palms) — the creative does the audience targeting now that Meta restricts demographic targeting for this category.
+3. Logo centered at top of every canvas, composited from the real file, never redrawn.
+4. Navy gradient bottom third for legibility; generous negative space.
+5. Benefit details (labs, telemedicine, discounts) live in the ad's primary text/caption and landing page — not on the image.
+
+V2 files: estrella_mp0X_v2_*.png (five). V1 removed from the folder; recoverable from git history.
