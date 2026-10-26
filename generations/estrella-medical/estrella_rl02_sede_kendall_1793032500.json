@@ -1,0 +1,19 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "RL2 — Cerca de ti, en Miami (REAL Kendall 13980 building photo, sky/atmosphere enhanced only)",
+  "prompt": "V3 glassy style on real client photography; faces/buildings preserved, background and typography added. Full prompts in fal.ai request history.",
+  "refs": [
+    "refs/location_kendall_13980.webp",
+    "../refs/estrella_logo.png"
+  ],
+  "params": {
+    "aspect": "1:1",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-10-26T16:50:00Z",
+  "note": "Built on real client assets — verify each doctor consents to paid-media usage before trafficking RL1/RL3"
+}
