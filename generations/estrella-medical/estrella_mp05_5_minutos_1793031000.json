@@ -1,0 +1,18 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "MP5 — Inscríbete en menos de 5 minutos (enrollment + telemedicina 24/7)",
+  "prompt": "See campaign/medical_plan_staged_prompts.json (full prompts) and campaign/MEDICAL_PLAN_CAMPAIGN.md",
+  "refs": [
+    "../refs/estrella_logo.png"
+  ],
+  "params": {
+    "aspect": "4:5",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-10-26T16:11:00Z",
+  "note": "Estrella Medical Plan membership campaign; logo + estrellamedicalplans.com / (305) 982-8810 CTA + not-insurance disclaimer baked in"
+}
