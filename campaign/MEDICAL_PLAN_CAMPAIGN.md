@@ -42,3 +42,7 @@
 5. Benefit details (labs, telemedicine, discounts) live in the ad's primary text/caption and landing page — not on the image.
 
 V2 files: estrella_mp0X_v2_*.png (five). V1 removed from the folder; recoverable from git history.
+
+## V3 — Pinterest-reference style pass (Oct 26)
+
+Style extracted from the provided references (Brazilian "Dia Mundial da Saúde" templates + Misr Hospital collage poster): glassy luminous blue gradients with light flares · duotone photo compositing with rim-glow cutouts · bold sans + elegant gold script type lockups · glossy 3D icons (heart/cross/clock/star) · slim icon footer bar (globe/phone/pin) · eyebrow label pill. Fused with the V2 message discipline (one headline + one CTA + one legal line) and the brand star — including the collage-inside-star-silhouette hero (mp03_v3), our adaptation of the Misr double-exposure concept. V3 files: estrella_mp0X_v3_*.png. V2 minimalist set retained as an A/B style cell.

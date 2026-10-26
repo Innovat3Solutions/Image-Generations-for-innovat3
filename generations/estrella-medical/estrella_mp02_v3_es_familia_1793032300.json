@@ -1,0 +1,17 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "MP2 v3 — Más que un seguro, es familia (family cutout, palm duotone, 3D heart+cross icon)",
+  "prompt": "V3 Pinterest-reference style: glassy blue gradients + light flares, duotone photo compositing, bold sans + gold script lockups, glossy 3D icons, icon footer bar; V2 message discipline kept (one headline, one CTA). Full prompts in fal.ai request history.",
+  "refs": [
+    "../refs/estrella_logo.png"
+  ],
+  "params": {
+    "aspect": "4:5",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-10-26T16:35:00Z"
+}

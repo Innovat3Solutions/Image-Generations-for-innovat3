@@ -1,0 +1,17 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "MP5 v3 — Inscríbete en 5 minutos (mother w/ phone, 3D clock+heart icons, Miami skyline)",
+  "prompt": "V3 Pinterest-reference style: glassy blue gradients + light flares, duotone photo compositing, bold sans + gold script lockups, glossy 3D icons, icon footer bar; V2 message discipline kept (one headline, one CTA). Full prompts in fal.ai request history.",
+  "refs": [
+    "../refs/estrella_logo.png"
+  ],
+  "params": {
+    "aspect": "9:16",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-10-26T16:35:00Z"
+}
