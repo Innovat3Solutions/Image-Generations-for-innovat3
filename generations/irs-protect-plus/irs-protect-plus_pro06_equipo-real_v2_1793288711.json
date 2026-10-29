@@ -1,0 +1,19 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit (erase) + manual composite",
+  "provider": "fal",
+  "concept": "Logos reales: se reemplazan los logos generados por IA por los archivos oficiales de refs/",
+  "source": "irs-protect-plus_pro06_equipo-real_1757602300.png",
+  "erase_prompt": "Remove the logo lockup in the top-right corner (IRS Protect Plus shield and Best Vision Accounting logo), and the brand logos and the small one-line disclaimer text at the bottom of the image. Fill those areas seamlessly with the natural continuation of the plain background. Do not change anything else: the people, all other text and colors stay exactly the same.",
+  "logos": [
+    "refs/best-vision-accounting-logo.png",
+    "refs/irs-protect-plus-plan-logo.png"
+  ],
+  "disclaimer": "IRS Protect Plus es un programa de membres\u00eda y no es un seguro.",
+  "layout": {
+    "align": "top-right",
+    "dark_plate": false
+  },
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:45:11Z",
+  "steps_extra": "removed leftover AI-drawn \"Best Vision Accounting\" script under the top-right lockup"
+}
