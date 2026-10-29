@@ -1,0 +1,18 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit (text removal) + manual composite",
+  "provider": "fal",
+  "concept": "Oferta: primer mes gratis. Solo titular + oferta + un CTA + divulgación",
+  "source": "irs-protect-plus_story13_cuanto-cuesta_v2_1793288582.png",
+  "kept_text": [
+    "¿Y esto cuánto me va a costar?"
+  ],
+  "offer": "PRIMER MES GRATIS",
+  "cta": "Reclama tu mes gratis",
+  "disclosure": "Primer mes gratis para nuevos miembros; luego $19.99 al mes hasta cancelar. Cancela cuando quieras. IRS Protect Plus es un programa de membresía de Best Vision Accounting, LLC y no es un seguro. Cubre avisos elegibles del IRS fechados después de la inscripción. Aplican requisitos, limitaciones y exclusiones.",
+  "logos": [
+    "refs/best-vision-accounting-logo.png",
+    "refs/irs-protect-plus-plan-logo.png"
+  ],
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T23:14:20Z"
+}
