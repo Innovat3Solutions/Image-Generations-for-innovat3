@@ -1,0 +1,13 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal",
+  "concept": "Corrección batch 1 — Bajar el tamaño de los textos",
+  "source": "irs-protect-plus_story08_no-paso-nada_1757625420.png",
+  "prompt": "Edit this advertisement image. Keep EVERYTHING else identical: same photo, people, scene, composition, colors, lighting, logos, fonts, disclaimer line and all other text exactly as it is now. Only make this change: Reduce the size of all the text at the top by about 30%: \"La carta llegó.\" , \"Y no pasó nada.\" , \"Porque esta vez no estabas solo.\" and the grey price line, keeping the same wording, fonts, colors, alignment and order, with more breathing room around them. All Spanish text must be spelled exactly as written here, with correct accents and punctuation. Do not add any other text.",
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K"
+  },
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:18:50.000Z"
+}

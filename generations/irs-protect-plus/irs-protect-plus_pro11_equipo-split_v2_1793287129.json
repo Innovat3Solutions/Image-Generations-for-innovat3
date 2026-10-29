@@ -1,0 +1,13 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal",
+  "concept": "Corrección batch 1 — Separar párrafos y hacer el segundo más pequeño",
+  "source": "irs-protect-plus_pro11_equipo-split_1757602600.png",
+  "prompt": "Edit this advertisement image. Keep EVERYTHING else identical: same photo, people, scene, composition, colors, lighting, logos, fonts, disclaimer line and all other text exactly as it is now. Only make this change: Fix the text hierarchy on the left. Keep the headline \"Detrás de cada membresía hay un equipo que da la cara por ti.\" as it is. Add clearly more vertical space between the headline and the second paragraph, and make the second paragraph \"Revisión de avisos, respuestas al IRS y representación autorizada.\" noticeably smaller (about 65% of its current size), in grey. All Spanish text must be spelled exactly as written here, with correct accents and punctuation. Do not add any other text.",
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K"
+  },
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:18:49.000Z"
+}

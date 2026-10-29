@@ -1,0 +1,13 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal",
+  "concept": "Corrección batch 1 — Corregir espacio doble en \"Cuéntanoslo a nosotros\"",
+  "source": "irs-protect-plus_story12_no-lo-cuentas_v3_1793287131.png",
+  "prompt": "Edit this advertisement image. Keep EVERYTHING else identical: same photo, people, scene, composition, colors, lighting, logos, fonts, disclaimer line and all other text exactly as it is now. Only make this change: Fix the spacing in the bold line so it reads \"Cuéntanoslo a nosotros.\" with exactly one normal word space between \"Cuéntanoslo\" and \"a\", centered as before. All Spanish text must be spelled exactly as written here, with correct accents and punctuation. Do not add any other text.",
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K"
+  },
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:20:15.000Z"
+}

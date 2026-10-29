@@ -1,0 +1,13 @@
+{
+  "model": "manual edit (sky reconstruction + rescale)",
+  "concept": "Correcci\u00f3n batch 1 \u2014 textos al 60% de tama\u00f1o",
+  "source": "irs-protect-plus_story08_no-paso-nada_1757625420.png",
+  "steps": [
+    "lift headline block from sky",
+    "rebuild sky (gradient fit + local correction)",
+    "restore porch-post fade",
+    "re-place same text at 60% scale, top-left"
+  ],
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:27:48Z"
+}

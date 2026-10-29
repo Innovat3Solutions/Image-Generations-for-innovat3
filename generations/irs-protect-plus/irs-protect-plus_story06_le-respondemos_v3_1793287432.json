@@ -1,0 +1,12 @@
+{
+  "model": "manual composite (Pillow)",
+  "concept": "Correcci\u00f3n batch 1 \u2014 precio como bot\u00f3n en el footer, debajo del equipo",
+  "source": "irs-protect-plus_story06_le-respondemos_v2_1793287130.png",
+  "steps": [
+    "remove price pill from under headline",
+    "move team band up 186px",
+    "place price pill centered below team, above disclaimer"
+  ],
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:23:52Z"
+}

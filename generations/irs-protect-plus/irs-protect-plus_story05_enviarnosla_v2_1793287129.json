@@ -1,0 +1,13 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal",
+  "concept": "Corrección batch 1 — Párrafo azul reordenado, en recuadro y más pequeño",
+  "source": "irs-protect-plus_story05_enviarnosla_1757625240.png",
+  "prompt": "Edit this advertisement image. Keep EVERYTHING else identical: same photo, people, scene, composition, colors, lighting, logos, fonts, disclaimer line and all other text exactly as it is now. Only make this change: Replace the large blue two-line paragraph \"Foto, envío, y nuestro equipo se encarga del resto.\" with a smaller single callout: a rounded pill box filled with royal blue (#2648B5) containing white bold text \"Envía una foto y nuestro equipo se encarga del resto.\" centered in the same area, about half the previous text size. The headline above and the grey price line below stay the same. All Spanish text must be spelled exactly as written here, with correct accents and punctuation. Do not add any other text.",
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K"
+  },
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:18:49.000Z"
+}

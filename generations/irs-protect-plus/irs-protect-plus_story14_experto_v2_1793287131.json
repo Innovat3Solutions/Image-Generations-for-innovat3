@@ -1,0 +1,13 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal",
+  "concept": "Corrección batch 1 — Palabras de arriba lado a lado en recuadros redondeados",
+  "source": "irs-protect-plus_story14_experto_1757690300.png",
+  "prompt": "Edit this advertisement image. Keep EVERYTHING else identical: same photo, people, scene, composition, colors, lighting, logos, fonts, disclaimer line and all other text exactly as it is now. Only make this change: Replace the three stacked words at the top \"MULTAS. INTERESES. PLAZOS.\" with the same three words placed side by side on one single centered row, each inside its own rounded pill box with deep navy (#10193F) fill and white bold uppercase letters: \"MULTAS\" \"INTERESES\" \"PLAZOS\". All Spanish text must be spelled exactly as written here, with correct accents and punctuation. Do not add any other text.",
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K"
+  },
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:18:51.000Z"
+}

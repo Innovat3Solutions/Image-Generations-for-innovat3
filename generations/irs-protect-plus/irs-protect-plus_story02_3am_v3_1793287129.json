@@ -1,0 +1,13 @@
+{
+  "model": "fal-ai/nano-banana-pro/edit",
+  "provider": "fal",
+  "concept": "Corrección batch 1 — Nuevo hook: la próxima carta, no la actual (la cobertura no es retroactiva)",
+  "source": "irs-protect-plus_story02_3am_v2_1757626500.png",
+  "prompt": "Edit this advertisement image. Keep EVERYTHING else identical: same photo, people, scene, composition, colors, lighting, logos, fonts, disclaimer line and all other text exactly as it is now. Only make this change: Replace the whole headline block at the top (the three headline lines and the blue line under them) with this new copy, same style and position: first line in light weight white \"¿Otra noche en vela?\", then a bold white headline on two lines \"Que la próxima carta del IRS no te quite el sueño.\", then one line in light blue \"Protégete hoy y duerme tranquilo.\" Keep the grey price line \"Desde $19.99 al mes · Hasta $10,000 en representación\" below it unchanged. All Spanish text must be spelled exactly as written here, with correct accents and punctuation. Do not add any other text.",
+  "params": {
+    "aspect_ratio": "4:5",
+    "resolution": "2K"
+  },
+  "project": "irs-protect-plus",
+  "created": "2026-10-29T15:18:49.000Z"
+}
