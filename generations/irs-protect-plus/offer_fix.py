@@ -21,7 +21,7 @@ FB = os.path.join(lf.REFS, 'fonts', 'manrope-800.ttf')
 FR = os.path.join(lf.REFS, 'fonts', 'manrope-500.ttf')
 NAVY, GOLD = (16, 25, 63), (201, 162, 39)
 OFFER = 'PRIMER MES GRATIS'
-CTA = 'Reclama tu mes gratis'
+CTA = 'Activa tu mes de cobertura gratis'
 DISCLOSURE = ('Primer mes gratis para nuevos miembros; luego $19.99 al mes hasta cancelar. Cancela cuando quieras. '
               'IRS Protect Plus es un programa de membresía de Best Vision Accounting, LLC y no es un seguro. '
               'Cubre avisos elegibles del IRS fechados después de la inscripción. Aplican requisitos, limitaciones y exclusiones.')
@@ -60,7 +60,7 @@ KEEP = {
 }
 LEFT = {'pro01', 'pro06', 'pro07', 'pro08', 'pro11', 'story02', 'story06', 'story08', 'story18'}   # left-aligned headlines; the rest are centered
 TEAM = {'pro06', 'pro10', 'story06', 'story18'}         # team photo fills the bottom: CTA goes next to the offer bar
-SLOT_Y = {'pro09': 0.285}   # manual offer position where auto-detection picks the headline
+SLOT_Y = {'pro09': 0.285, 'pro06': 0.255, 'pro08': 0.25, 'story08': 0.258}   # manual offer position where auto-detection picks the headline
 LOCKUP_TOP = {'pro06': 'right', 'story18': 'right', 'story06': 'center'}
 
 PROMPT = ('Edit this advertisement. Remove ALL text in the image EXCEPT the following, which must stay exactly as it is now '
@@ -101,12 +101,45 @@ def pill(text, font, size, fg, bg, pad=(48, 26), arrow=False):
     return im
 
 
+SUBLINE = 'de tu membresía de representación ante el IRS'
+
+
 def offer_bar(arrow=False):
-    return pill(OFFER, FB, 104, NAVY, ((243, 218, 125), (201, 162, 39)), pad=(72, 36), arrow=arrow)
+    """Two-line gold button: PRIMER MES GRATIS + supporting line. Soft glow centered behind it (no offset slab)."""
+    fm, fs_ = ImageFont.truetype(FB, 96), ImageFont.truetype(os.path.join(lf.REFS, 'fonts', 'manrope-700.ttf'), 42)
+    mb, sb = fm.getbbox(OFFER), fs_.getbbox(SUBLINE)
+    aw = 120 if arrow else 0
+    w = max(mb[2] - mb[0], sb[2] - sb[0]) + 130 + aw
+    h = (mb[3] - mb[1]) + (sb[3] - sb[1]) + 30 + 64
+    m = 60                                   # room for the glow
+    im = Image.new('RGBA', (w + 2 * m, h + 2 * m), (0, 0, 0, 0))
+    glow = Image.new('L', im.size, 0)
+    ImageDraw.Draw(glow).rounded_rectangle((m, m, m + w, m + h), radius=h // 2, fill=120)
+    glow = Image.fromarray(cv2.GaussianBlur(np.asarray(glow), (0, 0), 22))
+    im.paste(Image.new('RGBA', im.size, (12, 18, 44, 255)), (0, 0), glow)
+    g = Image.new('RGBA', (w, h)); gd = ImageDraw.Draw(g)
+    for yy in range(h):
+        t = yy / h; c = tuple(int(a * (1 - t) + b * t) for a, b in zip((243, 218, 125), (201, 162, 39))) + (255,)
+        gd.line((0, yy, w, yy), fill=c)
+    mask = Image.new('L', (w, h), 0); ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=h // 2, fill=255)
+    im.paste(g, (m, m), mask)
+    d = ImageDraw.Draw(im)
+    tw = w - aw
+    y1 = m + 32
+    d.text((m + (tw - (mb[2] - mb[0])) // 2 - mb[0], y1 - mb[1]), OFFER, font=fm, fill=NAVY)
+    y2 = y1 + (mb[3] - mb[1]) + 30
+    d.text((m + (tw - (sb[2] - sb[0])) // 2 - sb[0], y2 - sb[1]), SUBLINE, font=fs_, fill=NAVY)
+    if arrow:
+        r = 46; cx = m + w - aw // 2 - 20; cy = m + h // 2
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=NAVY)
+        d.line((cx - r * .45, cy, cx + r * .4, cy), fill=(255, 255, 255), width=8)
+        d.polygon([(cx + r * .5, cy), (cx + r * .05, cy - r * .38), (cx + r * .05, cy + r * .38)], fill=(255, 255, 255))
+    im.offset = m
+    return im
 
 
 def cta_btn(dark):
-    return pill(CTA, FB, 58, NAVY if dark else (255, 255, 255), (255, 255, 255) if dark else NAVY, pad=(44, 26), arrow=True)
+    return pill(CTA, FB, 46, NAVY if dark else (255, 255, 255), (255, 255, 255) if dark else NAVY, pad=(44, 26), arrow=True)
 
 
 def disclosure(W, dark):
@@ -135,10 +168,13 @@ def fix(id_):
     src = latest(id_); orig = Image.open(src).convert('RGB'); W, H = orig.size
     keep = '; '.join(f'"{k}"' for k in KEEP[id_])
     extra = ' and the logo lockup at the top' if id_ in LOCKUP_TOP else ''
-    edited = lf.fal_edit(orig, PROMPT.format(keep=keep, extra=extra))
+    cached = os.path.join(DIR, '.clean', f'{id_}.png')
+    edited = Image.open(cached).convert('RGB') if os.path.exists(cached) else lf.fal_edit(orig, PROMPT.format(keep=keep, extra=extra))
     mask, boxes = lf.changed_boxes(orig, edited, [(0, 1)])
     soft = cv2.GaussianBlur(mask.astype(np.float32), (0, 0), 8)[..., None]
     clean = Image.fromarray((np.asarray(orig, np.float32) * (1 - soft) + np.asarray(edited, np.float32) * soft).clip(0, 255).astype(np.uint8))
+    os.makedirs(os.path.join(DIR, '.clean'), exist_ok=True)
+    clean.save(os.path.join(DIR, '.clean', f'{id_}.png'))
     out = clean.convert('RGBA')
 
     # offer bar: where the first removed line under the headline was
@@ -154,9 +190,9 @@ def fix(id_):
     dark_top = lf.is_dark(clean, (max(0, sx), sy, max(1, sw), max(1, min(sh, 200))))
     if id_ in TEAM:   # no clear spot for a second button over the team photo: the offer bar itself is the CTA
         bar = offer_bar(arrow=True)
-        out.alpha_composite(bar, ((W - bar.width) // 2 if centered else 80, sy + 10))
+        out.alpha_composite(bar, ((W - bar.width) // 2 if centered else 80 - bar.offset, sy + 10 - bar.offset))
     else:
-        out.alpha_composite(bar, ((W - bar.width) // 2 if centered else 80, sy + 10))
+        out.alpha_composite(bar, ((W - bar.width) // 2 if centered else 80 - bar.offset, sy + 10 - bar.offset))
 
     # footer: disclosure + (lockup left, CTA right) or top lockup for team layouts
     fy = int(H * .82)
@@ -176,7 +212,7 @@ def fix(id_):
         L = lf.lockup(lf.is_dark(clean, (0, 0, W, int(H * .14))), 0.9 if LOCKUP_TOP[id_] == 'right' else 1.2)
         out.alpha_composite(L, (W - 90 - L.width if LOCKUP_TOP[id_] == 'right' else (W - L.width) // 2, 80))
     elif id_ not in TEAM:
-        L = lf.lockup(True, 0.95); cta = cta_btn(dark_f)   # always plated: the dark script disappears on mid-tone photos
+        L = lf.lockup(True, 0.85); cta = cta_btn(dark_f)   # always plated: the dark script disappears on mid-tone photos
         row_h = max(L.height, cta.height); ry = ty - 30 - row_h
         out.alpha_composite(L, (80, ry + (row_h - L.height) // 2))
         out.alpha_composite(cta, (W - 70 - cta.width, ry + (row_h - cta.height) // 2))
@@ -187,7 +223,7 @@ def fix(id_):
     out.convert('RGB').save(os.path.join(DIR, name + '.png'))
     json.dump({'model': 'fal-ai/nano-banana-pro/edit (text removal) + manual composite', 'provider': 'fal',
                'concept': 'Oferta: primer mes gratis. Solo titular + oferta + un CTA + divulgación',
-               'source': os.path.basename(src), 'kept_text': KEEP[id_], 'offer': OFFER, 'cta': CTA, 'disclosure': DISCLOSURE,
+               'source': os.path.basename(src), 'kept_text': KEEP[id_], 'offer': OFFER, 'offer_subline': SUBLINE, 'cta': CTA, 'disclosure': DISCLOSURE,
                'logos': ['refs/best-vision-accounting-logo.png', 'refs/irs-protect-plus-plan-logo.png'],
                'project': 'irs-protect-plus', 'created': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(ts))},
               open(os.path.join(DIR, name + '.json'), 'w'), indent=2, ensure_ascii=False)
