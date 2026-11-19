@@ -1,0 +1,20 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "WV v2 refinement: MEDICAL WEIGHT LOSS PROGRAM / PROGRAMA MEDICO DE PERDIDA DE PESO eyebrow added, star kept only on wv01 collage hero, shadows/glows reduced, simpler composition",
+  "language": "es",
+  "prompt": "Full prompts in fal.ai request history.",
+  "refs": [
+    "../refs/estrella_logo.png",
+    "refs/location_kendall_13980.webp",
+    "refs/location_tower_salud_brilla.webp"
+  ],
+  "params": {
+    "aspect": "1:1",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-11-20T00:20:00Z"
+}
