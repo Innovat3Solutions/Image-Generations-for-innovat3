@@ -87,3 +87,9 @@ Big idea: *You are the star of this transformation — and your medical team is 
 - [Meta Transparency Center — Health and Wellness Ad Standards](https://transparency.meta.com/policies/ad-standards/restricted-goods-services/health-wellness/)
 - [AuditSocials — Meta Weight Loss Ads 2026: Banned Claims](https://www.auditsocials.com/blog/meta-health-wellness-restricted-ads-2026-supplements-body-image-medical-claim-rules)
 - [NBC News — Ozempic/Wegovy ads on Instagram](https://www.nbcnews.com/tech/internet/ozempic-weight-loss-drug-ads-instagramwegovy-semaglutide-rcna88602)
+
+---
+
+## WL — Wellness $199 bilingual flat-minimal set (Nov 19, 2026)
+
+Ten ads (5 EN / 5 ES mirrors) for the Estrella Wellness $199/mo limited-time offer with consultation included and a money-back guarantee if the patient doesn't qualify. Client direction: clean, minimalistic, NO shadows, book/schedule CTAs (no call-based CTAs), no extravagant claims. System: pure-white shadowless flat design, one headline + one CTA pill ("Book today"/"Schedule today" | "Reserva hoy"/"Agenda hoy") + guarantee line + legal line ("Prescription required. Results vary." / "Se requiere receta médica. Los resultados varían."), logo centered top, gold star accent. Concepts: offer / brand tagline / guarantee / doctor trust / easy booking. Files: estrella_wl0X_{en,es}_*.png. Note: the "money-back guarantee if you don't qualify" is a refund-policy claim — confirm the clinic actually operates this policy in writing before trafficking.

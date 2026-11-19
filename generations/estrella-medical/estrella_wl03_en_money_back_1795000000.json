@@ -1,0 +1,18 @@
+{
+  "model": "fal-ai/nano-banana-2/edit",
+  "provider": "fal.ai",
+  "prompt_note": "WL3-EN — Don't qualify? Money back. (guarantee type-only)",
+  "language": "en",
+  "prompt": "WL flat-minimal system: pure white, no shadows, one headline + CTA (Book/Schedule today | Reserva/Agenda hoy) + guarantee line + legal line, logo centered top. Full prompts in fal.ai request history.",
+  "refs": [
+    "../refs/estrella_logo.png"
+  ],
+  "params": {
+    "aspect": "1:1",
+    "resolution": "2K",
+    "output_format": "png"
+  },
+  "cost_usd": 0.08,
+  "project": "estrella-medical",
+  "created": "2026-11-19T23:10:00Z"
+}
